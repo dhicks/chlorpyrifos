@@ -11,13 +11,14 @@ county_df = read_rds(counties_file)
 ## List of ACS variables
 # vars_df = load_variables(2015, "acs5", cache = TRUE)
 
-vars_of_interest = c('total_pop' = 'B01003_001', # total population
+vars_of_interest = c(
+         'total_pop' = 'B01003_001', # total population
          ## Race and ethnicity
          'white' = 'B01001H_001', # white-alone non-hispanic
          'black' = 'B01001B_001', # black-alone
          'indigenous' = 'B01001C_001', # indigenous-alone
          'asian' = 'B01001D_001', # asian-alone
-         'hispaic' = 'B01001I_001', # hispanic or latino
+         'hispanic' = 'B01001I_001', # hispanic or latino
          ## Birth x citizenship
          # 'total_citizenship' = 'B05002_001', # total for birth x citizenship
          'noncitizens' = 'B05002_021', # foreign-born noncitizens
@@ -45,7 +46,7 @@ tracts_sf = get_acs(geography = 'tract',
     st_transform('+proj=utm +zone=10 +datum=NAD83') %>%
     mutate(area = st_area(.),
            area = units::set_units(area, 'km^2'),
-           densityE = total_popE / units::drop_units(area), 
+           densityE = total_popE / units::drop_units(area),
            densityM = total_popM / units::drop_units(area),
            density_log10 = log10(densityE))
 
