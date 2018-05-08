@@ -34,27 +34,39 @@ if (!file.exists(counties_file)) {
 }
 
 ## Pesticide use data -----
+pur_years = 11:15
+
 pur_files = county_df %>%
-    pull(county_cd) %>%
-    str_c('udc15_', ., '.txt') %>%
-    str_c('pur2015/', .) %>%
-    str_c(data_dir, .)
+    crossing(pur_years) %>%
+    mutate(dir = str_c('pur20', pur_years), 
+           file = str_c('udc', pur_years, '_', county_cd, '.txt'), 
+           path = str_c(dir, '/', file), 
+           fullpath = str_c(data_dir, path), 
+           pur_years = str_c('20', pur_years)) %>%
+    pull(fullpath)
+names(pur_files) <- rep(str_c('20', pur_years), 
+                        length.out = length(pur_files))
 
 pur_data_unfltd = pur_files %>%
     map(read_csv) %>%
     map(mutate_at, vars(range, township, county_cd, 
-                        grower_id),
+                        grower_id, license_no),
         'as.character') %>%
-    bind_rows() %>%
+    bind_rows(.id = 'year') %>%
     full_join(county_df)
 
 ## Chemical data -----
 chem_file = str_c(data_dir, 'pur2015/chemical.txt')
 chem_df = read_csv(chem_file)
 
+## These appear to be the same across years, at least for chlorpyrifos
+# chem_df2 = read_csv(str_c(data_dir, 'pur2011/chemical.txt'))
+
 chlor_data = chem_df %>%
     filter(str_detect(chemname, 'CHLORPYRIFOS')) %>%
-    left_join(pur_data_unfltd)
+    inner_join(pur_data_unfltd) %>%
+    ## 1 entry w/ NA lbs_chm_used
+    filter(!is.na(lbs_chm_used))
 
 ## Error checking -----
 chlor_errors = read_csv(str_c(data_dir, 'pur2015/errors2015.txt')) %>%
@@ -70,6 +82,7 @@ str_c(data_dir, 'pur2015/changes2015.txt') %>%
 
 ## When the record might be a duplicate (80), duplicate_set doesn't actually identify the duplicates? 
 chlor_errors %>%
+    filter(year == 2015) %>%
     count(duplicate_set) %>%
     arrange(desc(n))
 
@@ -97,7 +110,7 @@ sections_sf = sections_unfltd %>%
 
 ## Combine section shapefiles w/ chlorpyrifos use data ----
 chlor_sf = chlor_data %>%
-    group_by(comtrs) %>%
+    group_by(year, comtrs) %>%
     summarize(total_use = sum(lbs_chm_used)) %>%
     inner_join(sections_sf, ., 
                       by = c('CO_MTRS' = 'comtrs'))
@@ -105,6 +118,7 @@ chlor_sf = chlor_data %>%
 write_rds(chlor_sf, str_c(data_dir, '01_chlor_sf.Rds'))
 st_write(chlor_sf, str_c(path.expand(data_dir), 
                          'chlorpyrifos_2015/', 
-                         'chlorpyrifos_2015.shp'))
+                         'chlorpyrifos_2015.shp'), 
+         delete_layer = TRUE)
 
 

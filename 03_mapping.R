@@ -26,7 +26,20 @@ tm_shape(tracts_sf) +
     tm_polygons(col = 'blue', alpha = .25) +
 tm_shape(places_sf) +
     tm_polygons(col = 'yellow', alpha = .75) +
-tm_shape(chlor_sf) +
+tm_shape(subset(chlor_sf, year == 2015)) +
     tm_dots(col = 'total_use', palette = 'Reds') +
 tm_scale_bar(position = c('left', 'bottom'))
 
+
+## Distribution of use ----
+## I'd say this is close enough to lognormal
+## Annual values
+ggplot(chlor_sf, aes(log10(total_use), color = year)) + 
+    geom_density()
+
+## Aggregated
+chlor_sf %>%
+    group_by(CO_MTRS) %>%
+    summarize(total_use = sum(total_use)) %>%
+    ggplot(aes(log10(total_use))) + 
+    geom_density()
