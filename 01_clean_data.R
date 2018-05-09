@@ -4,10 +4,10 @@
 #' This script cleans the PUR data for chlorpyrifos use in the Central Valley.  Output files are in `shp` (Esri Shapefile) and `Rds` (R-specific serialization) formats. 
 #' Important notes:
 #' 
-#' - Output contains only uses in the counties listed in `cv_counties`
-#' - Output contains only total use of chemical (in pounds) at each section.
+#' - Output contains only uses in the counties listed in `counties_of_interest`
+#' - Output contains only total annual use of chemical (in pounds) at each section.
 #' - Uses are mapped to section centroids rather than sections or fields. 
-#' - Chlorpyrifos use is identified by matching the string 'chlorpyrifos' in the chemical list.  This matches chlorpyrifos as well as chlorpyrifos-methyl and chlorpyifos oxon.  In 2015, only 2/11192 uses were of chlorpyrifos-methyl or chlorpyrifos oxon.  
+#' - Chlorpyrifos use is identified by matching the string 'chlorpyrifos' in the chemical list.  This matches chlorpyrifos as well as chlorpyrifos-methyl and chlorpyifos oxon.  In 2015, only 2/11k uses were of chlorpyrifos-methyl or chlorpyrifos oxon.  
 #' - Shapefiles are in UTM 10 projection. 
 
 library(tidyverse)
@@ -117,8 +117,8 @@ chlor_sf = chlor_data %>%
 
 write_rds(chlor_sf, str_c(data_dir, '01_chlor_sf.Rds'))
 st_write(chlor_sf, str_c(path.expand(data_dir), 
-                         'chlorpyrifos_2015/', 
-                         'chlorpyrifos_2015.shp'), 
+                         'chlorpyrifos/', 
+                         'chlorpyrifos.shp'), 
          delete_layer = TRUE)
 
 
