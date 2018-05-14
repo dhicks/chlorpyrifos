@@ -17,7 +17,7 @@ data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 counties_file = str_c(data_dir, '01_counties.Rda')
 if (!file.exists(counties_file)) {
-  counties_of_interest = c('Shasta', 'Tehama', 'Glenn', 'Butte', 
+  study_area = c('Shasta', 'Tehama', 'Glenn', 'Butte', 
                            'Colusa', 'San Joaquin', 'Stanislaus', 
                            'Merced', 'Madera', 'Fresno', 'Kings', 
                            'Tulare', 'Kern')
@@ -25,8 +25,8 @@ if (!file.exists(counties_file)) {
   county_df = pur_county_file %>%
     read_csv() %>%
     rename(county = couty_name) %>% 
-    filter(county %in% toupper(counties_of_interest)) %>%
-    mutate(county = str_to_title(county))
+    mutate(county = str_to_title(county), 
+           study_area = county %in% study_area)
   
   write_rds(county_df, counties_file)
 } else {
@@ -47,13 +47,17 @@ pur_files = county_df %>%
 names(pur_files) <- rep(str_c('20', pur_years), 
                         length.out = length(pur_files))
 
+# ~172 s
+tictoc::tic()
 pur_data_unfltd = pur_files %>%
-    map(read_csv) %>%
-    map(mutate_at, vars(range, township, county_cd, 
-                        grower_id, license_no),
-        'as.character') %>%
+    map(read_csv, col_types = cols(range = 'c', township = 'c', section = 'c', county_cd = 'c', 
+                                   grower_id = 'c', license_no = 'c', 
+                                   applic_time = 'c', section = 'c', 
+                                   site_loc_id = 'c',
+                                   acre_planted = 'n', acre_treated = 'n')) %>%
     bind_rows(.id = 'year') %>%
     full_join(county_df)
+tictoc::toc()
 
 ## Chemical data -----
 chem_file = str_c(data_dir, 'pur2015/chemical.txt')
@@ -62,14 +66,18 @@ chem_df = read_csv(chem_file)
 ## These appear to be the same across years, at least for chlorpyrifos
 # chem_df2 = read_csv(str_c(data_dir, 'pur2011/chemical.txt'))
 
-chlor_data = chem_df %>%
+chlor_data_uncleaned = chem_df %>%
     filter(str_detect(chemname, 'CHLORPYRIFOS')) %>%
     inner_join(pur_data_unfltd) %>%
     ## 1 entry w/ NA lbs_chm_used
     filter(!is.na(lbs_chm_used))
 
 ## Error checking -----
-chlor_errors = read_csv(str_c(data_dir, 'pur2015/errors2015.txt')) %>%
+chlor_errors = pur_years %>%
+    str_c('pur20', ., '/errors20', ., '.txt') %>%
+    str_c(data_dir, .) %>%
+    set_names(str_c('20', pur_years)) %>%
+    map_dfr(read_csv, .id = 'year') %>%
     inner_join(chlor_data)
 ## Table of types of errors
 count(chlor_errors, error_code, error_description)
@@ -80,16 +88,26 @@ str_c(data_dir, 'pur2015/changes2015.txt') %>%
     read_csv() %>%
     inner_join(chlor_errors)
 
-## When the record might be a duplicate (80), duplicate_set doesn't actually identify the duplicates? 
-chlor_errors %>%
-    filter(year == 2015) %>%
-    count(duplicate_set) %>%
-    arrange(desc(n))
+## Outlier correction (code 75)
+## It looks like these adjustments have already been made in the datafile
+filter(chlor_errors, error_code == 75) %>%
+    select(year, comments, lbs_prd_used, acre)
+str_c(data_dir, 'pur2011/changes2011.txt') %>%
+    read_csv() %>%
+    inner_join(chlor_errors) %>%
+    filter(error_code == 75)
 
-## Grower # 50155005245 has a potential duplicate (use # 181070, row 5 below)
+## When the record might be a duplicate (80), duplicate_set doesn't actually identify the duplicates? 
+## Or does in some cases, and in other cases they've already been removed? 
+chlor_errors %>%
+    filter(error_code == 80) %>%
+    count(duplicate_set, year) %>%
+    arrange(desc(n)) #%>% View
+
+## In 2015, grower # 50155005245 has a potential duplicate (use # 181070, row 5 below)
 ## But there doesn't seem to be another entry with the same lbs_chm_used
-chlor_data %>%
-    filter(grower_id == '50155005245')
+chlor_data_uncleaned %>%
+    filter(grower_id == '50155005245') #%>% View
 ## So I guess duplicates have already been deleted?  
 
 ## This grower seems to have some issues with their paperwork
@@ -97,7 +115,25 @@ chlor_errors %>%
     filter(grower_id == '50155005245')
 ## Uses 94056 and 94061 seem to be identical, but have different site_loc_id values
 
-## Based on this, I'm going to infer that duplicates have already been removed and I don't need to do any further cleaning
+## OTOH, consider these two from 20122
+chlor_data_uncleaned %>%
+    filter(use_no %in% c(2468421, 5093585)) %>% View
+## These are identical, except that the application time is 0440 vs 1640 and some of the record identifiers are different.  
+
+## So we'll remove the second record when duplicate_set appears twice
+chlor_data = chlor_errors %>%
+    filter(error_code == 80) %>%
+    count(duplicate_set, year) %>%
+    arrange(desc(n)) %>%
+    filter(n > 1) %>%
+    ## Rejoin w/ chlor_errors to get the use numbers
+    inner_join(chlor_errors) %>%
+    select(duplicate_set, year, use_no) %>%
+    ## Get the second record
+    group_by(duplicate_set, year) %>%
+    summarize(use_no = last(use_no)) %>%
+    ## Anti-join to chlor_data_uncleaned
+    anti_join(chlor_data_uncleaned, .)
 
 ## Section shapefiles -----
 ## ~10 seconds
