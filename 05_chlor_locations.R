@@ -35,7 +35,7 @@ distances_tr = st_within(chlor_sf, tracts_sf, sparse = FALSE) %>%
     mutate(tracts_idx = as.integer(str_extract(tracts_idx, '[0-9]+'))) %>%
     right_join(distances_tr)
 
-write_rds(distances_tr, str_c(data_dir, '04_dist_tracts.Rds'))
+write_rds(distances_tr, str_c(data_dir, '05_dist_tracts.Rds'))
 
 # distances_tr %>%
 #     inner_join(tracts_sf) %>%
@@ -80,7 +80,7 @@ distances_pl = st_within(chlor_sf, places_sf, sparse = FALSE) %>%
     mutate(places_idx = as.integer(str_extract(places_idx, '[0-9]+'))) %>%
     right_join(distances_pl)
 
-write_rds(distances_pl, str_c(data_dir, '04_dist_places.Rds'))
+write_rds(distances_pl, str_c(data_dir, '05_dist_places.Rds'))
 
 # distances_pl %>%
 #     inner_join(places_sf) %>%
