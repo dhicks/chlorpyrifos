@@ -1,6 +1,10 @@
+## TODO: contiguity spatial weights
+## TODO: update text
+
 #' This document conducts an EDA on census data only, first at the tract level and then at the places level.  
 library(tidyverse)
 library(sf)
+library(spdep)
 
 library(tidycensus)
 
@@ -130,17 +134,28 @@ tracts_sf %>%
 #' About 20% more Hispanics than Whites
 
 ## Spatial weights ----
-## We'll construct KNN for K=3-8
-library(spdep)
-
-weights = 3:8 %>%
+coords_tracts = tracts_sf %>%
+    st_centroid() %>%
+    st_coordinates()
+## KNN
+weights_tracts_knn = 3:8 %>%
     set_names() %>%
-    map(~ {tracts_sf %>%
-            st_centroid() %>%
-            st_coordinates() %>%
-            knearneigh(k = .x) %>%
+    map(~ {knearneigh(coords_tracts, k = .x) %>%
             knn2nb() %>%
             nb2listw(style = 'W')})
+## Inverse spatial weights w/in 50 km
+dnn_tracts = dnearneigh(coords_tracts, d1 = 0, d2 = 50 * 1000)
+weights_tracts_d = nbdists(dnn_tracts, coords = coords_tracts) %>%
+    map( ~ 1/.) %>%
+    nb2listw(dnn_tracts, glist = ., style = 'W', 
+             zero.policy = TRUE)
+
+weights_tracts = c(weights_tracts_knn, 
+                   distance = list(weights_tracts_d))
+
+plot(tracts_sf, max.plot = 1)
+plot(weights_tracts$distance, coords = coords_tracts, 
+     add = TRUE, col = 'blue')
 
 ## Moran's I ----
 moran.i = function(vec, weights, ...) {
@@ -149,12 +164,12 @@ moran.i = function(vec, weights, ...) {
 }
 
 ## Moran's I for overall density
-weights %>%
+weights_tracts %>%
     map(~moran.i(log10(tracts_sf$densityE), .)) %>%
     unlist()
 #' Moderate population clustering, .41-.45
 
-weights %>%
+weights_tracts %>%
 tibble(weights = ., k = names(.)) %>%
     crossing(tibble(variable = c('whiteE_D', 
                                  'blackE_D', 
@@ -180,7 +195,7 @@ tibble(weights = ., k = names(.)) %>%
     geom_hline(yintercept = c(.41, .45), linetype = 'dashed') +
     coord_flip()
 
-#' The 6 neighborings all give similar values of Moran's $I$, with slightly lower values as $K$ increases.  The dashed line corresponds to the range of $I$ for total population density, calculated above.  
+#' The 6 KNN neighborings all give similar values of Moran's $I$, with slightly lower values as $K$ increases.  The dashed line corresponds to the range of $I$ for total population density, calculated above.  Distance-based weights have consistently lower values of Moran's $I$, but order the groups in basically the same way.  
 #' 
 #' Asian and black residents have moderate-high clustering.  White, Hispanic, and noncitizen residents have moderate clustering.  Children and impoverished residents seem to have clustering values the same as or just above the overall population.  Indigenous people have weak positive clustering.  
 
@@ -307,26 +322,31 @@ places_sf %>%
 #' Hispanic-white ratio slightly higher, at 27%
 
 ## Spatial weights ----
-## We'll construct KNN for K=3-8
 library(spdep)
 
-weights_places = 3:8 %>%
-    set_names() %>%
-    map(~ {places_sf %>%
-            st_centroid() %>%
-            st_coordinates() %>%
-            knearneigh(k = .x) %>%
-            knn2nb() %>%
-            nb2listw(style = 'W')})
-
-coords = places_sf %>%
+coords_places = places_sf %>%
     st_centroid() %>%
     st_coordinates()
-plot(places_sf, max.plot = 1)
-plot(weights_places$`8`, coords = coords, add = TRUE, col = 'blue')
-plot(weights_places$`3`, coords = coords, add = TRUE, col = 'red')
+## KNN
+weights_places_knn = 3:8 %>%
+    set_names() %>%
+    map(~ {knearneigh(coords_places, k = .x) %>%
+            knn2nb() %>%
+            nb2listw(style = 'W')})
+## Inverse spatial weights w/in 50 km
+dnn_places = dnearneigh(coords_places, d1 = 0, d2 = 50 * 1000)
+weights_places_d = nbdists(dnn_places, coords = coords_places) %>%
+    map( ~ 1/.) %>%
+    nb2listw(dnn_places, glist = ., style = 'W', zero.policy = TRUE)
 
-## Both systems of neighbors produce an archipelago of tight clusters and longer connections.  Neither seems to produce ridiculously extended "neighbor" connections.  
+weights_places = c(weights_places_knn, 
+                   distance = list(weights_places_d))
+
+plot(places_sf, max.plot = 1)
+plot(weights_places$distance, coords = coords_places, 
+     add = TRUE, col = 'blue')
+
+## All systems of neighbors produce an archipelago of tight clusters and longer connections.  Neither seems to produce ridiculously extended "neighbor" connections.  
 
 ## Moran's I ----
 moran.i = function(vec, weights, ...) {
@@ -338,7 +358,7 @@ moran.i = function(vec, weights, ...) {
 weights_places %>%
     map(~moran.i(log10(places_sf$densityE), .)) %>%
     unlist()
-#' Higher moderate population clustering, .45-.52
+#' Higher moderate population clustering, .45-.52. Distance weights are more consistent w/ KNN here.  
 
 weights_places %>%
     tibble(weights = ., k = names(.)) %>%
@@ -366,4 +386,8 @@ weights_places %>%
     geom_hline(yintercept = c(.45, .52), linetype = 'dashed') +
     coord_flip()
 
-#' With places, most groups have low and below-average clustering. Impoverished people, noncitizens, and Hispanics have moderate clustering, and Hispanics and noncitizens are above the overall average.  
+#' With places, most groups have low and below-average clustering. Impoverished people, noncitizens, and Hispanics have moderate clustering, and Hispanics and noncitizens are above the overall average.  Distance values are generally similar to but a bit lower than the KNN.  
+
+weights_tracts_d$weights %>%
+    map(sum) %>%
+    unlist()
