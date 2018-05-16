@@ -4,6 +4,10 @@ library(tmap)
 
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
+county_df = str_c(data_dir, '01_counties.Rda') %>%
+    read_rds() %>%
+    filter(study_area)
+
 ## County borders -----
 ## https://www.census.gov/geo/maps-data/data/cbf/cbf_counties.html
 counties_sf = read_sf(str_c(data_dir, 'cb_2015_us_county_20m'), 
@@ -29,10 +33,13 @@ tm_shape(places_sf) +
     tm_polygons(col = 'yellow', alpha = .75) +
 tm_shape(subset(chlor_sf, year == 2015)) +
     tm_dots(col = 'log_total_use', palette = 'Reds', 
-            style = 'cont') +
-tm_shape(subset(counties_sf, NAME %in% chlor_sf$county)) +
+            style = 'cont', title = 'Chlorpyrifos\n2015 Use\n(log lbs)') +
+tm_shape(subset(counties_sf, 
+                NAME %in% county_df$county)) +
     tm_text('NAME') +
 tm_scale_bar(position = c('left', 'bottom'))
+save_tmap(filename = '03_chlor_use.png', 
+          width = 6, height = 7, units = 'in')
 
 
 ## Distribution of use ----
