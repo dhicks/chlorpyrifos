@@ -1,6 +1,3 @@
-## TODO: contiguity spatial weights
-## TODO: update text
-
 #' This document conducts an EDA on census data only, first at the tract level and then at the places level.  
 library(tidyverse)
 library(sf)
@@ -12,6 +9,8 @@ data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 #' # Tracts #
 tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
+    ## 1 tract w/ total population 0
+    filter(total_popE != 0) %>%
     ## Population proportions
     mutate(whiteP = whiteE / total_popE, 
            whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
@@ -58,7 +57,7 @@ tracts_sf %>%
     facet_wrap(~ variable, scales = 'free') +
     scale_x_continuous(labels = scales::percent_format())
 
-#' There are a few tracts with a modest proportion of Asian and Black residents ($> 20%$); but only a few.  Almost no tracts have more than 5% Indigenous residents, and none have more than about 20%.  Children are typically ~5-12% of the population.  The poverty rate varies dramatically, with a median somewhere around 30% and some values above 50%.  Hispanic and White proportions are the most diverse.  
+#' There are a few tracts with a modest proportion of Asian and Black residents ($> 20\%$); but only a few.  Almost no tracts have more than 5% Indigenous residents, and none have more than about 20%.  Children are typically ~5-12% of the population.  The poverty rate varies dramatically, with a median somewhere around 30% and some values above 50%.  Hispanic and White proportions are the most diverse.  
 
 tracts_sf %>%
     mutate(w_plus_h = whiteP + hispanicP) %>%
@@ -137,6 +136,12 @@ tracts_sf %>%
 coords_tracts = tracts_sf %>%
     st_centroid() %>%
     st_coordinates()
+## Contiguity
+weights_tracts_contig = tracts_sf %>%
+    pull(geometry) %>%
+    as_Spatial() %>%
+    poly2nb() %>%
+    nb2listw(style = 'W')
 ## KNN
 weights_tracts_knn = 3:8 %>%
     set_names() %>%
@@ -151,10 +156,11 @@ weights_tracts_d = nbdists(dnn_tracts, coords = coords_tracts) %>%
              zero.policy = TRUE)
 
 weights_tracts = c(weights_tracts_knn, 
+                   contiguity = list(weights_tracts_contig),
                    distance = list(weights_tracts_d))
 
 plot(tracts_sf, max.plot = 1)
-plot(weights_tracts$distance, coords = coords_tracts, 
+plot(weights_tracts$contiguity, coords = coords_tracts, 
      add = TRUE, col = 'blue')
 
 ## Moran's I ----
@@ -164,13 +170,14 @@ moran.i = function(vec, weights, ...) {
 }
 
 ## Moran's I for overall density
-weights_tracts %>%
-    map(~moran.i(log10(tracts_sf$densityE), .)) %>%
-    unlist()
-#' Moderate population clustering, .41-.45
+moran_i_tracts = weights_tracts %>%
+    map_dfr(~moran.i(log10(tracts_sf$densityE), .)) %>%
+    gather(key = 'k', value = 'I')
+moran_i_tracts
+#' Moderate population clustering, ~.40-.45 for KNN
 
 weights_tracts %>%
-tibble(weights = ., k = names(.)) %>%
+    tibble(weights = ., k = names(.)) %>%
     crossing(tibble(variable = c('whiteE_D', 
                                  'blackE_D', 
                                  'indigenousE_D', 
@@ -192,12 +199,15 @@ tibble(weights = ., k = names(.)) %>%
     ggplot(aes(variable, moran_i, color = k, group = k)) + 
     geom_point() +
     geom_line() +
-    geom_hline(yintercept = c(.41, .45), linetype = 'dashed') +
+    geom_hline(data = moran_i_tracts, 
+               aes(yintercept = I, color = k), 
+               linetype = 'dashed') +
     coord_flip()
 
-#' The 6 KNN neighborings all give similar values of Moran's $I$, with slightly lower values as $K$ increases.  The dashed line corresponds to the range of $I$ for total population density, calculated above.  Distance-based weights have consistently lower values of Moran's $I$, but order the groups in basically the same way.  
+#' The 6 KNN neighborings all give similar values of Moran's $I$, with slightly lower values as $K$ increases.  The dashed lines correspond to the values of $I$ for total population density, calculated above.  Distance-based weights have consistently lower values of Moran's $I$, but order the groups in basically the same way.  Continuity weights have consistently higher values of I, with almost no difference between different groups.  
 #' 
 #' Asian and black residents have moderate-high clustering.  White, Hispanic, and noncitizen residents have moderate clustering.  Children and impoverished residents seem to have clustering values the same as or just above the overall population.  Indigenous people have weak positive clustering.  
+#' 
 
 
 #' # Places #
@@ -327,6 +337,12 @@ library(spdep)
 coords_places = places_sf %>%
     st_centroid() %>%
     st_coordinates()
+## Contiguity
+weights_places_contig = places_sf %>%
+    pull(geometry) %>%
+    as_Spatial() %>%
+    poly2nb() %>%
+    nb2listw(style = 'W', zero.policy = TRUE)
 ## KNN
 weights_places_knn = 3:8 %>%
     set_names() %>%
@@ -340,13 +356,19 @@ weights_places_d = nbdists(dnn_places, coords = coords_places) %>%
     nb2listw(dnn_places, glist = ., style = 'W', zero.policy = TRUE)
 
 weights_places = c(weights_places_knn, 
+                   contiguity = list(weights_places_contig),
                    distance = list(weights_places_d))
 
 plot(places_sf, max.plot = 1)
-plot(weights_places$distance, coords = coords_places, 
+plot(weights_places$contiguity, coords = coords_places, 
      add = TRUE, col = 'blue')
 
 ## All systems of neighbors produce an archipelago of tight clusters and longer connections.  Neither seems to produce ridiculously extended "neighbor" connections.  
+## 
+## Contiguity weights produce large numbers of islands:  246/397 (62%) have no neighbors
+
+weights_places$contiguity$neighbours
+
 
 ## Moran's I ----
 moran.i = function(vec, weights, ...) {
@@ -355,10 +377,12 @@ moran.i = function(vec, weights, ...) {
 }
 
 ## Moran's I for overall density
-weights_places %>%
-    map(~moran.i(log10(places_sf$densityE), .)) %>%
-    unlist()
-#' Higher moderate population clustering, .45-.52. Distance weights are more consistent w/ KNN here.  
+moran_i_places = weights_places %>%
+    map_dfr(~moran.i(log10(places_sf$densityE), ., 
+                     zero.policy = TRUE)) %>%
+    gather(key = 'k', value = 'I')
+moran_i_places
+#' Higher moderate population clustering, .45-.53. Distance weights are more consistent w/ KNN here.  Contiguity weights are much lower.  
 
 weights_places %>%
     tibble(weights = ., k = names(.)) %>%
@@ -376,18 +400,17 @@ weights_places %>%
             pull(variable) %>%
             {. + 1} %>% log10() %>%
             list()}, 
-           moran_i = moran.i(var_value, weights)) %>%
+           moran_i = moran.i(var_value, weights, 
+                             zero.policy = TRUE)) %>%
     select(k, variable, moran_i) %>%
     arrange(desc(moran_i)) %>%
     mutate(variable = fct_inorder(variable)) %>%
     ggplot(aes(variable, moran_i, color = k, group = k)) + 
     geom_point() +
     geom_line() +
-    geom_hline(yintercept = c(.45, .52), linetype = 'dashed') +
+    geom_hline(data = moran_i_places, 
+               aes(yintercept = I, color = k), 
+               linetype = 'dashed') +
     coord_flip()
 
-#' With places, most groups have low and below-average clustering. Impoverished people, noncitizens, and Hispanics have moderate clustering, and Hispanics and noncitizens are above the overall average.  Distance values are generally similar to but a bit lower than the KNN.  
-
-weights_tracts_d$weights %>%
-    map(sum) %>%
-    unlist()
+#' With places, most groups have low and below-average clustering. Impoverished people, noncitizens, and Hispanics have moderate clustering, and Hispanics and noncitizens are above the overall average.  Distance values are generally similar to but a bit lower than the KNN.  Contiguity values are generally quite a bit lower.  
