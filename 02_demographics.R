@@ -4,8 +4,9 @@ library(sf)
 
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
-counties_file = str_c(data_dir, '01_counties.Rda')
-county_df = read_rds(counties_file)
+county_df = str_c(data_dir, '01_counties.Rda') %>%
+    read_rds() %>%
+    filter(study_area)
 
 ## Variables of interest -----
 ## List of ACS variables
@@ -72,7 +73,9 @@ places_df = get_acs(geography = 'place',
 places_sf = places_sf %>% 
     inner_join(places_df, by = c('GEOID.1' = 'GEOID')) %>%
     select(GEOID = GEOID.1, 
-           NAME, total_popE:povertyM) %>%
+           name = NAME, 
+           county = NAME.2,
+           total_popE:povertyM) %>%
     mutate(area = st_area(.),
            area = units::set_units(area, 'km^2'),
            densityE = total_popE / units::drop_units(area), 
