@@ -4,8 +4,8 @@
 #' This script cleans the PUR data for chlorpyrifos use in the Central Valley.  Output files are in `shp` (Esri Shapefile) and `Rds` (R-specific serialization) formats. 
 #' Important notes:
 #' 
-#' - Output contains only uses in the counties listed in `counties_of_interest`
-#' - Output contains only total annual use of chemical (in pounds) at each section.
+#' - Output contains chlorpyrifos use for all California counties.  Counties to be analyzed downstream (Central Valley counties other than Sacramento) are designed with the variable `study_area`. 
+#' - Output contains only total annual use of chemical (in pounds) at each section for 2011-2015. 
 #' - Uses are mapped to section centroids rather than sections or fields. 
 #' - Chlorpyrifos use is identified by matching the string 'chlorpyrifos' in the chemical list.  This matches chlorpyrifos as well as chlorpyrifos-methyl and chlorpyifos oxon.  In 2015, only 2/11k uses were of chlorpyrifos-methyl or chlorpyrifos oxon.  
 #' - Shapefiles are in UTM 10 projection. 
@@ -17,20 +17,21 @@ data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 counties_file = str_c(data_dir, '01_counties.Rda')
 if (!file.exists(counties_file)) {
-  study_area = c('Shasta', 'Tehama', 'Glenn', 'Butte', 
-                           'Colusa', 'San Joaquin', 'Stanislaus', 
-                           'Merced', 'Madera', 'Fresno', 'Kings', 
-                           'Tulare', 'Kern')
-  pur_county_file = str_c(data_dir, 'pur2015/county.txt')
-  county_df = pur_county_file %>%
-    read_csv() %>%
-    rename(county = couty_name) %>% 
-    mutate(county = str_to_title(county), 
-           study_area = county %in% study_area)
-  
-  write_rds(county_df, counties_file)
+    study_area = c('Shasta', 'Tehama', 'Glenn', 'Butte', 
+                   'Colusa', 'Yuba', 'Sutter',
+                   'Yolo', 'Solano', 'San Joaquin', 'Stanislaus', 
+                   'Merced', 'Madera', 'Fresno', 'Kings', 
+                   'Tulare', 'Kern')
+    pur_county_file = str_c(data_dir, 'pur2015/county.txt')
+    county_df = pur_county_file %>%
+        read_csv() %>%
+        rename(county = couty_name) %>% 
+        mutate(county = str_to_title(county), 
+               study_area = county %in% study_area)
+    
+    write_rds(county_df, counties_file)
 } else {
-  county_df = read_rds(counties_file)
+    county_df = read_rds(counties_file)
 }
 
 ## Pesticide use data -----
@@ -78,7 +79,7 @@ chlor_errors = pur_years %>%
     str_c(data_dir, .) %>%
     set_names(str_c('20', pur_years)) %>%
     map_dfr(read_csv, .id = 'year') %>%
-    inner_join(chlor_data)
+    inner_join(chlor_data_uncleaned)
 ## Table of types of errors
 count(chlor_errors, error_code, error_description)
 
@@ -91,7 +92,7 @@ str_c(data_dir, 'pur2015/changes2015.txt') %>%
 ## Outlier correction (code 75)
 ## It looks like these adjustments have already been made in the datafile
 filter(chlor_errors, error_code == 75) %>%
-    select(year, comments, lbs_prd_used, acre)
+    select(year, comments, lbs_prd_used, acre_treated)
 str_c(data_dir, 'pur2011/changes2011.txt') %>%
     read_csv() %>%
     inner_join(chlor_errors) %>%
@@ -117,7 +118,7 @@ chlor_errors %>%
 
 ## OTOH, consider these two from 20122
 chlor_data_uncleaned %>%
-    filter(use_no %in% c(2468421, 5093585)) %>% View
+    filter(use_no %in% c(2468421, 5093585))# %>% View
 ## These are identical, except that the application time is 0440 vs 1640 and some of the record identifiers are different.  
 
 ## So we'll remove the second record when duplicate_set appears twice
@@ -149,7 +150,7 @@ chlor_sf = chlor_data %>%
     group_by(year, comtrs) %>%
     summarize(total_use = sum(lbs_chm_used)) %>%
     inner_join(sections_sf, ., 
-                      by = c('CO_MTRS' = 'comtrs'))
+               by = c('CO_MTRS' = 'comtrs'))
 
 write_rds(chlor_sf, str_c(data_dir, '01_chlor_sf.Rds'))
 st_write(chlor_sf, str_c(path.expand(data_dir), 
