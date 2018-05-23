@@ -1,6 +1,3 @@
-## TODO: multiple years
-##  + check for error 75 (outliers)
-
 #' This script cleans the PUR data for chlorpyrifos use in the Central Valley.  Output files are in `shp` (Esri Shapefile) and `Rds` (R-specific serialization) formats. 
 #' Important notes:
 #' 
