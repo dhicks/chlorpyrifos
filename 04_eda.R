@@ -9,8 +9,8 @@ data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 #' # Tracts #
 tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
-    ## 1 tract w/ total population 0
-    filter(total_popE != 0) %>%
+    ## Remove tracts w/ total population or total employed 0
+    filter(total_popE != 0, total_employedE != 0) %>%
     ## Population proportions
     mutate(whiteP = whiteE / total_popE, 
            whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
@@ -32,10 +32,16 @@ tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
            poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
            poverty_combP = poverty_combE / total_popE, 
            poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM)) %>%
+                                     poverty_combM, total_popM), 
+           hisp_povertyP = hisp_povertyE / hispanicE, 
+           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
+           ag_employedP = ag_employedE / total_employedE,
+           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
+           ) %>%
     ## Population densities
     mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE), 
+                   noncitizensE, childrenE, poverty_combE, 
+                   hisp_povertyP, ag_employedP), 
               funs(D = . / units::drop_units(area)))
 ## Gives a warning about NaNs; 
 ## but there aren't any in the output
@@ -76,7 +82,7 @@ ggplot(tracts_sf, aes(hispanicP, poverty_combP)) +
 ## Correlations ----
 tracts_sf %>%
     as_tibble() %>%
-    select(densityE, whiteP, blackP, childrenP, hispanicP, indigenousP, noncitizensP, poverty_combP, whiteP) %>%
+    select(densityE, ends_with('P')) %>%
     cor() %>%
     as.data.frame() %>%
     rownames_to_column(var = 'var1') %>%
@@ -87,8 +93,19 @@ tracts_sf %>%
     geom_tile() +
     geom_text() +
     scale_fill_gradient2()
+
+tracts_sf %>%
+    as_tibble() %>%
+    select(densityE, ends_with('P'), -whiteP) %>%
+    cor() %>%
+    as.data.frame() %>%
+    rownames_to_column(var = 'var1') %>%
+    as_tibble() %>%
+    gather(key = 'var2', value = 'cor', -var1) %>%
+    filter(abs(cor) > .4, var1 < var2) %>%
+    arrange(desc(abs(cor)))
     
-#' White proportion has moderate to very strong negative corelations with every other variable (except Indigenous).  Very strong correlation between Hispanic and noncitizen proportion.  Moderate correlations between each pair of poverty, children, noncitizens, and Hispanic.  
+#' White proportion has moderate to very strong negative corelations with every other variable (except Indigenous).  Very strong correlation between Hispanic and noncitizen proportion and between Hispanic and general poverty.  Strong correlations between agricultural employment and noncitizens and Hispanic.  Moderate correlations between each pair of poverty, children, noncitizens, and Hispanic, and between agricultural employment and poverty.  
 
 ggplot(tracts_sf, aes((densityE), hispanicP)) + 
     geom_point() +
@@ -236,10 +253,15 @@ places_sf = read_rds(str_c(data_dir, '02_places_sf.Rds')) %>%
            poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
            poverty_combP = poverty_combE / total_popE, 
            poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM)) %>%
+                                     poverty_combM, total_popM), 
+           hisp_povertyP = hisp_povertyE / hispanicE, 
+           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
+           ag_employedP = ag_employedE / total_employedE,
+           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)) %>%
     ## Population densities
     mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE), 
+                   noncitizensE, childrenE, poverty_combE, 
+                   hisp_povertyE, ag_employedE), 
               funs(D = . / units::drop_units(area)))
 
 glimpse(places_sf)
@@ -286,6 +308,17 @@ places_sf %>%
     geom_tile() +
     geom_text() +
     scale_fill_gradient2()
+
+places_sf %>%
+    as_tibble() %>%
+    select(densityE, ends_with('P'), -whiteP) %>%
+    cor() %>%
+    as.data.frame() %>%
+    rownames_to_column(var = 'var1') %>%
+    as_tibble() %>%
+    gather(key = 'var2', value = 'cor', -var1) %>%
+    filter(abs(cor) > .4, var1 < var2) %>%
+    arrange(desc(abs(cor)))
 
 #' White is still anticorrelated with everything except Indigenous.  Strong or moderate correlations between noncitizens, poverty, or Hispanic. (Not children.)  Moderate correlations between Hispanic and density, and moderate-weak between Hispanic and children and density and noncitizens.  
 

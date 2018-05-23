@@ -29,11 +29,17 @@ vars_of_interest = c(
          ## Poverty
          # 'total_poverty' = 'C17002_001', # total for poverty
          'extreme_poverty' = 'C17002_002', # IP ratio < .5
-         'poverty' = 'C17002_003' # IP ratio .5-.99
+         'poverty' = 'C17002_003', # IP ratio .5-.99
+         ## Hispanic poverty
+         # 'total_hisp_poverty' = 'B17001I_001', # Hispanic total
+         'hisp_poverty' = 'B17001I_002', # Hispanic poverty
          ## Migration
          ## Not working? 
-         # 'total_migration' = 'B99072_001E', # total for migration
-         # 'migrant' = 'B99072_002E' # different house
+         # 'total_migration' = 'B99072_001', # total for migration
+         # 'migrant' = 'B99072_002' # different house
+         ## Employed in agriculture
+         'total_employed' = 'C24050_001', # civilian, employed, >= 16 yo
+         'ag_employed' = 'C24050_002' # employed in ag
          )
 
 ## Tracts -----
@@ -75,7 +81,7 @@ places_sf = places_sf %>%
     select(GEOID = GEOID.1, 
            name = NAME, 
            county = NAME.2,
-           total_popE:povertyM) %>%
+           total_popE:ag_employedM) %>%
     mutate(area = st_area(.),
            area = units::set_units(area, 'km^2'),
            densityE = total_popE / units::drop_units(area), 
