@@ -1,16 +1,12 @@
-## TODO:  
-## - parallelize fitting
-## - full loop
-##      - datasets
-##      - values of k
-##      - CTDs
-## - combine resample results (in next script)
-
 ## Spatial Durbin models
 library(tidyverse)
 library(sf)
 library(tidycensus)
 library(spdep)
+library(doSNOW)
+library(tictoc)
+
+registerDoSNOW(makeCluster(2))
 
 ## Load data ----
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
@@ -53,15 +49,56 @@ places_sf = read_rds(str_c(data_dir, '02_places_sf.Rds')) %>%
                    noncitizensE, childrenE, poverty_combE, 
                    hisp_povertyP, ag_employedP), 
               funs(D = . / units::drop_units(area))) %>%
-    ## Working w/ groups in Stan is easier if county is a factor
-    mutate(county = as.factor(county)) %>%
     ## Bind w/ locally-weighted total use
     left_join(read_rds(str_c(data_dir, '06_w_use_places.Rds'))) %>%
     ## Logged use
     mutate(log_w_use = log10(w_use))
 
+tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
+    mutate(tracts_idx = row_number()) %>%
+    ## Remove tracts w/ total population or total employed 0
+    filter(total_popE != 0, total_employedE != 0) %>%
+    ## Log density
+    mutate(log_densityE = log10(densityE)) %>%
+    ## Population proportions
+    mutate(whiteP = whiteE / total_popE, 
+           whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
+           blackP = blackE / total_popE, 
+           blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
+           indigenousP = indigenousE / total_popE, 
+           indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
+           asianP = asianE / total_popE, 
+           asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
+           hispanicP = hispanicE / total_popE, 
+           hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
+           noncitizensP = noncitizensE / total_popE,
+           noncitizensPM = moe_prop(noncitizensE, total_popE, 
+                                    noncitizensM, total_popM),
+           childrenP = childrenE / total_popE, 
+           childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
+           
+           poverty_combE = povertyE + extreme_povertyE,
+           poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
+           poverty_combP = poverty_combE / total_popE, 
+           poverty_combPM = moe_prop(poverty_combE, total_popE, 
+                                     poverty_combM, total_popM), 
+           hisp_povertyP = hisp_povertyE / hispanicE, 
+           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
+           ag_employedP = ag_employedE / total_employedE,
+           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
+    ) %>%
+    ## Population densities
+    mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
+                   noncitizensE, childrenE, poverty_combE, 
+                   hisp_povertyP, ag_employedP), 
+              funs(D = . / units::drop_units(area))) %>%
+    ## Bind w/ locally-weighted total use
+    left_join(read_rds(str_c(data_dir, '06_w_use_tracts.Rds'))) %>%
+    ## Logged use
+    mutate(log_w_use = log10(w_use))
 
-## Fitting functions ----
+
+## Functions for fitting and resampling ----
 perturb_ivs = function(data, formula) {
     dv = formula %>%
         as.character() %>%
@@ -108,37 +145,46 @@ perturb_ivs = function(data, formula) {
     return(design_wide)
 }
 
-fit_model = function(data, 
-                     weights, # spatial weights
-                     regression_formula, 
-                     zero.policy = NULL
-) {
-    ## Calculate traces
-    traces = weights %>%
-        as('CsparseMatrix') %>%
-        trW()
-    
-    ## Fit model
-    model = lagsarlm(regression_formula, 
-                     data = data, 
-                     listw = weights, 
-                     trs = traces, 
-                     type = 'Durbin', 
-                     zero.policy = zero.policy)
-    ## Calculate impacts
-    impacts = impacts(model, tr = traces, R = 500)
-    
-    ## Moran's I of residuals
-    moran = moran.mc(residuals(model), 
-                     weights, nsim = 500, 
-                     zero.policy = zero.policy)
-    
-    ## Return results
-    results = list(model = model, 
-                   impacts = impacts, 
-                   moran = moran, 
-                   formula = regression_formula)
-    return(results)
+{
+    ## Probably for annoying scoping reasons, the parallel setup in resample_and_model() can't find fit_model() unless it's defined inside the former.  
+    # fit_model = function(data,
+    #                      weights, # spatial weights
+    #                      regression_formula,
+    #                      zero.policy = NULL,
+    #                      return_model = FALSE # return the complete fitted model?
+    # ) {
+    #     ## Calculate traces
+    #     traces = trW(as(weights, 'CsparseMatrix'))
+    # 
+    #     ## Fit model
+    #     model = lagsarlm(regression_formula,
+    #                      data = data,
+    #                      listw = weights,
+    #                      trs = traces,
+    #                      type = 'Durbin',
+    #                      zero.policy = zero.policy)
+    #     ## Calculate impacts
+    #     impacts = impacts(model, tr = traces, R = 100)
+    # 
+    #     ## Moran's I of residuals
+    #     # moran = moran.mc(residuals(model),
+    #     #                  weights, nsim = 500,
+    #     #                  zero.policy = zero.policy)
+    #     moran = moran.test(residuals(model), weights,
+    #                        zero.policy = zero.policy)
+    # 
+    #     ## Return results
+    #     results = list(rho = data.frame(rho = model$rho,
+    #                                     rho.se = model$rho.se),
+    #                    aic = AIC(model),
+    #                    impacts = impacts,
+    #                    moran = moran,
+    #                    formula = regression_formula)
+    #     if (return_model) {
+    #         results$model = model
+    #     }
+    #     return(results)
+    # }
 }
 
 resample_and_model = function(data, 
@@ -148,8 +194,48 @@ resample_and_model = function(data,
                               zero.policy = NULL,
                               do_bootstrap = FALSE, # Do resamples? 
                               n_resamples = 1, # Num. resample datasets
-                              seed = NULL # seed for RNG
+                              seed = NULL, # seed for RNG
+                              return_model = FALSE # return the complete fitted models? 
 ) {
+    fit_model = function(data,
+                         weights, # spatial weights
+                         regression_formula,
+                         zero.policy = NULL,
+                         return_model = FALSE # return the complete fitted model?
+    ) {
+        ## Calculate traces
+        traces = trW(as(weights, 'CsparseMatrix'))
+        
+        ## Fit model
+        model = lagsarlm(regression_formula,
+                         data = data,
+                         listw = weights,
+                         trs = traces,
+                         type = 'Durbin',
+                         zero.policy = zero.policy)
+        ## Calculate impacts
+        impacts = impacts(model, tr = traces, R = 100)
+        
+        ## Moran's I of residuals
+        # moran = moran.mc(residuals(model),
+        #                  weights, nsim = 500,
+        #                  zero.policy = zero.policy)
+        moran = moran.test(residuals(model), weights,
+                           zero.policy = zero.policy)
+        
+        ## Return results
+        results = list(rho = data.frame(rho = model$rho,
+                                        rho.se = model$rho.se),
+                       aic = AIC(model),
+                       impacts = impacts,
+                       moran = moran,
+                       formula = regression_formula)
+        if (return_model) {
+            results$model = model
+        }
+        return(results)
+    }
+    
     ## Filter data using filter_condition
     if (!is.null(filter_condition)) {
         data = filter_(data, filter_condition)
@@ -211,8 +297,17 @@ resample_and_model = function(data,
     
     ## Fit model
     fitted_models = resample_datasets %>%
-        map(~ fit_model(.$data, weights = .$weights, regression_formula,
-                        zero.policy = zero.policy)) %>%
+        ## Something in the interaction w/ doSNOW causes warnings
+        ## cf <https://github.com/hadley/plyr/issues/203>
+        plyr::llply(function (x) 
+            fit_model(x$data, 
+                      weights = x$weights, 
+                      regression_formula,
+                      zero.policy = zero.policy, 
+                      return_model = return_model), 
+            .parallel = TRUE, 
+            .paropts = list(#.export = 'regression_formula', 
+                .packages = c('spdep'))) %>%
         map(function (x) {x$k = k; return(x)})
     
     return(fitted_models)
@@ -222,27 +317,37 @@ resample_and_model = function(data,
 ## Run resamples ----
 
 reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + asianP + childrenP + poverty_combP + ag_employedP + log_densityE)
-returned = resample_and_model(places_sf,
-                              reg_form,
-                              filter_condition = 'ctd == "ctd_60"', 
-                              k = 3, 
-                              do_bootstrap = TRUE, n_resamples = 2, 
-                              zero.policy = TRUE)
+# tictoc::tic()
+# returned = resample_and_model(tracts_sf,
+#                               reg_form,
+#                               filter_condition = 'ctd == "ctd_60"', 
+#                               k = 3, 
+#                               zero.policy = TRUE, 
+#                               return_model = FALSE,
+#                               do_bootstrap = TRUE, 
+#                               n_resamples = 2)
+# tictoc::toc()
 
-## Combine MC impact estimates ----
-returned %>%
-    transpose() %>%
-    .$impacts %>%
-    map(~ .$sres) %>% 
-    map(as.data.frame) %>% 
-    bind_rows(.id = 'resample') %>% 
-    select(resample, contains('total')) %>%
-    gather(key = 'variable', value = 'value', -resample) %>% 
-    group_by(variable) %>%
-    summarize(ci_low = quantile(value, probs = .025), 
-              median = median(value), 
-              ci_high = quantile(value, probs = .975)) %>%
-    mutate_if(is.numeric, funs(10^.))
+models_meta_df = cross_df(list(dataset = c('places_sf', 'tracts_sf'), 
+                               k = as.integer(seq(3, 9, by = 2)), 
+                               ctd = unique(places_sf$ctd)
+)) %>%
+    mutate(model_idx = as.character(row_number()))
 
+tic()
+resamples = foreach(row = iter(models_meta_df, by = 'row'), 
+                .packages = c('tidyverse', 'sf', 'spdep'), 
+                .export = c('places_sf', 'tracts_sf')
+                ) %do% {
+    resample_and_model(eval(parse(text = row$dataset)), 
+                       reg_form,
+                       filter_condition = str_c('ctd == \"', 
+                                                row$ctd, '\"'), 
+                       k = row$k, 
+                       zero.policy = TRUE, 
+                       do_bootstrap = TRUE, n_resamples = 10)
+                }
+toc()
 
-
+write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
+write_rds(resamples, str_c(data_dir, '10_resamples.Rds'))
