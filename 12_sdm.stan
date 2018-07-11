@@ -49,6 +49,8 @@ model {
     alpha ~ normal(0, 3);
     beta ~ normal(0, 3);
     gamma ~ normal(0, 3);
-    
+    rho ~ normal(0, .5);
     sigma ~ cauchy(0, 3);
+}
+generated quantities {
 }
