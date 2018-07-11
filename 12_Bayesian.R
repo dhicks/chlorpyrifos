@@ -141,4 +141,5 @@ samples = sampling(compiled, data = list(N = nrow(dataf),
                    control = list(adapt_delta = 0.8))
 tictoc::toc()
 
+# summary(samples, pars = pars)$summary
 # pairs(samples, pars = pars)
