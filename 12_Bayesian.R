@@ -106,16 +106,15 @@ weights_pl = places_sf %>%
     knearneigh(k = k) %>%
     knn2nb() %>%
     nb2listw(style = 'W') %>%
-    as('CsparseMatrix') %>%
-    as('dgTMatrix')
+    as('RsparseMatrix')
 
 
 ## Stan ----
 response = 'log_w_use'
-# vars = c('hispanicP', 'blackP', 'indigenousP', 
-#          'asianP', 'childrenP', 'poverty_combP',
-#          'ag_employedP', 'log_densityE')
-vars = c('hispanicP', 'ag_employedP', 'log_densityE')
+vars = c('hispanicP', 'blackP', 'indigenousP',
+         'asianP', 'childrenP', 'poverty_combP',
+         'ag_employedP', 'log_densityE')
+# vars = c('hispanicP', 'ag_employedP', 'log_densityE')
 dataf = places_sf %>%
     filter(ctd == 'ctd_60') %>%
     as_tibble() %>%
@@ -133,12 +132,14 @@ samples = sampling(compiled, data = list(N = nrow(dataf),
                                          y = dataf[[1]], 
                                          X = dataf[-1],
                                          # W = as.matrix(W_3nn)
-                                         Wn = length(weights_pl@i), 
-                                         Wi = weights_pl@i+1, 
-                                         Wj = weights_pl@j+1,
+                                         Wn = length(weights_pl@j), 
+                                         Wrow = length(weights_pl@p),
+                                         Wv = weights_pl@j+1,
+                                         Wu = weights_pl@p+1,
                                          Ww = weights_pl@x),
-                   chains = 1, iter = 20, 
-                   control = list(adapt_delta = 0.8))
+                   chains = 2, iter = 100, 
+                   control = list(adapt_delta = 0.8, 
+                                  max_treedepth = 15))
 tictoc::toc()
 
 # summary(samples, pars = pars)$summary

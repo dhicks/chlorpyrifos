@@ -8,8 +8,9 @@ data {
     vector<lower=0>[N] y; // response
     // matrix[N, N] W; // spatial weights matrix (non-sparse version)
     int Wn; // num. non-zero entries in spatial weights
-    int Wi[Wn]; // i index of spatial weights
-    int Wj[Wn]; // j index of spatial weights
+    int Wrow; // num. non-zero rows in spatial weights
+    int Wv[Wn]; // j (column) index of spatial weights
+    int Wu[Wrow]; // row starting index of spatial weights
     vector[Wn] Ww; // spatial weight
     
 }
@@ -31,14 +32,8 @@ transformed parameters {
         vector[N] y_hat_lags;
         
         y_hat_local = alpha*rep_vector(1, N) + X*beta;
-        y_hat_lags = rep_vector(0, N);
-        for (w_idx in 1:Wn) {
-            y_hat_lags[Wi[w_idx]] += rho*Ww[w_idx]*y[Wj[w_idx]];
-            for (col_idx in 1:p) {
-            y_hat_lags[Wi[w_idx]] += Ww[w_idx]*X[Wj[w_idx], col_idx]*gamma[col_idx];
-            }
-        }
-        
+        y_hat_lags = rho*csr_matrix_times_vector(N, N, Ww, Wv, Wu, y) +
+            csr_matrix_times_vector(N, N, Ww, Wv, Wu, X*gamma);
         y_hat = y_hat_local + y_hat_lags;
     }
 }
