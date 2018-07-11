@@ -34,9 +34,9 @@ tm_shape(places_sf) +
 tm_shape(subset(chlor_sf, year == 2015)) +
     tm_dots(col = 'log_total_use', palette = 'Reds', 
             style = 'cont', title = 'Chlorpyrifos\n2015 Use\n(log lbs)') +
-tm_shape(subset(counties_sf, 
-                NAME %in% county_df$county)) +
-    tm_text('NAME') +
+# tm_shape(subset(counties_sf, 
+#                 NAME %in% county_df$county)) +
+#     tm_text('NAME') +
 tm_scale_bar(position = c('left', 'bottom'))
 save_tmap(filename = '03_chlor_use.png', 
           width = 6, height = 7, units = 'in')

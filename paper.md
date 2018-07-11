@@ -6,22 +6,76 @@ bibliography: spatial_project.bib
 
 # Introduction #
 
-This paper conducts an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  Chlorpyrifos is one of the most widely-used pesticides in the world.  It is known to be a moderately powerful neurotoxicant, and was banned for residential use in the US in 2001.  During the Obama administration, US EPA had developed plans to remove all tolerances for chlorpyrifos residue on food, which effectively would have banned all US use of chlorpyrifos.  However, one of Scott Pruitt's first actions as Administrator of US EPA was to halt this process.  [Need cites, actual lit review]
+This paper conducts an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  Chlorpyrifos is one of the most widely-used pesticides in the world.  It is known to be a moderately powerful neurotoxicant, and was banned for residential use in the US in 2001.  During the Obama administration, US EPA had developed plans to remove all tolerances for chlorpyrifos residue on food, which effectively would have banned all US use of chlorpyrifos.  However, one of Scott Pruitt's first actions as Administrator of US EPA was to halt this process.  *[cites]
 
-*["distributional"]
+A dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.  Since the landmark report "Toxic Wastes and Race in the United States"  [@CommissionforRacialJusticeToxicWastesRace1987], a significant dEJ literature has emerged *[examples].  While spatial methods are frequently used in dEJ analysis, they are often not statistically sophisticated; @ChakrabortyRevisitingToblerFirst2011 notes that dEJ regression analyses often use ordinary least squares (OLS), and fail to account for spatial autocorrelation.  OLS may also be inappropriate for some left-bounded or otherwise non-Gaussian data, such as pounds of a chemical used or disease rates.  This lack of statistical sophistication makes spatial EJ analyses vulnerable to technical criticism by "merchants of doubt" [@OreskesMerchantsDoubtHow2011], which can limit their effectiveness in pushing for policy change or legal remediation.  
 
-An dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.  *[UCC study and since]  While spatial methods are frequently used in dEJ analysis, they are often not statistically sophisticated; @ChakrabortyRevisitingToblerFirst2011 notes that EJ regression analyses often use ordinary least squares (OLS), and fail to account for spatial autocorrelation.  OLS may also be inappropriate for some left-bounded data, such as pounds of a chemical used or disease rates.  This lack of statistical sophistication makes spatial EJ analyses vulnerable to technical criticism by "merchants of doubt" [@OreskesMerchantsDoubtHow2011], which can limit their effectiveness in pushing for policy change or legal remediation.  
+It is important to recognize that environmental justice issues are not exhausted by the distribution of environmental hazards.  @SchlosbergDefiningEnvironmentalJustice2007, drawing on previous work by @YoungJusticePoliticsDifference1990 and @Shrader-FrechetteEnvironmentaljusticecreating2002, argues that environmental justice also includes procedural justice and appropriate recognition and respect for community identity.  For example, racialized communities that are outside of an administrative district — and so formally excluded from land-use decisions within the district — might be exposed to pollution emitted as a result of those land-use decisions [@LondonStruggleWaterJustice2018]; this is a form of procedural injustice.  Or, communities' claims and arguments might be ignored because they are racialized or lack formal scientific credentials [@OttingerBucketsResistanceStandards2010].  This is an example of misrecognition and disrespect.  
 
-*[real lit review] A quick literature search identified one previous spatial analysis of chlorpyrifos exposure in California's Central Valley [@LuoSpatiallydistributedpesticide2010].  This analysis focused on modeling fate and transport of the pesticide using a physical-chemical simulation, and did not examine the population being exposed.  It was therefore not a dEJ analysis.  In contrast, my analysis will focus on demographic covariates for chlorpyrifos use in the Central Valley.  
-*[Lovasi, G. S., Quinn, J. W., Rauh, V. A., Perera, F. P., Andrews, H. F., Garfinkel, R., ... & Rundle, A. (2011). Chlorpyrifos exposure and urban residential environment characteristics as determinants of early childhood neurodevelopment. American journal of public health, 101(1), 63-70.; 
-CHAMACOS study]
+However, dEJ remains an important aspect of EJ, and the kinds of quantitative methods deployed in this project can be especially useful for identifying distributive environmental injustices.  
+
+*[real lit review] 
+
+A quick literature search identified one previous spatial analysis of chlorpyrifos exposure in California's Central Valley [@LuoSpatiallydistributedpesticide2010].  This analysis focused on modeling fate and transport of the pesticide using a physical-chemical simulation, and did not examine the population being exposed.  It was therefore not a dEJ analysis.  In contrast, my analysis will focus on demographic covariates for chlorpyrifos use in the Central Valley.  
+
+- CCCEH:  Rauh and collaborators
+    - LovasiChlorpyrifosExposureUrban2011
+        - used neighborhood poverty and built environment indicators as controls
+        - primarily interested in impact of chlorpyrifos exposure on cognitive and motor development in 3 yo children
+        - chlorpyrifos exposure measured by analysis of umbilical cord (and any other way?)
+    
+
+- CHAMACOS: Eskenazi and collaborators
+    - GunierAgriculturalpesticideuse2001
+        - DPR data
+        - use w/in block groups, as lbs active ingredient per mi^2 of group area
+            - so nonspatial; cite spatial segregation literature
+        - lbs, weighted by hazard (carcinogenicity), exposure (potential for volatilization), and persistence
+        - purely descriptive statistical analysis
+            - # children <15 living in block groups at > 90% empirical quantile for use of each pesticide or pesticide group considered
+    
+    - GunierPrenatalResidentialProximity2017
+        - DPR data; Wechsler Intelligence Scale for Children (WISC) tests
+        - regressed WISC results for 7 yo children against nearby use of 5 pesticide groups / 5 individual pesticides
+        - find 1 sd increase of OP use is associated with 1-4 point decrease in WISC results
+        - use defined by 1 km buffer around each pregnant woman's residence at the time of pregnancy
+            - sections not fully contained w/in the buffer had pesticide use areal-weighted
+            - nonspatial
+        - "The main strength of this study is the use of PUR data, which provide the amount of active ingredients in and the locations of all agricultural pesticide applications, and which represent a major improvement in exposure classification"
+       
+    - GunierDeterminantsAgriculturalPesticide2011
+        - cited by GunierPrenatalResidentialProximity2017 to justify 1 km buffer
+        - compared 500 m and 1.25 km buffers
+
+
+- Lievanos??
+
+- SilvaSpatialModelingIdentify2018
+    
 
 
 # Data #
 
+## Study Area ##
+
+The study area for this project is California's Central Valley.  The Central Valley can be defined in a number of different ways.  Since the second primary dataset for this project comprises Census tract demographics, I chose to use a county-based definition.  Sacramento County was excluded because, unlike the rest of the region, most of its area is urban.  17 other counties were used to define the Central Valley; see table \ref{tab.counties} and figure \ref{fig.chlor_use}.  
+
+||
+|:-------|:------------|
+| Shasta | San Joaquin |
+| Tehama | Stanislaus  |
+| Glenn  | Merced |
+| Butte  | Madera |
+| Colusa | Fresno |
+| Yuba   | Kings  |
+| Sutter | Tulare |
+| Yolo   | Kern   |
+| Solano ||
+Table: California counties comprising the Central Valley for the purposes of this study.  Counties are listed roughly in north-south order.  \label{tab.counties}
+
 ## Pesticide Use ##
 
-This paper combines two datasets.  First, California's Department of Pesticide Regulation (DPR) releases annual public datasets for pesticide use across the state, known Pesticide Use Reports (PUR) [^DPR].  These datasets provide data on pesticide use at the township and section level, including pounds of an active chemical used on particular days and times.  The most recent data release covers 2015.  These data exclusively report agriculture use; this limitation is acceptable for studying chlorpyrifos in the agriculture-heavy Central Valley.  
+This paper combines two datasets.  First, California's Department of Pesticide Regulation (DPR) releases annual public datasets for agricultural pesticide use across the state, known as Pesticide Use Reports (PUR) [^DPR].  These datasets provide data on pesticide use at the township and section level, including pounds of an active chemical used on particular days and times.  The most recent data release covers 2015.  These data exclusively report agriculture use; this limitation is acceptable for studying chlorpyrifos in the agriculture-heavy Central Valley.  
 
 [^DPR]: <http://www.cdpr.ca.gov/docs/pur/purmain.htm>
 
