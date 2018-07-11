@@ -1,4 +1,8 @@
 ## Spatial Durbin models
+## NB This script takes several hours to run
+## Hard-coded bootstrap settings:  
+## 500 block resamples for each primary model
+## 100 simulations for the impacts on each resample model
 library(tidyverse)
 library(sf)
 library(tidycensus)
@@ -100,10 +104,14 @@ tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
 
 ## Functions for fitting and resampling ----
 perturb_ivs = function(data, formula) {
+    ## This function uses the tidycensus MOEs to perturb the independent variables / draw samples from the measurement distributions for each variable
+    
+    ## Extract dependent variable from formula
     dv = formula %>%
         as.character() %>%
         .[2]
     
+    ## Extract IVs
     vars = formula %>%
         as.character() %>%
         .[3] %>%
@@ -111,31 +119,37 @@ perturb_ivs = function(data, formula) {
         unlist()
     # return(str_c(vars, collapse = '|'))
     
+    ## Wide format, w/ IVs + their MOEs in columns
     data_wide = data %>%
         as.data.frame() %>%
         select(matches(str_c(vars, collapse = '|'))) %>%
         mutate(row_idx = row_number())
+    ## Arrange the IVs in long format
     data_E = data_wide %>%
         select(-ends_with('M'), row_idx) %>%
         gather(key = 'variable', value = 'estimate', -row_idx) %>%
         mutate(prefix = str_extract(variable, '[a-z]+'))
+    ## Arrange the MOEs in long format
     data_M = data_wide %>%
         select(row_idx, ends_with('M')) %>%
         gather(key = 'variable', value = 'moe', -row_idx) %>%
         mutate(prefix = str_extract(variable, '[a-z]+'),
                se = moe / qnorm(.95))
     
+    ## Join them together, and draw from the measurement distribution for each variable
     data_long = inner_join(data_E, data_M, by = c('row_idx', 'prefix'))
-    
     data_long = mutate(data_long, 
                        perturbed_value = rnorm(nrow(data_long), 
                                                mean = estimate, 
                                                sd = se))
+    
+    ## Arrange the draws back into a wide design matrix
     design_wide = data_long %>%
         select(row_idx, variable = variable.x, perturbed_value) %>%
         spread(key = variable, value = perturbed_value) %>%
         arrange(row_idx) %>%
         select(-row_idx)
+    ## Recombine with the DV and any IVs that didn't have MOEs
     missed_vars = setdiff(vars, names(design_wide))
     design_wide = data %>%
         as.data.frame() %>%
@@ -146,7 +160,8 @@ perturb_ivs = function(data, formula) {
 }
 
 {
-    ## Probably for annoying scoping reasons, the parallel setup in resample_and_model() can't find fit_model() unless it's defined inside the former.  
+    ## Probably for annoying scoping reasons, the plyr-based parallel setup in resample_and_model() can't find fit_model() unless it's defined inside the former.  
+    ## NB This could probably be moved back outside now that the script uses foreach directly
     # fit_model = function(data,
     #                      weights, # spatial weights
     #                      regression_formula,
@@ -187,6 +202,10 @@ perturb_ivs = function(data, formula) {
     # }
 }
 
+## This function does the following:  
+## 1. Given k, construct KNN spatial weights
+## 2. Using spatial weights, construct block bootstrap resamples
+## 3. Call fit_model() for the actual model fitting
 resample_and_model = function(data, 
                               regression_formula, 
                               filter_condition = NULL, # string to filter data
@@ -197,6 +216,9 @@ resample_and_model = function(data,
                               seed = NULL, # seed for RNG
                               return_model = FALSE # return the complete fitted models? 
 ) {
+    ## fit_model() does the actual fitting
+    ## NB it was moved here to deal with plyr's scoping issues
+    ## It could probably be moved back outside resample_and_model now
     fit_model = function(data,
                          weights, # spatial weights
                          regression_formula,
@@ -296,19 +318,32 @@ resample_and_model = function(data,
     }
     
     ## Fit model
-    fitted_models = resample_datasets %>%
-        ## Something in the interaction w/ doSNOW causes warnings
-        ## cf <https://github.com/hadley/plyr/issues/203>
-        plyr::llply(function (x) 
-            fit_model(x$data, 
-                      weights = x$weights, 
-                      regression_formula,
-                      zero.policy = zero.policy, 
-                      return_model = return_model), 
-            .parallel = TRUE, 
-            .paropts = list(#.export = 'regression_formula', 
-                .packages = c('spdep'))) %>%
-        map(function (x) {x$k = k; return(x)})
+    # fitted_models = resample_datasets %>%
+    #     ## Something in the interaction w/ doSNOW causes warnings
+    #     ## cf <https://github.com/hadley/plyr/issues/203>
+    #     plyr::llply(function (x) 
+    #         fit_model(x$data, 
+    #                   weights = x$weights, 
+    #                   regression_formula,
+    #                   zero.policy = zero.policy, 
+    #                   return_model = return_model), 
+    #         .parallel = TRUE, 
+    #         .paropts = list(.export = 'regression_formula', 
+    #             .packages = c('spdep'))) %>%
+    #     map(function (x) {x$k = k; return(x)})
+    ## SNOW progress bar
+    pb = txtProgressBar(max = n_resamples, style = 3)
+    progress = function(n) setTxtProgressBar(pb, n)
+    fitted_models = foreach(x = resample_datasets, 
+                            .packages = 'spdep', 
+                            .options.snow = list(progress = progress)
+    ) %dopar% {
+        fit_model(x$data, 
+                  weights = x$weights, 
+                  regression_formula, 
+                  zero.policy = zero.policy, 
+                  return_model = return_model)
+    }
     
     return(fitted_models)
 }
@@ -316,38 +351,48 @@ resample_and_model = function(data,
 
 ## Run resamples ----
 
-reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + asianP + childrenP + poverty_combP + ag_employedP + log_densityE)
-# tictoc::tic()
-# returned = resample_and_model(tracts_sf,
-#                               reg_form,
-#                               filter_condition = 'ctd == "ctd_60"', 
-#                               k = 3, 
-#                               zero.policy = TRUE, 
-#                               return_model = FALSE,
-#                               do_bootstrap = TRUE, 
-#                               n_resamples = 2)
-# tictoc::toc()
+reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + 
+                       asianP + childrenP + poverty_combP + 
+                       ag_employedP + log_densityE)
 
 models_meta_df = cross_df(list(dataset = c('places_sf', 'tracts_sf'), 
-                               k = as.integer(seq(3, 9, by = 2)), 
+                               k = 3, #as.integer(seq(3, 9, by = 2)), 
                                ctd = unique(places_sf$ctd)
 )) %>%
     mutate(model_idx = as.character(row_number()))
+write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
+
+tic()
+durbin = foreach(row = iter(models_meta_df, by = 'row'), 
+                 .verbose = TRUE
+) %do% {
+    resample_and_model(eval(parse(text = row$dataset)), 
+                       reg_form, 
+                       filter_condition = str_c('ctd == \"', 
+                                                row$ctd, '\"'), 
+                       k = row$k, 
+                       seed = 78910, 
+                       zero.policy = TRUE, 
+                       do_bootstrap = FALSE)
+}
+toc()
+write_rds(durbin, str_c(data_dir, '10_durbin_models.Rds'))
 
 tic()
 resamples = foreach(row = iter(models_meta_df, by = 'row'), 
-                .packages = c('tidyverse', 'sf', 'spdep'), 
-                .export = c('places_sf', 'tracts_sf')
-                ) %do% {
+                    .packages = c('tidyverse', 'sf', 'spdep'), 
+                    .export = c('places_sf', 'tracts_sf'), 
+                    .verbose = TRUE
+) %do% {
     resample_and_model(eval(parse(text = row$dataset)), 
                        reg_form,
                        filter_condition = str_c('ctd == \"', 
                                                 row$ctd, '\"'), 
                        k = row$k, 
+                       seed = 1369,
                        zero.policy = TRUE, 
-                       do_bootstrap = TRUE, n_resamples = 10)
-                }
+                       do_bootstrap = TRUE, n_resamples = 500)
+}
 toc()
 
-write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
 write_rds(resamples, str_c(data_dir, '10_resamples.Rds'))
