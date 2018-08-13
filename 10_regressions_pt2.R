@@ -4,102 +4,19 @@
 ## 500 block resamples for each primary model
 ## 100 simulations for the impacts on each resample model
 library(tidyverse)
-library(sf)
-library(tidycensus)
+# library(sf)
+# library(tidycensus)
 library(spdep)
 library(doSNOW)
 library(tictoc)
 
-registerDoSNOW(makeCluster(2))
+registerDoSNOW(makeCluster(25))
 
 ## Load data ----
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
-places_sf = read_rds(str_c(data_dir, '02_places_sf.Rds')) %>%
-    mutate(places_idx = row_number()) %>%
-    ## Remove places w/ total population or total employed 0
-    filter(total_popE != 0, total_employedE != 0) %>%
-    ## Log density
-    mutate(log_densityE = log10(densityE)) %>%
-    ## Population proportions
-    mutate(whiteP = whiteE / total_popE, 
-           whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
-           blackP = blackE / total_popE, 
-           blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
-           indigenousP = indigenousE / total_popE, 
-           indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
-           asianP = asianE / total_popE, 
-           asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
-           hispanicP = hispanicE / total_popE, 
-           hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
-           noncitizensP = noncitizensE / total_popE,
-           noncitizensPM = moe_prop(noncitizensE, total_popE, 
-                                    noncitizensM, total_popM),
-           childrenP = childrenE / total_popE, 
-           childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
-           
-           poverty_combE = povertyE + extreme_povertyE,
-           poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
-           poverty_combP = poverty_combE / total_popE, 
-           poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM), 
-           hisp_povertyP = hisp_povertyE / hispanicE, 
-           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
-           ag_employedP = ag_employedE / total_employedE,
-           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
-    ) %>%
-    ## Population densities
-    mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE, 
-                   hisp_povertyP, ag_employedP), 
-              funs(D = . / units::drop_units(area))) %>%
-    ## Bind w/ locally-weighted total use
-    left_join(read_rds(str_c(data_dir, '06_w_use_places.Rds'))) %>%
-    ## Logged use
-    mutate(log_w_use = log10(w_use))
-
-tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
-    mutate(tracts_idx = row_number()) %>%
-    ## Remove tracts w/ total population or total employed 0
-    filter(total_popE != 0, total_employedE != 0) %>%
-    ## Log density
-    mutate(log_densityE = log10(densityE)) %>%
-    ## Population proportions
-    mutate(whiteP = whiteE / total_popE, 
-           whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
-           blackP = blackE / total_popE, 
-           blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
-           indigenousP = indigenousE / total_popE, 
-           indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
-           asianP = asianE / total_popE, 
-           asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
-           hispanicP = hispanicE / total_popE, 
-           hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
-           noncitizensP = noncitizensE / total_popE,
-           noncitizensPM = moe_prop(noncitizensE, total_popE, 
-                                    noncitizensM, total_popM),
-           childrenP = childrenE / total_popE, 
-           childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
-           
-           poverty_combE = povertyE + extreme_povertyE,
-           poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
-           poverty_combP = poverty_combE / total_popE, 
-           poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM), 
-           hisp_povertyP = hisp_povertyE / hispanicE, 
-           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
-           ag_employedP = ag_employedE / total_employedE,
-           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
-    ) %>%
-    ## Population densities
-    mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE, 
-                   hisp_povertyP, ag_employedP), 
-              funs(D = . / units::drop_units(area))) %>%
-    ## Bind w/ locally-weighted total use
-    left_join(read_rds(str_c(data_dir, '06_w_use_tracts.Rds'))) %>%
-    ## Logged use
-    mutate(log_w_use = log10(w_use))
+places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
+tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
 
 
 ## Functions for fitting and resampling ----
@@ -266,7 +183,7 @@ resample_and_model = function(data,
     ## Construct spatial weights
     weights_knn = data %>%
         st_centroid %>%
-        st_coordinates() %>%
+        st_coordinates(.) %>%
         knearneigh(k = k) %>%
         knn2nb() %>%
         nb2listw(style = 'W')
@@ -297,7 +214,8 @@ resample_and_model = function(data,
         
         ## Subset the spatial weights matrix and coerce back to listw
         weights_matrix = as(weights_knn, 'CsparseMatrix')
-        resample_weights = map(resample_locations, ~ weights_matrix[., .]) %>% 
+        resample_weights = map(resample_locations, 
+                               ~ weights_matrix[., .]) %>% 
             ## Row standardize
             map(~ ./rowSums(.)[row(.)]) %>% 
             map(function (x) {x[is.na(x)] = 0; return(x)}) %>% 
@@ -353,42 +271,39 @@ resample_and_model = function(data,
 
 reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + 
                        asianP + childrenP + poverty_combP + 
-                       ag_employedP + log_densityE)
+                       ag_employedP + density_log10)
 
-models_meta_df = cross_df(list(dataset = c('places_sf', 'tracts_sf'), 
-                               k = 3, #as.integer(seq(3, 9, by = 2)), 
-                               ctd = unique(places_sf$ctd)
-)) %>%
-    mutate(model_idx = as.character(row_number()))
+models_meta_df = tibble(geography = c('places', 'tracts'), 
+                        ctd = list(names(places_sfl), names(tracts_sfl)),
+                        data = list(places_sfl, tracts_sfl)) %>%
+    unnest()
+
 write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
 
 tic()
-durbin = foreach(row = iter(models_meta_df, by = 'row'), 
-                 .verbose = TRUE
+durbin = foreach(data = models_meta_df$data
+                 # .packages = c('tidyverse', 'sf', 'spdep'),
+                 # .verbose = TRUE
 ) %do% {
-    resample_and_model(eval(parse(text = row$dataset)), 
-                       reg_form, 
-                       filter_condition = str_c('ctd == \"', 
-                                                row$ctd, '\"'), 
-                       k = row$k, 
-                       seed = 78910, 
-                       zero.policy = TRUE, 
+    resample_and_model(data,
+                       reg_form,
+                       k = 3,
+                       seed = 78910,
+                       zero.policy = TRUE,
                        do_bootstrap = FALSE)
 }
 toc()
+
 write_rds(durbin, str_c(data_dir, '10_durbin_models.Rds'))
 
 tic()
-resamples = foreach(row = iter(models_meta_df, by = 'row'), 
-                    .packages = c('tidyverse', 'sf', 'spdep'), 
-                    .export = c('places_sf', 'tracts_sf'), 
-                    .verbose = TRUE
+resamples = foreach(row = models_meta_df$data,
+                    .packages = c('tidyverse', 'sf', 'spdep'),
+                    .verbose = FALSE
 ) %do% {
-    resample_and_model(eval(parse(text = row$dataset)), 
+    resample_and_model(data,
                        reg_form,
-                       filter_condition = str_c('ctd == \"', 
-                                                row$ctd, '\"'), 
-                       k = row$k, 
+                       k = 3, 
                        seed = 1369,
                        zero.policy = TRUE, 
                        do_bootstrap = TRUE, n_resamples = 500)
