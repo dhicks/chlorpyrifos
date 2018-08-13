@@ -82,6 +82,26 @@ tracts_sfl = prep_data(str_c(data_dir, '02_tracts_sf.Rds'),
 write_rds(places_sfl, str_c(data_dir, '07_places_sfl.Rds'))
 write_rds(tracts_sfl, str_c(data_dir, '07_tracts_sfl.Rds'))
 
+## Spatial weights, for use in the regression scripts
+construct_weights = function(sfl, k = 3) {
+    sfl %>%
+        .[[1]] %>%
+        st_centroid %>%
+        st_coordinates() %>%
+        knearneigh(k = k) %>%
+        knn2nb() %>%
+        nb2listw(style = 'W')
+}
+
+k = 3
+places_sfl %>%
+    construct_weights(k = k) %>%
+    write_rds(str_c(data_dir, '07_places_weights.Rds'))
+tracts_sfl %>%
+    construct_weights(k = k) %>%
+    write_rds(str_c(data_dir, '07_tracts_weights.Rds'))
+
+
 ## EDA ----
 ## Non-Gaussian distributions
 tracts_sfl %>%

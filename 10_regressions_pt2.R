@@ -18,6 +18,8 @@ data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
 
+weights_pl = read_rds(str_c(data_dir, '07_places_weights.Rds'))
+weights_tr = read_rds(str_c(data_dir, '07_tracts_weights.Rds'))
 
 ## Functions for fitting and resampling ----
 perturb_ivs = function(data, formula) {
@@ -123,10 +125,10 @@ perturb_ivs = function(data, formula) {
 ## 1. Given k, construct KNN spatial weights
 ## 2. Using spatial weights, construct block bootstrap resamples
 ## 3. Call fit_model() for the actual model fitting
-resample_and_model = function(data, 
+resample_and_model = function(data, weights,
                               regression_formula, 
                               filter_condition = NULL, # string to filter data
-                              k = 3, # for KNN weights
+                              # k = 3, # for KNN weights
                               zero.policy = NULL,
                               do_bootstrap = FALSE, # Do resamples? 
                               n_resamples = 1, # Num. resample datasets
@@ -180,21 +182,13 @@ resample_and_model = function(data,
         data = filter_(data, filter_condition)
     }
     
-    ## Construct spatial weights
-    weights_knn = data %>%
-        st_centroid %>%
-        st_coordinates(.) %>%
-        knearneigh(k = k) %>%
-        knn2nb() %>%
-        nb2listw(style = 'W')
-    
     ## Resampling
     if (!is.null(seed)) {
         set.seed(seed)
     }
     if (!do_bootstrap) {
         ## If we're not doing bootstrap, just use the unmodified data
-        resample_datasets = list(list(data = data, weights = weights_knn))
+        resample_datasets = list(list(data = data, weights = weights))
     } else {
         ## Sample blocks
         n_blocks = floor(nrow(data) / (k+1))
@@ -202,7 +196,7 @@ resample_and_model = function(data,
         centers = sample(1:nrow(data), n_resamples*n_blocks, replace = TRUE)
         
         ## Go from index of "centers" to index of all locations
-        resample_locations = weights_knn$neighbours[centers] %>%
+        resample_locations = weights$neighbours[centers] %>%
             ## Concatenate the centers, each center in a singleton list
             c({centers %>% list() %>% transpose() %>% flatten()}) %>%
             tibble(location = .) %>%
@@ -213,7 +207,7 @@ resample_and_model = function(data,
             map(~.$location)
         
         ## Subset the spatial weights matrix and coerce back to listw
-        weights_matrix = as(weights_knn, 'CsparseMatrix')
+        weights_matrix = as(weights, 'CsparseMatrix')
         resample_weights = map(resample_locations, 
                                ~ weights_matrix[., .]) %>% 
             ## Row standardize
@@ -275,19 +269,19 @@ reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP +
 
 models_meta_df = tibble(geography = c('places', 'tracts'), 
                         ctd = list(names(places_sfl), names(tracts_sfl)),
-                        data = list(places_sfl, tracts_sfl)) %>%
-    unnest()
+                        data = list(places_sfl, tracts_sfl), 
+                        weights = list(weights_pl, weights_tr)) %>%
+    unnest(ctd, data, .drop = FALSE)
 
 write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
 
 tic()
-durbin = foreach(data = models_meta_df$data
+durbin = foreach(row = iter(models_meta_df, by = 'row')
                  # .packages = c('tidyverse', 'sf', 'spdep'),
                  # .verbose = TRUE
 ) %do% {
-    resample_and_model(data,
+    resample_and_model(row$data[[1]], row$weights[[1]],
                        reg_form,
-                       k = 3,
                        seed = 78910,
                        zero.policy = TRUE,
                        do_bootstrap = FALSE)
@@ -297,16 +291,15 @@ toc()
 write_rds(durbin, str_c(data_dir, '10_durbin_models.Rds'))
 
 tic()
-resamples = foreach(row = models_meta_df$data,
+resamples = foreach(row = iter(models_meta_df[1:2,], by = 'row'),
                     .packages = c('tidyverse', 'sf', 'spdep'),
                     .verbose = FALSE
 ) %do% {
-    resample_and_model(data,
+    resample_and_model(row$data[[1]], row$weights[[1]],
                        reg_form,
-                       k = 3, 
                        seed = 1369,
                        zero.policy = TRUE, 
-                       do_bootstrap = TRUE, n_resamples = 500)
+                       do_bootstrap = TRUE, n_resamples = 2)
 }
 toc()
 

@@ -19,26 +19,16 @@ tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
 reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + asianP + childrenP + poverty_combP + ag_employedP + density_log10)
 
 ## KNN
-k = 3
-construct_weights = function(sfl, k = 3) {
-    sfl %>%
-        .[[1]] %>%
-        st_centroid %>%
-        st_coordinates() %>%
-        knearneigh(k = k) %>%
-        knn2nb() %>%
-        nb2listw(style = 'W')
-}
 construct_traces = function(weights) {
     weights %>%
         as('CsparseMatrix') %>%
         trW()
 }
 
-weights_pl = construct_weights(places_sfl)
-traces_pl = construct_traces(weights_pl)
+weights_pl = read_rds(str_c(data_dir, '07_places_weights.Rds'))
+weights_tr = read_rds(str_c(data_dir, '07_tracts_weights.Rds'))
 
-weights_tr = construct_weights(tracts_sfl)
+traces_pl = construct_traces(weights_pl)
 traces_tr = construct_traces(weights_tr)
 
 
