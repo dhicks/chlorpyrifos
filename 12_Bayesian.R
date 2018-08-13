@@ -123,10 +123,9 @@ dataf = places_sf %>%
 
 parsed = stanc(file = '12_sdm.stan', verbose = TRUE)
 compiled = stan_model(stanc_ret = parsed, verbose = FALSE)
-pars = c('rho', 'alpha', 'beta', 'gamma')
+pars = c('alpha', 'beta', 'rho', 'gamma')
 
 tictoc::tic()
-## ~300 sec
 samples = sampling(compiled, data = list(N = nrow(dataf), 
                                          p = ncol(dataf) - 1,
                                          y = dataf[[1]], 
@@ -137,8 +136,8 @@ samples = sampling(compiled, data = list(N = nrow(dataf),
                                          Wv = weights_pl@j+1,
                                          Wu = weights_pl@p+1,
                                          Ww = weights_pl@x),
-                   chains = 2, iter = 100, 
-                   control = list(adapt_delta = 0.8, 
+                   chains = 2, iter = 2000, 
+                   control = list(adapt_delta = 0.9, 
                                   max_treedepth = 15))
 tictoc::toc()
 
