@@ -10,10 +10,11 @@ library(spdep)
 library(doSNOW)
 library(tictoc)
 
-registerDoSNOW(makeCluster(25))
+# registerDoSNOW(makeCluster(25))
 
 ## Load data ----
-data_dir = 'data/'
+# data_dir = 'data/'
+data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
@@ -78,47 +79,44 @@ perturb_ivs = function(data, formula) {
     return(design_wide)
 }
 
-{
-    ## Probably for annoying scoping reasons, the plyr-based parallel setup in resample_and_model() can't find fit_model() unless it's defined inside the former.  
-    ## NB This could probably be moved back outside now that the script uses foreach directly
-    # fit_model = function(data,
-    #                      weights, # spatial weights
-    #                      regression_formula,
-    #                      zero.policy = NULL,
-    #                      return_model = FALSE # return the complete fitted model?
-    # ) {
-    #     ## Calculate traces
-    #     traces = trW(as(weights, 'CsparseMatrix'))
-    # 
-    #     ## Fit model
-    #     model = lagsarlm(regression_formula,
-    #                      data = data,
-    #                      listw = weights,
-    #                      trs = traces,
-    #                      type = 'Durbin',
-    #                      zero.policy = zero.policy)
-    #     ## Calculate impacts
-    #     impacts = impacts(model, tr = traces, R = 100)
-    # 
-    #     ## Moran's I of residuals
-    #     # moran = moran.mc(residuals(model),
-    #     #                  weights, nsim = 500,
-    #     #                  zero.policy = zero.policy)
-    #     moran = moran.test(residuals(model), weights,
-    #                        zero.policy = zero.policy)
-    # 
-    #     ## Return results
-    #     results = list(rho = data.frame(rho = model$rho,
-    #                                     rho.se = model$rho.se),
-    #                    aic = AIC(model),
-    #                    impacts = impacts,
-    #                    moran = moran,
-    #                    formula = regression_formula)
-    #     if (return_model) {
-    #         results$model = model
-    #     }
-    #     return(results)
-    # }
+## fit_model() does the actual fitting
+fit_model = function(data,
+                     weights, # spatial weights
+                     regression_formula,
+                     zero.policy = NULL,
+                     return_model = FALSE # return the complete fitted model?
+) {
+    ## Calculate traces
+    traces = trW(as(weights, 'CsparseMatrix'))
+    
+    ## Fit model
+    model = lagsarlm(regression_formula,
+                     data = data,
+                     listw = weights,
+                     trs = traces,
+                     type = 'Durbin',
+                     zero.policy = zero.policy)
+    ## Calculate impacts
+    impacts = impacts(model, tr = traces, R = 100)
+    
+    ## Moran's I of residuals
+    # moran = moran.mc(residuals(model),
+    #                  weights, nsim = 500,
+    #                  zero.policy = zero.policy)
+    moran = moran.test(residuals(model), weights,
+                       zero.policy = zero.policy)
+    
+    ## Return results
+    results = list(rho = data.frame(rho = model$rho,
+                                    rho.se = model$rho.se),
+                   aic = AIC(model),
+                   impacts = impacts,
+                   moran = moran,
+                   formula = regression_formula)
+    if (return_model) {
+        results$model = model
+    }
+    return(results)
 }
 
 ## This function does the following:  
@@ -128,56 +126,13 @@ perturb_ivs = function(data, formula) {
 resample_and_model = function(data, weights,
                               regression_formula, 
                               filter_condition = NULL, # string to filter data
-                              # k = 3, # for KNN weights
+                              k = 3, # n for knn; used in block resampling
                               zero.policy = NULL,
                               do_bootstrap = FALSE, # Do resamples? 
                               n_resamples = 1, # Num. resample datasets
                               seed = NULL, # seed for RNG
                               return_model = FALSE # return the complete fitted models? 
 ) {
-    ## fit_model() does the actual fitting
-    ## NB it was moved here to deal with plyr's scoping issues
-    ## It could probably be moved back outside resample_and_model now
-    fit_model = function(data,
-                         weights, # spatial weights
-                         k = 3, # n for knn; used in block resampling
-                         regression_formula,
-                         zero.policy = NULL,
-                         return_model = FALSE # return the complete fitted model?
-    ) {
-        ## Calculate traces
-        traces = trW(as(weights, 'CsparseMatrix'))
-        
-        ## Fit model
-        model = lagsarlm(regression_formula,
-                         data = data,
-                         listw = weights,
-                         trs = traces,
-                         type = 'Durbin',
-                         zero.policy = zero.policy)
-        ## Calculate impacts
-        impacts = impacts(model, tr = traces, R = 100)
-        
-        ## Moran's I of residuals
-        # moran = moran.mc(residuals(model),
-        #                  weights, nsim = 500,
-        #                  zero.policy = zero.policy)
-        moran = moran.test(residuals(model), weights,
-                           zero.policy = zero.policy)
-        
-        ## Return results
-        results = list(rho = data.frame(rho = model$rho,
-                                        rho.se = model$rho.se),
-                       aic = AIC(model),
-                       impacts = impacts,
-                       moran = moran,
-                       formula = regression_formula)
-        if (return_model) {
-            results$model = model
-        }
-        return(results)
-    }
-    
     ## Filter data using filter_condition
     if (!is.null(filter_condition)) {
         data = filter_(data, filter_condition)
@@ -231,24 +186,11 @@ resample_and_model = function(data, weights,
     }
     
     ## Fit model
-    # fitted_models = resample_datasets %>%
-    #     ## Something in the interaction w/ doSNOW causes warnings
-    #     ## cf <https://github.com/hadley/plyr/issues/203>
-    #     plyr::llply(function (x) 
-    #         fit_model(x$data, 
-    #                   weights = x$weights, 
-    #                   regression_formula,
-    #                   zero.policy = zero.policy, 
-    #                   return_model = return_model), 
-    #         .parallel = TRUE, 
-    #         .paropts = list(.export = 'regression_formula', 
-    #             .packages = c('spdep'))) %>%
-    #     map(function (x) {x$k = k; return(x)})
-    ## SNOW progress bar
     pb = txtProgressBar(max = n_resamples, style = 3)
     progress = function(n) setTxtProgressBar(pb, n)
     fitted_models = foreach(x = resample_datasets, 
                             .packages = 'spdep', 
+                            # .export = 'fit_model',
                             .options.snow = list(progress = progress)
     ) %dopar% {
         fit_model(x$data, 
