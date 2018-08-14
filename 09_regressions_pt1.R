@@ -81,14 +81,14 @@ models_sd_pl = map(places_sfl,
                               type = 'Durbin'))
 ## No glance() for sarlm
 stats_sd_pl = models_sd_pl %>%
-    map(summary, Nagelkerke = TRUE) %>% 
-    map_dfr(~ tibble(r.squared = .$NK, 
-                 # AIC = .$), where is this?
-        ), .id = 'ctd') %>%
-    mutate(specification = 'sd',
-           model = models_sd_pl, 
+    map_dfr(~ tibble(specification = 'sd', 
+                     model = list(.)), 
+            .id = 'ctd') %>%
+    mutate(y = map(model, ~ .$y), 
+           fitted = map(model, 
+                        ~ as.numeric(predict(., pred.type = 'trend'))),
+           r.squared = map2_dbl(y, fitted, cor), 
            AIC = map_dbl(model, AIC),
-           fitted = map(model, fitted),
            residuals = map(model, residuals), 
            moran = map_dbl(residuals, 
                            ~ moran.mc(., weights_pl, 500) %>%
@@ -169,14 +169,14 @@ models_sd_tr = map(tracts_sfl,
                               type = 'Durbin'))
 ## No glance() for sarlm
 stats_sd_tr = models_sd_tr %>%
-    map(summary, Nagelkerke = TRUE) %>% 
-    map_dfr(~ tibble(r.squared = .$NK, 
-                     # AIC = .$), where is this?
-    ), .id = 'ctd') %>%
-    mutate(specification = 'sd',
-           model = models_sd_tr, 
+    map_dfr(~ tibble(specification = 'sd', 
+                     model = list(.)), 
+            .id = 'ctd') %>%
+    mutate(y = map(model, ~ .$y), 
+           fitted = map(model, 
+                        ~ as.numeric(predict(., pred.type = 'trend'))),
+           r.squared = map2_dbl(y, fitted, cor), 
            AIC = map_dbl(model, AIC),
-           fitted = map(model, fitted),
            residuals = map(model, residuals), 
            moran = map_dbl(residuals, 
                            ~ moran.mc(., weights_tr, 500) %>%
