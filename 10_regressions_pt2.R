@@ -1,5 +1,8 @@
 ## Spatial Durbin models
-## NB This script takes several hours to run
+## NB On a standard-performance setup (eg, laptop) this script can take 10+ 
+hours to run
+## The parallelization below is configured for a high-performance compute server
+## Make sure the configuration is appropriate for your setup
 ## Hard-coded bootstrap settings:  
 ## 500 block resamples for each primary model
 ## 100 simulations for the impacts on each resample model
@@ -10,11 +13,12 @@ library(spdep)
 library(doSNOW)
 library(tictoc)
 
-# registerDoSNOW(makeCluster(25))
+## parallel::detectCores()
+registerDoSNOW(makeCluster(25))
 
 ## Load data ----
-# data_dir = 'data/'
-data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
+data_dir = 'data/'
+# data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
@@ -190,7 +194,7 @@ resample_and_model = function(data, weights,
     progress = function(n) setTxtProgressBar(pb, n)
     fitted_models = foreach(x = resample_datasets, 
                             .packages = 'spdep', 
-                            # .export = 'fit_model',
+                            .export = 'fit_model',
                             .options.snow = list(progress = progress)
     ) %dopar% {
         fit_model(x$data, 
@@ -237,7 +241,7 @@ write_rds(durbin, str_c(data_dir, '10_durbin_models.Rds'))
 
 print('Fitting resamples')
 tic()
-resamples = foreach(row = iter(models_meta_df[1:2,], by = 'row'),
+resamples = foreach(row = iter(models_meta_df, by = 'row'),
                     .packages = c('tidyverse', 'spdep'),
                     .verbose = FALSE
 ) %do% {
@@ -245,7 +249,7 @@ resamples = foreach(row = iter(models_meta_df[1:2,], by = 'row'),
                        regression_formula = reg_form,
                        seed = 1369,
                        zero.policy = TRUE, 
-                       do_bootstrap = TRUE, n_resamples = 2)
+                       do_bootstrap = TRUE, n_resamples = 500)
 }
 toc()
 
