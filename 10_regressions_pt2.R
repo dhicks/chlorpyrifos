@@ -13,7 +13,7 @@ library(tictoc)
 registerDoSNOW(makeCluster(25))
 
 ## Load data ----
-data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
+data_dir = 'data/'
 
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
@@ -140,6 +140,7 @@ resample_and_model = function(data, weights,
     ## It could probably be moved back outside resample_and_model now
     fit_model = function(data,
                          weights, # spatial weights
+                         k = 3, # n for knn; used in block resampling
                          regression_formula,
                          zero.policy = NULL,
                          return_model = FALSE # return the complete fitted model?
@@ -252,7 +253,7 @@ resample_and_model = function(data, weights,
     ) %dopar% {
         fit_model(x$data, 
                   weights = x$weights, 
-                  regression_formula, 
+                  regression_formula = regression_formula, 
                   zero.policy = zero.policy, 
                   return_model = return_model)
     }
@@ -267,6 +268,7 @@ reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP +
                        asianP + childrenP + poverty_combP + 
                        ag_employedP + density_log10)
 
+print('Constructing model metadataframe')
 models_meta_df = tibble(geography = c('places', 'tracts'), 
                         ctd = list(names(places_sfl), names(tracts_sfl)),
                         data = list(places_sfl, tracts_sfl), 
@@ -275,13 +277,14 @@ models_meta_df = tibble(geography = c('places', 'tracts'),
 
 write_rds(models_meta_df, str_c(data_dir, '10_models_meta.Rds'))
 
+print('Fitting full spatial Durbin models')
 tic()
 durbin = foreach(row = iter(models_meta_df, by = 'row')
                  # .packages = c('tidyverse', 'sf', 'spdep'),
                  # .verbose = TRUE
 ) %do% {
     resample_and_model(row$data[[1]], row$weights[[1]],
-                       reg_form,
+                       regression_formula = reg_form,
                        seed = 78910,
                        zero.policy = TRUE,
                        do_bootstrap = FALSE)
@@ -290,13 +293,14 @@ toc()
 
 write_rds(durbin, str_c(data_dir, '10_durbin_models.Rds'))
 
+print('Fitting resamples')
 tic()
 resamples = foreach(row = iter(models_meta_df[1:2,], by = 'row'),
-                    .packages = c('tidyverse', 'sf', 'spdep'),
+                    .packages = c('tidyverse', 'spdep'),
                     .verbose = FALSE
 ) %do% {
     resample_and_model(row$data[[1]], row$weights[[1]],
-                       reg_form,
+                       regression_formula = reg_form,
                        seed = 1369,
                        zero.policy = TRUE, 
                        do_bootstrap = TRUE, n_resamples = 2)
