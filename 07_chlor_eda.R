@@ -140,7 +140,7 @@ imap(tracts_sfl,
         ggtitle(.y)) %>%
     cowplot::plot_grid(plotlist = .)
 
-
+## Map of use for CTD = 60
 tm_shape(tracts_sfl$ctd_60) + 
     tm_fill('log_w_use', style = 'cont', palette = '-RdBu') +
     tm_shape(counties_sf) +
@@ -148,6 +148,33 @@ tm_shape(tracts_sfl$ctd_60) +
     tm_shape(chlor_sf) +
     tm_symbols(col = 'total_use', size = .1, alpha = .05, border.lwd = 0)
 
+# tracts_sfl %>%
+#     map(as_tibble) %>%
+#     bind_rows() %>% 
+#     ggplot(aes(log_w_use)) +
+#     geom_density() +
+#     facet_wrap(~ ctd, scales = 'free')
+
+## Faceted use map for all CTD
+tracts_sfl %>%
+    do.call(rbind, .) %>%
+    mutate(ctd = case_when(ctd == 'ctd_1' ~ '1', 
+                           ctd == 'ctd_10' ~ '10', 
+                           ctd == 'ctd_30' ~ '30', 
+                           ctd == 'ctd_60' ~ '60', 
+                           ctd == 'ctd_90' ~ '90')) %>%
+    tm_shape() +
+    tm_fill('log_w_use', style = 'cont', 
+            palette = '-RdBu', midpoint = 5, 
+            title = 'Weighted\nlocal use') +
+    tm_facets(by = 'ctd', free.scales = TRUE) +
+    tm_shape(counties_sf) +
+    tm_borders() +
+    tm_scale_bar(position = c('left', 'bottom')) +
+    tm_layout(legend.position = c('right', 'top'))
+tmap_save(filename = '07_ctd.png', 
+          width = 6, height = 7, units = 'in')
+    
 imap(places_sfl, 
      ~ ggplot(.x, aes(hispanicP, w_use)) + 
          geom_point() +
