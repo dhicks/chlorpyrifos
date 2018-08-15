@@ -10,7 +10,10 @@ ctd_df = tibble(ctd = c(1, 10, 30, 60, 90),
                 decay_rate = (1-.63)^(1/ctd)) %>%
     mutate(ctd = str_c('ctd_', ctd))
 
+## A few seconds to aggregate across years
 chlor_sf = read_rds(str_c(data_dir, '01_chlor_sf.Rds')) %>%
+    group_by(CO_MTRS) %>%
+    summarize(total_use = sum(total_use)) %>%
     mutate(log_total_use = log10(total_use), 
            chlor_idx = as.character(row_number()))
 tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
@@ -23,7 +26,7 @@ places_centroids = read_rds(str_c(data_dir, '05_w_cntr_places.Rds'))
 
 
 ## Places ----
-## ~70s
+## ~10s
 tictoc::tic()
 distances_pl = places_centroids %>% 
     ## Calculate distances between centroids and uses
@@ -48,11 +51,11 @@ distances_pl = st_within(chlor_sf, places_sf, sparse = FALSE) %>%
     inner_join(distances_pl)
 
 ## Calculate total weighted local use
-## ~35s
+## ~10s
 tictoc::tic()
 w_use_pl = distances_pl %>%
     inner_join(chlor_sf, by = 'chlor_idx') %>%
-    select(GEOID, chlor_idx, year,
+    select(GEOID, chlor_idx, 
            distance, within, total_use) %>%
     crossing(ctd_df) %>%
     mutate(decay_coef = ifelse(within, 1, decay_rate^distance)) %>% 
@@ -78,7 +81,7 @@ write_rds(w_use_pl, str_c(data_dir, '06_w_use_places.Rds'))
 
 
 ## Tracts ----
-## ~111s
+## ~25s
 tictoc::tic()
 distances_tr = tracts_centroids %>%
     ## Distances
@@ -102,12 +105,11 @@ distances_tr = st_within(chlor_sf, tracts_sf, sparse = FALSE) %>%
     inner_join(distances_tr)
 
 ## Calculate total potential exposure
-## ~146s
-## NB >14GB memory
+## ~30s
 tictoc::tic()
 w_use_tr = distances_tr %>%
     inner_join(chlor_sf, by = 'chlor_idx') %>%
-    select(GEOID, chlor_idx, year,
+    select(GEOID, chlor_idx, 
            distance, within, total_use) %>%
     crossing(ctd_df) %>%
     mutate(decay_coef = ifelse(within, 1, decay_rate^distance)) %>%
