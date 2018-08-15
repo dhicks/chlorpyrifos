@@ -2,7 +2,31 @@
 title: Environmental Justice Analysis of Chlorpyrifos Use in California's Central Valley
 author: Daniel J. Hicks
 bibliography: spatial_project.bib
+numbersections: true
 ---
+
+# Abstract #
+
+## Background ##
+
+Chlorpyrifos is one of the most widely-used pesticides in the world, and is generally recognized to be a moderate neurotoxin.  
+
+## Objectives ##
+
+This paper conducts an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.
+
+## Methods ##
+
+Data on chlorpyrifos use in townships and sections are retrieved from California's Department of Pesticide Registration public pesticide use records for 2011-2015.  These data are combined with demographic data on Census tracts and Census-designated places in the Central Valley from the American Community Survey (ACS).  Spatial and non-spatial regression models are used to estimate effects of demographic covariates on local chlorpyrifos use.  A block bootstrap method is also examined as a way to account for measurement error in the ACS estimates.  
+
+## Results ##
+
+Model select statistics consistently favored spatial Durbin models, which are used in further analysis.  The block bootstrap results are difficult to interpret, and it is unclear whether this method has avoided attenuation bias.  
+
+## Discussion ## 
+
+There is consistent evidence that a 10-point increase in Hispanic population is associated with a 7-8% increase in potential chlorpyrifos exposure.  The effects of agricultural employment and poverty proportions are ambiguous.  Due to significant uncertainty in effects estimates, it is unclear if there is any association between potential chlorpyrifos exposure and Asian, Indigenous, and young children population proportion. 
+
 
 # Introduction #
 
@@ -24,7 +48,11 @@ The Columbia Center for Children's Environmental Health (CCEH) at Columbia Unive
 
 Because these last two studies focus on populations that are likely to be highly exposed or socially vulnerable to chlorpyrifos impacts, they can be considered dEJ studies.  Both of these studies focus on estimating the health impacts of chlorpyrifos exposure, rather than the (relative or absolute) degree of exposure per se.  In contrast, the current paper considers social vulnerability as a predictor for (a proxy of) chlorpyrifos exposure.  The current study also works at a much larger scale than these two studies:  rather than analyzing data for a few hundred individuals, this study analyzes data for more than a thousand Census tracts and tens of thousands of uses of chlorpyrifos.  
 
-Methodologically, the current study closely resembles two studies that used spatial methods to identify demographic predictors of potential exposure to other kinds of environmental health hazards.   @LievanosRacedeprivationimmigrant2015 uses data from across the continental US and spatial methods to construct clusters of high lifetime cancer risk (LCR) due to air pollution, then (nonspatially) regresses these clusters against composite Census tract demographic variables.  This study concludes that "isolated Latino immigrant-economic deprivation is the strongest positive demographic predictor of tract presence in air-toxic LCR clusters, followed by black-economic deprivation and isolated Asian/Pacific Islander immigrant-economic deprivation" [@LievanosRacedeprivationimmigrant2015 50], a significant dEJ finding.  
+Methodologically, the current study closely resembles a number of other studies that use spatial methods to identify demographic predictors of potential exposure to other kinds of environmental health hazards.  Often these studies are framed explicitly in terms of environmental justice.  @LievanosRacedeprivationimmigrant2015 uses data from across the continental US and spatial methods to construct clusters of high lifetime cancer risk (LCR) due to air pollution, then (nonspatially) regresses these clusters against composite Census tract demographic variables.  This study concludes that "isolated Latino immigrant-economic deprivation is the strongest positive demographic predictor of tract presence in air-toxic LCR clusters, followed by black-economic deprivation and isolated Asian/Pacific Islander immigrant-economic deprivation" [@LievanosRacedeprivationimmigrant2015 50], a significant dEJ finding.  (See also @LievanosSociospatialDimensionsWater2017; @LievanosRetoolingCalEnviroScreenCumulative2018.)  
+
+@GrineskiAsianAmericansdisproportionate2017 also focus on demographic predictors of air pollution exposure.  They define non-spatial clusters of Census tracts based on median year of housing construction, then apply generalized estimating equations to model air pollution hazard as a function of demographics.  This study focuses on residents of Asian background, and estimates effects for 7 different Asian ancestry groups.  They find that "an increase in proportion of Asian residents in census tracts is associated with significantly greater cancer risk from HAPs" [@GrineskiAsianAmericansdisproportionate2017 71].  
+
+@BakhtsiyaravaEnvironmentalinequalitypollution2017 construct a spatial regression of immigrant population against toxic chemical releases, identified using the Toxics Release Inventory.  In this case, spatial regression is used as a control, to account for spatial autocorrelation in both migration and chemical releases.  They find that "immigrants from Europe and Latin America show a pollution advantage and tend to migrate to less polluted areas" relative to non-immigrants (defined as individuals who lived in the US the previous year); at the same time "for Mexican, Chinese, and Asian immigrants we found no relationship between toxin release and their concentration in PUMAs, indicating exposure patterns comparable to their native-born [sic] counterparts" [@BakhtsiyaravaEnvironmentalinequalitypollution2017 65]. 
 
 @SilvaSpatialModelingIdentify2018 examine the presence of hydraulic fracturing wells in Ohio Census block groups.  They compare spatial and nonspatial regression models, that is, models that do and do not account for correlation between neighboring block groups.  They observe that the nonspatial model is susceptible to spatial confounding in this case; and find that increased median income and population density are associated with an increased presence of wells.  
 
@@ -63,26 +91,22 @@ DPR automatically identifies potential outliers as entries satisfying at least o
 
 Chlorpyrifos uses are associated with townships and sections in the data, and I calculated annual and all-study-period totals of active ingredient at the centroid of each 1 mile-square ($1.6 km \times 1.6 km$) section.  Because these centroids do not match the actual use locations (i.e., farm fields), the centroid totals might be unreliable for the smallest CTD, 1km (see discussion and table \ref{tab.ctd} below).  However, this error should be negligible for the other CTDs.  
 
-*[total num. observations, range of total use values]
+All together, 1,113,398 use records for chlorpyrifos were identified in the DPR datasets for 2011-15.  After aggregating by sections and years, there were 31,789 records, with annualized use values ranging from $10^-2$ to $10^4$ lbs of active ingredient.  
 
 
 ## Demographics ##
 
-The second primary dataset comprises American Community Survey (ACS) five-year estimates, from 2011-2015, for all Census tracts and places in the 17 Central Valley Counties.  
-
-*[total num. tracts, places]
+The second primary dataset comprises American Community Survey (ACS) five-year estimates, from 2011-2015, for Census tracts and places in the 17 Central Valley Counties.  
 
 For each tract and place, I retrieved estimates and margin of error (MOE) values for three categories of demographic variables:  *race and ethnicity* (Hispanic, non-Hispanic White, non-Hispanic Black, Indigenous, and Asian residents), *foreign-born noncitizens*, *children under 5* (who may be especially sensitive to chlorpyrifos exposure due to small body weight and critical neurodevelopmental processes), and *poverty* (individuals with an Census-determined income-poverty ratio below 1).  Intersectionality theory [CollinsIntersectionality2013] suggests that interlocking systems of oppression, such as race-ethnicity and class, can produce synergistic effects, with greater disparities than either system would produce "on its own."  I therefore retrieved an intersectional Hispanic poverty variable (Hispanic individuals below the poverty line) calculated by the Census.  Because PUR data come only from agricultural uses, I predicted that chlorpyrifos use would be positively correlated with agricultural employment, and therefore retrieved an agricultural employment variable as a potential control.  (See also table \ref{tab.iv} and section \ref{sec.iv_selection}.)  
 
-I calculated population densities and proportions (e.g., the fraction of all residents who are Hispanic) for the total population and each of these ACS variables for every tract and place, using Census-recommended methods to calculate MOEs for these derived variables [@USCensusBureauAmericanCommunitySurvey, 11ff].  9 tracts and 15 places with estimated total population or total employment of 0 were excluded from all analyses.  
+Population densities and proportions (e.g., the fraction of all residents who are Hispanic) were calculated for the total population and each of these ACS variables for every tract and place, using Census-recommended methods to calculate MOEs for these derived variables [@USCensusBureauAmericanCommunitySurvey, 11ff].  9 tracts and 15 places with estimated total population or total employment of 0 were excluded; 391 places and 1,044 tracts were used in all further analysis.  
 
 Because much of the study area is rural, tract size and population density varied over four orders of magnitude, from 0.8 to 5600 residents per $km^2$.  Places cover 87% of the population, including 83% of non-Hispanic White and 88% of Hispanic residents, with population densities between 1.4 and 4400 residents per $km^2$.  However, places are geographically separated from each other, covering only 8% of the area of the tracts; in constructing contiguity-based spatial weights, 62% of places had no neighbors.  
 
 The Modifiable Areal Unit Problem (MAUP) has been used to criticize dEJ projects [@SteelEnvironmentalJusticeValues2012;  @TaylorToxiccommunitiesenvironmental2014, 41ff].  "Egocentric neighborhood" methods have been used to address the MAUP in segregation research [@ReardonMeasuresSpatialSegregation2004].  However, this method assumes that populations are distributed evenly within each discrete region (e.g., each Census tract).  This assumption is inappropriate for this project, which includes many spatially heterogeneous rural regions.  In addition, the large geographic scale of this project would require millions — if not tens of millions — of egocentric neighborhoods, and so literally trillions of distance calculations between neighborhoods and chlorpyrifos uses.  The Census tract-level distance calculations already pressed the limits of the computing power available for this phase of the project.  More fine-grained regions (e.g., Census block groups or blocks) would have multiplied uncertainty in the ACS estimates, and also likely would have exceeded the available computing power.  
 
-As a compromise, I used block population counts from the 2010 Census to calculate weighted centroids for each tract and place.  These centroids more accurately represent the "average location" of the population in each tract, without requiring more computing power in the distance calculation step.  By comparison, @LievanosRacedeprivationimmigrant2015 conducts a dEJ study of air toxic exposure across the US using Census tract centroids alone.[^NLCD]
-
-[^NLCD]: An alternative approach would be to use the National Land Cover Database (NLCD), which was most recently released in 2011.  (<https://www.mrlc.gov/nlcd2011.php>)  Specifically, tract populations could be interpolated across the four categories of developed land identified in the NLCD.  Unfortunately, this public data source did not come to my attention until too late in the process of preparing this manuscript.  
+As a compromise, block population counts from the 2010 Census were used to calculate weighted centroids for each tract and place.  These centroids more accurately represent the "average location" of the population in each tract, without requiring more computing power in the distance calculation step.  
 
 Chlorpyrifos use section centroids, Census tracts, and places included in the study area are shown in figure \ref{fig.chlor_use}.  
 
@@ -114,7 +138,7 @@ where $q_u$ is the total use at section $u$ and $d_{iu}$ is the Euclidean distan
 
 It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_exp} are, at best, crude estimate of potential exposure.  They do not take into account prevailing or occurrent winds, or other chemical transport mechanisms.  Read as exposure estimates, they represent the chemical moving uniformly away from the source along a one-dimensional path, not dispersing over a two- or three-dimensional space surrounding the source at various speeds in various directions at various times.  diverse and variable processes of application, fixation, and chemical transformation are represented as simple exponential decay.  I therefore refer to these aggregate statistics as "local use" rather than "exposure."  By comparison, @LuoSpatiallydistributedpesticide2010 use a physical-chemical model and PUR data to produce much more sophisticated estimates of chlorpyrifos loading.  
 
-@MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  For robustness, this paper considers five CTD values, ranging from 1 km to 90 km.  See table \ref{tab.ctd} and \ref{fig.ctd}.  
+@MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  For robustness, this paper considers five CTD values, ranging from 1 km to 90 km.  See table \ref{tab.ctd} and figure \ref{fig.ctd}.  
 
 | CTD (km) | $\beta$ |
 |:---------|:--------|
@@ -126,7 +150,9 @@ It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_ex
 
 Table: Characteristic Travel Distance (CTD) values used in this study, and corresponding decay-rate values $\beta$. \label{tab.ctd}
 
-![Impact of Characteristic Travel Distance (CTD) value on weighted local use values in Census tracts. Panels correspond to the different CTD values used in this study. Weighted local use is the log (base 10) of aggregate chlorpyrifos use around each tract, scaled using the decay coefficient, 2011-15. Color scales are only roughly consistent between panels, with the scale midpoint set at 5 ($10^5 = 100,000$ lbs).](07_ctd.png)
+![Impact of Characteristic Travel Distance (CTD) value on weighted local use values in Census tracts. Panels correspond to the different CTD values used in this study. Weighted local use is the log (base 10) of aggregate chlorpyrifos use around each tract, scaled using the decay coefficient, 2011-15. Color scales are only roughly consistent between panels, with the scale midpoint set at 5 ($10^5 = 100,000$ lbs). \label{fig.ctd}](07_ctd.png)
+
+It may be objected that this approach effectively assumes that, when chlorpyrifos is used, all of the chemical is volatilized.  This assumption is plainly false, but fortunately is not necessary for the current study.  Decay coefficients are multiplicative, so that if $q_u$ is the amount used at section $u$ and $\pi$ is the volatilization rate, then $q_i = \sum_{u} \pi q_u \beta^{d_{iu}} = \pi \sum q_u \beta^{d_{iu}}$ is weighted local use at location $i$.  The second equality assumes that the volatilization rate $\pi$ is constant across the dataset.  This entails that the local use values can all be scaled by $\pi$.  Then, since the log of weighted local use is the dependent variable in the regression models below, the scaling coefficient $\pi$ becomes a constant term:  $\log q_i = \log \hat q_i + \log \pi$, where $\hat q_i$ is the un-scaled estimate above.  Thus, while the value of $\pi$ matters of estimating the intercept of the regression models, it does not matter for estimating the coefficients on the covariates.  The assumption of a constant volatilization rate is still unlikely, of course; it likely varies with the weather at the time chlorpyrifos is applied, for example.  However, insofar as variation in the volatilization rate is uncorrelated with the section $u$ and the demographic covariates of interest — which both seem plausible — the argument above can be modified to conclude that this variation will be bundled into the error term of the regression models, and so will not bias the coefficient estimates.  
 
 
 # Methods #
@@ -139,8 +165,13 @@ Note that the theory-phenomenon distinction does not mean that phenomena are the
 
 Arguably, the theory-phenomenon distinction aligns with the difference between procedural and distributive aspects of EJ.  The unjust distribution of environmental hazards is the outcome of social processes, which are often unjust in themselves.  
 
+In addition, this study uses an effects estimation approach, rather than a hypothesis testing approach [@GelmanFailureNullHypothesis2017].  That is, there were no tests of any null hypothesis that the effect of a given independent variable on local chlorpyrifos use is exactly 0.  In line with the aphorism that "everything is related to everything else" (sometimes called "Tobler's first law of geography"), in the kind of observational/field research setting of this study it is a priori highly implausible that any such effect is exactly 0.  Hypothesis testing therefore merely tells us whether we have enough data to detect the non-zero effect, which is not informative.  In addition, "stepwise" regression model selection methods (which include or exclude variables based on whether their coefficients are statistically significant) are known to introduce bias and interpretability problems for both hypothesis testing and estimation [@gungAlgorithmsautomaticmodel2012 and citations therein].  
 
-## Independent Variable Selection ## \label{sec.iv_selection}
+Instead of testing hypotheses, the aim of this study is to estimate effects as accurately possible, including estimates of the uncertainty of those first-order estimates.  Specifically, the modeling approach discussed below is designed to avoid or mitigate bias due to spatial correlation and errors in the independent variable measures.  And two major "researcher degrees of freedom" [@SimmonsFalsePositivePsychology2011] — namely, geographic unit of analysis (tracts vs. places) and choice of CTD value — are tracked by analyzing 10 combinations of geography and CTD value in parallel.  The data collection and analysis process is captured in a series of publicly available computer scripts, including two scripts devoted to exploratory data analysis (EDA) and interstitial comments on analytical decisions, thereby enabling future researchers to reflect on the extent to which particular decisions made in the course of study might have influenced the findings [@LeonelliReThinkingReproducibilityCriterion2018]. 
+
+
+## Independent Variable Selection ## 
+\label{sec.iv_selection}
 
 Non-spatial exploratory data analysis indicated that, for almost all (>80%) tracts and places, almost all residents (>80%) were either Hispanic or non-Hispanic White.  Thus, Hispanic and non-Hispanic White proportions are strongly negatively correlated ($r = -.9$), and I dropped non-Hispanic White proportion from the independent variable list.  Similarly, there are strong correlations between Hispanic and non-citizen proportions ($r = .8$), and so we also drop non-citizen proportion from the independent variable list.  (Alternatively, factor analysis methods might have been used to construct composite variables combining Hispanic and non-citizen proportions; compare @LievanosRacedeprivationimmigrant2015.  This approach was not taken here for simplicity.)  There are moderate correlations ($r = .4-.6$) between Hispanic, young children, and poverty proportions; so, while we use all three of these variables, we expect to see greater uncertainty in their coefficient estimates, due to the difficulty of disentangling their statistical effects [@MorrisseyMultipleRegressionNot2018].  
 
@@ -150,7 +181,7 @@ Also for intersectional reasons, I considered including interaction terms betwee
 
 Finally, I also include two control variables.  Because PUR data come only from agricultural uses, we expect chlorpyrifos use to be negatively correlated with population density and positively correlated with agricultural employment.  Density was not substantially correlated with any variables of interest (except for a low-moderate negative correlation with White; $r = -.4$).  Because density is left-bounded at 0, we use log density to simplify the Bayesian prior on its true value.  Agricultural employment has a moderate-strong correlation with Hispanic ($r = .67$).  
 
-All independent variables are given in table \ref{tab.iv}.  
+All independent variables are given in table \ref{tab.iv}, and descriptive statistics for both places and tracts are given in table \ref{tab.desc_stats} 
 
 | Category       | Independent Variable |
 |:---------------|:-------------------|
@@ -165,24 +196,42 @@ All independent variables are given in table \ref{tab.iv}.
 
 Table: Independent variables (IVs) used in this study. All race-ethnicity groups other than Hispanic are non-Hispanic.  All IVs other than population density are proportion of total population in the tract or place. \label{tab.iv}
 
-I took an effects estimation approach to these variables, rather than a hypothesis testing approach.  That is, I did not test the null hypothesis that the effect of any given variable on local use is exactly 0.  In line with the aphorism that "everything is influenced by everything else," in this kind of observational/field research setting it is a priori highly implausible that the effect is exactly 0.  Hypothesis testing therefore merely tells us whether we have enough data to detect the non-zero effect, which is not informative.  In addition, "stepwise" regression model selection methods (which include or exclude variables based on whether their coefficients are statistically significant) are known to introduce bias and interpretability problems for both hypothesis testing and estimation [@gungAlgorithmsautomaticmodel2012].  
 
-Instead of testing hypotheses, I aimed to *[estimate effects as accurately possibly]
+|geography |variable           | mean|   sd|   min|  max| Moran's I|
+|:---------|:------------------|----:|----:|-----:|----:|---------:|
+|places    |ag. employment     | 0.17| 0.19|  0.00| 1.00|      0.54|
+|places    |Asian              | 0.03| 0.05|  0.00| 0.42|      0.29|
+|places    |Black              | 0.02| 0.05|  0.00| 0.61|      0.13|
+|places    |children           | 0.07| 0.04|  0.00| 0.21|      0.18|
+|places    |pop. density (log) | 2.40| 0.73|  0.14| 3.64|      0.52|
+|places    |Hispanic           | 0.43| 0.32|  0.00| 1.00|      0.74|
+|places    |Indigenous         | 0.02| 0.04|  0.00| 0.45|     -0.01|
+|places    |poverty            | 0.23| 0.17|  0.00| 1.00|      0.35|
+|tracts    |ag. employment     | 0.10| 0.13|  0.00| 0.65|      0.65|
+|tracts    |Asian              | 0.08| 0.08|  0.00| 0.53|      0.62|
+|tracts    |Black              | 0.05| 0.06|  0.00| 0.46|      0.68|
+|tracts    |children           | 0.07| 0.03|  0.00| 0.20|      0.28|
+|tracts    |pop. density (log) | 2.75| 0.87| -0.11| 3.75|      0.46|
+|tracts    |Hispanic           | 0.42| 0.24|  0.02| 0.98|      0.79|
+|tracts    |Indigenous         | 0.01| 0.02|  0.00| 0.19|      0.16|
+|tracts    |poverty            | 0.22| 0.13|  0.00| 0.64|      0.54|
+
+Table:  Descriptive statistics for independent variables used in this study. All race-ethnicity groups other than Hispanic are non-Hispanic.  All IVs other than population density are proportion of total population in the tract or place. \label{tab.desc_stats}
 
 
 ## Spatial Weights ##
 
 Exploratory data analysis considered 8 spatial weight constructions for both tracts and places:  contiguity, inverse distance weights (with an outer limit of 50 km and a decay of $\frac{1}{d}$), and $k$-nearest-neighbors (KNN) with $k$ ranging from 3 to 8.  All weights were row-normalized.  As noted above, 62% of places had no contiguity-based neighbors.  
 
-To examine the impact of different spatial weights constructions, Moran's $I$ was calculated for population densities corresponding to the independent variables identified above, e.g., density of Hispanic population, calculated as the number of Hispanic residents per square kilometer.  
+To examine the impact of different spatial weights constructions, Moran's $I$ was calculated for population densities corresponding to the independent variables identified above, e.g., density of Hispanic population, calculated as the number of Hispanic residents per square kilometer.  Moran's $I$ is a measure of spatial correlation, and is interpreted as a correlation coefficient:  values range from -1 to 1, with 1 indicating perfect spatial correlation (values at locations are identical to values at neighbors) and 0 indicating no spatial correlation.  
 
-Among tracts, contiguity produced the highest values of Moran's $I$, followed by KNN, and distance weights.  For example, for Hispanic population density, Moran's $I$ was slightly less than .7 for contiguity weights; was between .45-.55 for KNN; and was slightly greater than .3 for distance weights.  
+Among tracts, contiguity produced the highest values of Moran's $I$, followed by KNN, and finally distance weights.  For example, for Hispanic population density, Moran's $I$ was slightly less than .7 for contiguity weights; was between .45-.55 for KNN; and was slightly greater than .3 for distance weights.  
 
-Among places, KNN and distance-based weights were similar, especially for larger values of K, while contiguity-based weights were much less for most variables.  For example for Hispanic population density, Moran's I was between .55-.65 for KNN; about .53 for distance weights; but only .3 for contiguity weights.  
+Among places, KNN and distance-based weights were similar, especially for larger values of K, while contiguity-based weights were much less for most variables.  For example for Hispanic population density, Moran's I was between .55-.65 for KNN; about .53 for distance weights; but only .3 for contiguity weights. 
 
 KNN weights were selected for use in further analysis.  They produced reasonably high and consistent values of Moran's $I$ for both tracts and places.  For the block bootstrap procedure used to account for measurement error (discussed below), KNN blocks were dichotomous (for a given location $i$, every other location $j$ is either one of $i$'s $k$ nearest neighbors or not), had uniform size $k+1$, and could be characterized exactly by two values (namely, $k$ and the location $i$).  
 
-Initially, the block bootstrap procedure was written to allow exploring several values of $k$.  However, runtime issues required reducing the number of free parameters explored in this stage.  Again, EDA indicated that values of $k$ from 3 to 8 produced roughly the same spatial correlation values, while CTD values produced large differences between dependent variable values.  I therefore judged that different CTD values were likely to be a more important source of variations in effects than different spatial weights.  (See also @LeSageBiggestMythSpatial2014.)  I selected $k=3$ as the sole spatial weights construction for all analyses.  
+Initially, the block bootstrap procedure was written to allow exploring several values of $k$.  However, runtime issues required reducing the number of free parameters explored in this stage.  Again, EDA indicated that values of $k$ from 3 to 8 produced roughly the same spatial correlation values, while CTD values produced large differences between dependent variable values.  I therefore judged that different CTD values were likely to be a more important source of variation in effects than different spatial weights.  (See also @LeSageBiggestMythSpatial2014.)  I selected $k=3$ as the sole spatial weights construction for all analyses.  
 
 
 ## Regression Specification ##
@@ -212,7 +261,7 @@ KNN spatial weights, with $k=3$, were used for all of these models.  This sequen
 
 ## Measurement Error and Block Bootstrap ##
 
-All three of these models assume perfect measurements in the independent variables.  However, ACS estimates can have large margins of error, especially for subpopulations of rural tracts \*[cite].  This kind of measurement error induces *attenuation bias* or *regression dilution*, in which correlation estimates are shrunk towards 0 [@FrostCorrectingregressiondilution2000].  In the context of dEJ analysis, attenuation bias is potentially a serious problem, insofar as it leads to the underestimation of environmental disparities.  That is, measurement error can make distributive environmental injustices seem less serious than they actually are.  
+All three of these models assume perfect measurements in the independent variables.  However, ACS estimates can have large margins of error, especially for subpopulations of difficult-to-survey rural tracts [@SpielmanReducingUncertaintyAmerican2015].  This kind of measurement error induces *attenuation bias* or *regression dilution*, in which correlation estimates are shrunk towards 0 [@FrostCorrectingregressiondilution2000].  In the context of dEJ analysis, attenuation bias is potentially a serious problem, insofar as it leads to the underestimation of environmental disparities.  That is, measurement error can make distributive environmental injustices seem less serious than they actually are.  
 
 A block bootstrap approach was developed to explore the effect of measurement error on the impact estimates.  In a "basic" or unparameterized bootstrap, independent samples are taken from the observations in the dataset (with replacement), forming a "resampled dataset" of the same size as the dataset.  These samples approximate drawing a new sample from the original population.  By calculating model statistics on a set of resampled datasets (1000 resampled datasets is common), we can estimate features of the sampling distribution of the population statistic.  For example, if $\hat\beta^1, \hat\beta^2, \ldots, \hat\beta^{1000}$ are regression coefficient estimates calculated on 1,000 resampled datasets, $\mathrm{sd}_l(\hat\beta^l)$ estimates the standard error of the coefficient estimate. 
 
@@ -229,16 +278,19 @@ It is important to note that this block bootstrap approach has not been validate
 
 ## Model Selection ##
 
-For each of 4 dataset-CTD combinations examined in model selection, spatial Durbin models consistently outperformed both regression and spatial lagged X models.  AIC and Moran's $I$ on the residuals were lowest with spatial Durbin models in every case.  $R^2$ was generally .6-.65 for the spatial Durbin models on the places (except for CTD = 1, where $R^2 > .75), compared to values around .4 for regression and .55 for spatial lagged X models.  For tracts, $R^2$ was near .5 for spatial Durbin models, in each case slightly greater than approximately .45 for the spatial lagged X models.  ($R^2$ for the spatial Durbin models was calculated using "trend" predictions, which ignore the lagged dependent variable.  When the lagged dependent variable was included, $R^2$ was 1.00 after rounding to two decimal places.)  These three statistics all indicate that spatial Durbin models provide a better fit.  However, also in every case, Moran's $I$ was substantially (and statistically significantly) greater than 0 even for spatial Durbin models, with values of approximately $.07$ for tracts and $.15$ for places.  This suggests that there may be spatial non-stationarity; that is, the effects of the independent variables may vary across different sub-regions in the study area.  This possibility was not explored further in the current study.  
+Model select considered a "vanilla" linear regression, spatial lagged X, and spatial Durbin models across each of the $10 = 2 \times 5$ geography-CTD combinations.  Spatial Durbin models consistently outperformed both regression and spatial lagged X models.  Specifically, AIC and Moran's $I$ on the residuals were lowest with spatial Durbin models in every case.  For the spatial Durbin models, on both tracts and places $R^2>.8$ for all CTD values, and nearly 1 for CTD $\geq 30$, compared to values around .4-.5 for regression and .45-.55 for spatial lagged X.  These extremely high $R^2$ values appeared to be due to the way higher CTD values smoothed the response variable over space; see figure \ref{fig.ctd}.  
 
-Residual plots had strong signs of heteroscedasticity for both regression and spatial lagged X.  In general, residual variances were larger at small fitted values.  County-level heterogeneity appeared to be responsible for this pattern.  In tracts, with spatial Durbin models, any lingering indication of heteroscedasticity was due to 3 (out of 1044) locations with small fitted values and large (negative) residuals.  These locations can plausibly be treated as outliers, and so there do not appear to be any issues of heteroscedasticity at the tract level.  Places showed more heteroscedasticity, with approximately 15 (out of 391) locations with small fitted values and large (negative and positive) residuals in the spatial Durbin models.  This heteroscedasticity primarily means that the coefficient estimates are even more uncertain (e.g., larger standard errors) than are reported below.  
+Discounting these high $R^2$ values, AIC and Moran's I statistics both still indicate that spatial Durbin models provide a best fit, and these models were selected for further analysis.  However, Moran's $I$ was still substantially greater than 0 for all of the spatial Durbin models, with values of approximately $.07$ for tracts and $.15$ for places.  This suggests that there may be spatial non-stationarity; that is, the effects of the independent variables may vary across different sub-regions in the study area.  This possibility was not explored further in the current study.  
+
+Residual plots had strong signs of heteroscedasticity for both regression and spatial lagged X.  In general, residual variances were larger at small fitted values.  County-level heterogeneity appeared to be responsible for this pattern.  In tracts, with spatial Durbin models, any lingering indication of heteroscedasticity was due to 3 (out of 1044) locations with small fitted values and large (negative) residuals.  These locations can plausibly be treated as outliers, and so there do not appear to be any issues of heteroscedasticity at the tract level.  Places showed more heteroscedasticity, with approximately 15 (out of 391) locations with small fitted values and large (negative and positive) residuals in the spatial Durbin models.  This heteroscedasticity primarily means that the coefficient estimates are more uncertain (e.g., should have larger standard errors) than are reported below.  
 
 ## Moran's $I$ and $\rho$ ##
 
 Violin plots showing the block bootstrap distribution of Moran's $I$ and $\rho$, the coefficient on the lagged local use values, are shown in figures \ref{fig.moran} and \ref{fig.rho}, respectively.  
 
-![Block bootstrap distributions of Moran's $I$ for the residuals for each dataset-CTD combination.  Distribution width corresponds to the number of resamples at that value of $I$.  Horizontal lines indicate 5%, 50% (median), and 95% quantiles. Underlying data are 500 block bootstrap resamples at each dataset-CTD combination.  Points indicate estimated values for spatial Durbin models fitted on the complete original dataset.  \label{fig.moran}]{11_moran.png}
-![Block bootstrap distributions of $\rho$, coefficient on lagged dependent variables, for each dataset-CTD combination.  Distribution width corresponds to the number of resamples at that value of $\rho$.  Horizontal lines indicate 5%, 50% (median), and 95% quantiles. Underlying data are 500 block bootstrap resamples at each dataset-CTD combination. Points indicate estimated values for spatial Durbin models fitted on the complete original dataset.  \label{fig.rho}]{11_rho.png}
+![Block bootstrap distributions of Moran's $I$ for the residuals for each dataset-CTD combination.  Distribution width corresponds to the number of resamples at that value of $I$.  Horizontal lines indicate 5%, 50% (median), and 95% quantiles. Underlying data are 500 block bootstrap resamples at each dataset-CTD combination.  Points indicate estimated values for spatial Durbin models fitted on the complete original dataset.  \label{fig.moran}](11_moran.png)
+
+![Block bootstrap distributions of $\rho$, coefficient on lagged dependent variables, for each dataset-CTD combination.  Distribution width corresponds to the number of resamples at that value of $\rho$.  Horizontal lines indicate 5%, 50% (median), and 95% quantiles. Underlying data are 500 block bootstrap resamples at each dataset-CTD combination. Points indicate estimated values for spatial Durbin models fitted on the complete original dataset.  \label{fig.rho}](11_rho.png)
 
 For both statistics, tracts and places are comparable given a CTD value.  Moran's $I$ value tends to increase with CTD, while $\rho$ tends to decrease.  Scatterplots comparing $\rho$ to Moran's $I$ indicated that, for most dataset-CTD combinations, there was very strong negative correlation between these two statistics.  (This trend was weaker for places with CTD 1km, and the association was weakly positive for tracts with CTD 1km.)  
 
@@ -251,7 +303,7 @@ At a theoretical level, spatial patterns in the dependent variable that are not 
 Unlike "vanilla" linear regression models, which treat observations as formally and mathematically independent, spatial models treat observations — locations — as connected.  This means that changes in an IV at one location can influence the DV at another location, corresponding to the term $WX\theta$.  Further, the spatial Durbin model's lagged dependent variable term, $WY\rho$, introduces the possibility for feedback loops:  a change IV $\Delta x_i$ at location $l$ induces a change $\Delta y_{l'} = w_{l'l}\theta \Delta x_i$ in $y$ at neighbor $l'$, which feeds back to location $l$ as $w_{ll'} \Delta y_{l'} \rho$.  (This and the next paragraph generally follow @LeSageIntroductionSpatialEconometrics2009, §2.7.)  
 
 Spatial econometricians have introduced the notion of *impacts* for the interpretation of regression coefficients under spatial feedbacks.  In "vanilla" linear regression models without interaction, the coefficient $\beta_i$ for IV $x_i$ is identical to the partial derivative $\partial y / \partial x_i$.  $\beta_i$ can therefore be interpreted directly as the marginal effect of $x_i$ on $y$.  But in the spatial Durbin model, the partial derivative 
-\[ \frac{\partial y}{\partial x_i} = (I_n - W\rho)^{-1}(I_n \beta_i + W \theta_i = S_i(W) \]
+$$ \frac{\partial y}{\partial x_i} = (I_n - W\rho)^{-1}(I_n \beta_i + W \theta_i = S_i(W) $$
 depends not just on the coefficients $\beta_i$ and $\theta_i$, but also the autoregression coefficient $\rho$.  And the value of this partial derivative at location $l$ depends on its connection to other locations, as encoded in $W$.  The *total impacts* for IV $x_i$ are formally defined as the mean row sum of $S_i(W)$, which corresponds to averaging $S_i(W)$ across locations.  These impacts are efficiently calculated using the \texttt{impacts()} function in the R package \texttt{spdep}, which uses a Monte Carlo method based on the traces of the powers of $W$.  The Monte Carlo method produces a sequence of estimates for total impact, which can be analyzed as an estimate of the sampling distribution for the true total impact.  
 
 Figures \ref{fig.impacts_1}, \ref{fig.impacts_10}, \ref{fig.impacts_369} show total impact Monte Carlo estimates for IVs for CTD values of 1, 10, and 30-60-90 respectively. In the present study, total impact estimates were made for both the spatial Durbin models fit on the entire complete dataset and for each block bootstrap resample.  Resample estimates were then combined into a single estimated sampling distribution for each dataset-CTD-IV combination.  
@@ -292,53 +344,36 @@ Table: Estimates of total impact (direct + indirect) from spatial Durbin models 
 
 # Discussion #
 
-I focus this discussion on the total impact estimates for Hispanic, poverty, and agricultural employment proportion, and population density, for a CTD of 60 km.  These estimates are reported in figure \ref{fig.impacts_backtrans} and table \ref{tab.impacts}.  Transformed estimates are reported to aid interpretation:  when the estimated value of $\zeta$ is transformed as $\zeta_{trans} = 10^{\zeta/10}$, $\zeta_{trans}$ can be interpreted as the multiplicative change in local chlorpyrifos use when the corresponding IV increases by 10%.  For example, if $\zeta_{trans} = 1.5$ for Hispanic proportion, then a 10-point increase in Hispanic proportion is associated with a 50% in local chlorpyrifos use.  
+This discussion focuses on the total impact estimates for Hispanic, poverty, and agricultural employment proportion, and population density, for a CTD of 60 km.  These estimates are reported in figure \ref{fig.impacts_backtrans} and table \ref{tab.impacts}.  Transformed estimates are reported to aid interpretation:  when the estimated value of $\zeta$ is transformed as $\zeta_{trans} = 10^{\zeta/10}$, $\zeta_{trans}$ can be interpreted as the multiplicative change in local chlorpyrifos use when the corresponding IV increases by 10%.  For example, if $\zeta_{trans} = 1.5$ for some proportion variable, then a 10-percentage-point increase in this proportion is associated with a 50% increase in local chlorpyrifos use.  
 
-*[write discussion]
+A CTD of 60 km was chosen for this discussion for three reasons.  First, it yields good precision in the effects estimates — comparable to 90, better than 30, and much better than 10 or 1.  It also yields more skeptical or epistemically conservative estimates, in the sense that its estimates are closer to 0; although arguably this kind of skepticism is inappropriate in the context of environmental health [@HicksInductiveRiskRegulatory2018].  Finally, a CTD of 60 km is supported by the literature; namely, @MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  
 
-- why CTD = 60?  
-    - good precision in estimates - comparable to 90, better than 30
-    - more conservative (closer to 0) for these variables
-    - supported by literature
+The effects of agricultural employment and poverty proportions are ambiguous.  For agricultural employment, there is evidence is a positive effect of 1.14 (14% increase in chlorpyrifos use with each 10% increase in agricultural employment) for tracts; but a negligible negative effect of .99 for places.  For poverty, there is evidence of a negative effect for tracts, and a positive effect (with greater uncertainty) for places.  These inconsistencies between tracts and places may be due to the way places are constructed, namely, as a way to capture relatively dense population clusters in rural areas.  This process might exclude many agricultural workers and the rural poor, and that this exclusion might lead to biased effect estimates; though table \ref{tab.desc_stats} indicates that mean agricultural employment and poverty proportion are greater in places than in tracts.  On the other hand, places have more reliable demographics estimates, meaning attenuation bias might be larger with tracts.  
 
-- ag employment and poverty: ambiguous
-- population density and Hispanic: evidence of positive effect
+There is consistent evidence of a positive effect for population density, with a (non-transformed) point estimate of .2 for places (95% CI .08-.33) and .27 for tracts (.23-.30).  For this covariate, an effect of .25 means that an order-of-magnitude increase in population density is associated with a .25 order-of-magnitude, or 78%, increase in chlorpyrifos use.  This is counterintuitive:  since chlorpyrifos is used primarily in agricultural areas, with low population density, we would expect to see a negative association.  However, local knowledge of the Central Valley quickly suggests a potential explanation.  As indicated by figure \ref{fig.ctd}, with a CTD of 60, chlorpyrifos use is consistently much greater in the San Joaquin Valley (the southern part of the Central Valley).  The San Joaquin Valley has several small- and medium-sized cities, including Fresno (population approximately 500,000), Bakersfield (400,000), Stockton (300,000), and Modesto (200,000).  By contrast, after excluding Sacramento, the largest cities in the Sacramento Valley (the northern part of the Central Valley) are Redding and Chico (both approximately 90,000).  Population density is therefore likely confounded, at least in part, with large-scale county or regional differences in chlorpyrifos use due to the kinds of crops grown or the prevalence of insect pests.  
 
+Finally, there is consistent evidence that a 10-point increase in Hispanic population is associated with a 7-8% increase in potential chlorpyrifos exposure.  A 60-point increase, corresponding to the difference between a Hispanic-majority and Hispanic-minority tract, would be associated with a 50-59% increase in potential chlorpyrifos exposure.  
 
+As discussed in section \ref{sec.iv_selection}, this covariate was strongly correlated with foreign-born non-citizen population, and so the latter variable was dropped.  This means that we should not be hasty in interpreting the 7-8% increase as an ethnic effect, that is, as due to white supremacy.  It might be better understood as an effect of political exclusion (e.g., non-citizens lack voting rights) or social isolation (e.g., many Hispanic immigrants may not speak English) or, most likely, all three kinds of processes in interaction.  In any case, all of these causal interpretations go beyond the aim of this project, that is, to identify dEJ phenomena rather than develop a theory explaining these associations.  Also, the strong correlation means that the same individuals suffer the 7-8% increase in potential chlorpyrifos exposure, whether this is described as due to their ethnicity or due to their citizenship.  
 
 
+## Limitations ##
 
+There are 8 notable limitations to this study.  First, there are limitations in the DPR public use data.  This dataset includes agricultural use only, and does not include industrial, commercial, state, or residential use of pesticides.  This may not be an issue for chlorpyrifos, which is banned for residential use in the US and appears to be used primarily for agricultural purposes.  However, for other pesticides that are widely used across sectors or in sectors not covered by the DPR data, the DPR data are likely to have significant gaps.  In addition, the DPR dataset tracks active ingredients, not the complex mixtures of product formulations that may make pesticides more toxic than the active ingredients alone.  
 
+Second, and as discussed above, the methods used here model "local use" as a proxy for *potential* chlorpyrifos exposure, not actual exposure.  Also as discussed above, the methods used here effectively assume a highly simplified fate-and-transport model, in which the chemical is transported in a straight line through the air in all directions.  
 
+Third, the spatial distribution of population data roughly models residential potential exposure to chlorpyrifos.  It does not model occupational exposure, children at school, or "take-home" occupational exposure (e.g., an agricultural worker brings home contaminated clothes that are handled by her children).  The weighted centroid method assumes populations are spread evenly over block groups; more refined distributions could be constructed using land use data, "egocentric neighborhoods" or raster methods.  These last two would likely require significantly more computing power than was available for most of this project.  
 
+Fourth, highly correlated independent variables, such as Hispanic and non-citizen proportions, make it difficult to interpret effects.  Close correlations mean that the risk of omitted variable bias is small; but factor analysis or other approaches to composite variable construction could be used to incorporate correlated covariates.  
 
+Fifth, the block bootstrap attempted here has not been validated, and it is not clear whether it is accurately accounting for attenuation bias.  Due to these limitations, the block bootstrap results were not incorporated into the discussion above, meaning those findings might suffer from attenuation bias.  
 
+Six, there are signs of heteroscedasticity in the spatial Durbin models, especially for places.  There were indications throughout the study that county-level effects would address the non-Gaussian patterns in the data; but including county-level dummies created strong colinearities in the spatial regression models.  Other data sources might be incorporated to account for background baseline chlorpyrifos use rates, such as nearby crop species cultivated.  Or spatial random effects models — which allow effects to vary across space — might be used.  
 
+Seventh, this project aims at identifying phenomena in the relationships between demographics and potential chlorpyrifos exposure.  It does not aim to developing theory, that is, offering explanations of the processes that produce these phenomena.  
 
-Limitations
-- PUR limitations
-    - agricultural use only, not industrial, commercial, or state use (or residential, but there's no legal residential use of chlorpyrifos)
-- local use, not exposure
-    - but if practices are similar across amounts used, it's plausible that residential exposure will vary linearly with local use
-    - and just one chemical; mixtures
-    - roughly models residential exposure, not occupational, children at school, take-home occupational
-    - only transport through air
-- spatial distribution of population
-    - land use data could be used to refine centroid locations
-    - more computing power would be needed for "egocentric neighborhoods"
-    - or raster methods?  
-- correlated IVs
-- block bootstrap approach - validate? getting at something other than attenuation bias? 
-- heteroscedasticity suggests spatial heterogeneity
-    - crop species
-    - suggestions from Noli
-- phenomena, not theory
-- only distributive
-
-
-Policy implications
-- buffers and label guidelines
-- 
+Eighth and finally, this project examines distributive environmental injustice.  It does not attempt to examine procedural environmental injustice or misrecognition or disrespect.  While the data and methods used here are highly appropriate for identifying distributive environmental injustice phenomena, other approaches are necessary for understanding the social, political, and cultural processes that produce these unjust distributions of environmental hazard.  
 
 
 # References #
