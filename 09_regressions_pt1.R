@@ -85,9 +85,8 @@ stats_sd_pl = models_sd_pl %>%
                      model = list(.)), 
             .id = 'ctd') %>%
     mutate(y = map(model, ~ .$y), 
-           fitted = map(model, 
-                        ~ as.numeric(predict(., pred.type = 'trend'))),
-           r.squared = map2_dbl(y, fitted, cor), 
+           fitted = map(model, fitted),
+           r.squared = map2_dbl(y, fitted, cor)^2, 
            AIC = map_dbl(model, AIC),
            residuals = map(model, residuals), 
            moran = map_dbl(residuals, 
@@ -100,6 +99,7 @@ stats_sd_pl = models_sd_pl %>%
 bind_rows(stats_lm_pl, 
           stats_slx_pl, 
           stats_sd_pl) %>%
+    mutate(specification = fct_inorder(specification)) %>%
     select(specification, ctd,
            r.squared, AIC, moran) %>%
     gather(key = statistic, value, r.squared:moran) %>%
@@ -173,9 +173,8 @@ stats_sd_tr = models_sd_tr %>%
                      model = list(.)), 
             .id = 'ctd') %>%
     mutate(y = map(model, ~ .$y), 
-           fitted = map(model, 
-                        ~ as.numeric(predict(., pred.type = 'trend'))),
-           r.squared = map2_dbl(y, fitted, cor), 
+           fitted = map(model, fitted),
+           r.squared = map2_dbl(y, fitted, cor)^2, 
            AIC = map_dbl(model, AIC),
            residuals = map(model, residuals), 
            moran = map_dbl(residuals, 
@@ -188,6 +187,7 @@ stats_sd_tr = models_sd_tr %>%
 bind_rows(stats_lm_tr, 
           stats_slx_tr, 
           stats_sd_tr) %>%
+    mutate(specification = fct_inorder(specification)) %>%
     select(specification, ctd,
            r.squared, AIC, moran) %>%
     gather(key = statistic, value, r.squared:moran) %>%
