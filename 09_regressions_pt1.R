@@ -31,6 +31,53 @@ weights_tr = read_rds(str_c(data_dir, '07_tracts_weights.Rds'))
 traces_pl = construct_traces(weights_pl)
 traces_tr = construct_traces(weights_tr)
 
+## IV table ----
+## Nicely-printing variable names
+var_names = c('ag.employedP' = 'ag. employment', 
+              'asianP' = 'Asian', 
+              'blackP' = 'Black', 
+              'childrenP' = 'children', 
+              'hispanicP' = 'Hispanic', 
+              'indigenousP' = 'Indigenous', 
+              'density.log10' = 'pop. density (log)', 
+              'poverty.combP' = 'poverty')
+
+moran = function(vec, weights) {
+    moran.test(vec, weights) %>%
+        .$estimate %>%
+        .['Moran I statistic']
+}
+desc_stats = function(sfl, geography, weights) {
+    sfl %>%
+        .[[1]] %>%
+        as_tibble() %>% 
+        select(hispanicP, blackP, 
+               indigenousP, asianP, 
+               childrenP, poverty_combP, 
+               ag_employedP, density_log10) %>%
+        rename(poverty.combP = poverty_combP,
+               ag.employedP = ag_employedP, 
+               density.log10 = density_log10) %>%
+        summarize_all(funs(mean, sd,
+                           min, max,
+                           moran(., weights))) %>%
+        gather(key = var_stat, value) %>%
+        separate(var_stat, into = c('var', 'stat'), sep = '_') %>%
+        spread(key = stat, value) %>%
+        mutate(geography = geography) %>%
+        mutate(var = var_names[var]) %>%
+        select(geography, variable = var, 
+               mean, sd, min, max, `Moran's I` = moran)
+}
+desc_stats_table = bind_rows(
+    desc_stats(places_sfl, 'places', weights_pl),
+    desc_stats(tracts_sfl, 'tracts', weights_tr))
+knitr::kable(desc_stats_table, format = 'markdown', 
+             digits = 2)
+knitr::kable(desc_stats_table, format = 'markdown', 
+             digits = 2) %>%
+    write_lines('09_desc_stats_table.txt')
+
 
 ## Places ----
 #+ places
