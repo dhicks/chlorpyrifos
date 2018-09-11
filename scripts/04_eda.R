@@ -7,42 +7,51 @@ library(tidycensus)
 
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
+load_sf = function(rds_file) {
+    rds_file %>%
+        str_c(data_dir, .) %>%
+        read_rds() %>%
+        ## Remove locations w/ total population or total employed 0
+        filter(total_popE != 0, total_employedE != 0) %>%
+        ## Population proportions
+        mutate(womenP = womenE / total_popE,
+               womenPM = moe_prop(womenE, total_popE, womenM, total_popM),
+               whiteP = whiteE / total_popE, 
+               whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
+               blackP = blackE / total_popE, 
+               blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
+               indigenousP = indigenousE / total_popE, 
+               indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
+               asianP = asianE / total_popE, 
+               asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
+               hispanicP = hispanicE / total_popE, 
+               hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
+               noncitizensP = noncitizensE / total_popE,
+               noncitizensPM = moe_prop(noncitizensE, total_popE, 
+                                        noncitizensM, total_popM),
+               childrenP = childrenE / total_popE, 
+               childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
+               
+               poverty_combE = povertyE + extreme_povertyE,
+               poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
+               poverty_combP = poverty_combE / total_popE, 
+               poverty_combPM = moe_prop(poverty_combE, total_popE, 
+                                         poverty_combM, total_popM), 
+               hisp_povertyP = hisp_povertyE / hispanicE, 
+               hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
+               ag_employedP = ag_employedE / total_employedE,
+               ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
+        ) %>%
+        ## Population densities
+        mutate_at(vars(womenE, whiteE, blackE, indigenousE, asianE, hispanicE, 
+                       noncitizensE, childrenE, poverty_combE, 
+                       hisp_povertyP, ag_employedP), 
+                  funs(D = . / units::drop_units(area)))
+}
+
 #' # Tracts #
-tracts_sf = read_rds(str_c(data_dir, '02_tracts_sf.Rds')) %>%
-    ## Remove tracts w/ total population or total employed 0
-    filter(total_popE != 0, total_employedE != 0) %>%
-    ## Population proportions
-    mutate(whiteP = whiteE / total_popE, 
-           whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
-           blackP = blackE / total_popE, 
-           blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
-           indigenousP = indigenousE / total_popE, 
-           indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
-           asianP = asianE / total_popE, 
-           asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
-           hispanicP = hispanicE / total_popE, 
-           hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
-           noncitizensP = noncitizensE / total_popE,
-           noncitizensPM = moe_prop(noncitizensE, total_popE, 
-                                    noncitizensM, total_popM),
-           childrenP = childrenE / total_popE, 
-           childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
-           
-           poverty_combE = povertyE + extreme_povertyE,
-           poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
-           poverty_combP = poverty_combE / total_popE, 
-           poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM), 
-           hisp_povertyP = hisp_povertyE / hispanicE, 
-           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
-           ag_employedP = ag_employedE / total_employedE,
-           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
-           ) %>%
-    ## Population densities
-    mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE, 
-                   hisp_povertyP, ag_employedP), 
-              funs(D = . / units::drop_units(area)))
+tracts_sf = load_sf('02_tracts_sf.Rds')
+    
 ## Gives a warning about NaNs; 
 ## but there aren't any in the output
 # as.data.frame() %>%
@@ -63,7 +72,7 @@ tracts_sf %>%
     facet_wrap(~ variable, scales = 'free') +
     scale_x_continuous(labels = scales::percent_format())
 
-#' There are a few tracts with a modest proportion of Asian and Black residents ($> 20\%$); but only a few.  Almost no tracts have more than 5% Indigenous residents, and none have more than about 20%.  Children are typically ~5-12% of the population.  The poverty rate varies dramatically, with a median somewhere around 30% and some values above 50%.  Hispanic and White proportions are the most diverse.  
+#' There are a few tracts with a modest proportion of Asian and Black residents ($> 20\%$); but only a few.  Almost no tracts have more than 5% Indigenous residents, and none have more than about 20%.  Children are typically ~5-12% of the population.  The poverty rate varies dramatically, with a median somewhere around 30% and some values above 50%.  Hispanic and White proportions are the most diverse.  Very little variation in proportion of women, though there are a few extreme tracks with values < 25% or > 80%
 
 tracts_sf %>%
     mutate(w_plus_h = whiteP + hispanicP) %>%
@@ -195,14 +204,15 @@ moran_i_tracts
 
 weights_tracts %>%
     tibble(weights = ., k = names(.)) %>%
-    crossing(tibble(variable = c('whiteE_D', 
+    crossing(tibble(variable = c('womenE_D',
+                                 'whiteE_D', 
                                  'blackE_D', 
                                  'indigenousE_D', 
                                  'asianE_D', 
                                  'hispanicE_D', 
                                  'noncitizensE_D', 
                                  'childrenE_D', 
-                           'poverty_combE_D'))) %>%
+                                 'poverty_combE_D'))) %>%
     rowwise() %>%
     mutate(var_value = {tracts_sf %>% 
             as.data.frame() %>%
@@ -229,40 +239,7 @@ weights_tracts %>%
 
 #' # Places #
 
-places_sf = read_rds(str_c(data_dir, '02_places_sf.Rds')) %>%
-    ## There are 9 places with total population 0
-    filter(total_popE != 0) %>%
-    ## Population proportions
-    mutate(whiteP = whiteE / total_popE, 
-           whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
-           blackP = blackE / total_popE, 
-           blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
-           indigenousP = indigenousE / total_popE, 
-           indigenousPM = moe_prop(indigenousE, total_popE, indigenousM, total_popM),
-           asianP = asianE / total_popE, 
-           asianPM = moe_prop(asianE, total_popE, asianM, total_popM),
-           hispanicP = hispanicE / total_popE, 
-           hispanicPM = moe_prop(hispanicE, total_popE, hispanicM, total_popM),
-           noncitizensP = noncitizensE / total_popE,
-           noncitizensPM = moe_prop(noncitizensE, total_popE, 
-                                    noncitizensM, total_popM),
-           childrenP = childrenE / total_popE, 
-           childrenPM = moe_prop(childrenE, total_popE, childrenM, total_popM),
-           
-           poverty_combE = povertyE + extreme_povertyE,
-           poverty_combM = sqrt(povertyM^2 + extreme_povertyM^2), 
-           poverty_combP = poverty_combE / total_popE, 
-           poverty_combPM = moe_prop(poverty_combE, total_popE, 
-                                     poverty_combM, total_popM), 
-           hisp_povertyP = hisp_povertyE / hispanicE, 
-           hisp_povertyPM = moe_prop(hisp_povertyE, hispanicE, hisp_povertyM, hispanicM), 
-           ag_employedP = ag_employedE / total_employedE,
-           ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)) %>%
-    ## Population densities
-    mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
-                   noncitizensE, childrenE, poverty_combE, 
-                   hisp_povertyE, ag_employedE), 
-              funs(D = . / units::drop_units(area)))
+places_sf = load_sf('02_places_sf.Rds')
 
 glimpse(places_sf)
 
@@ -297,7 +274,7 @@ ggplot(places_sf, aes(hispanicP, poverty_combP)) +
 ## Correlations ----
 places_sf %>%
     as_tibble() %>%
-    select(densityE, whiteP, blackP, childrenP, hispanicP, indigenousP, noncitizensP, poverty_combP, whiteP) %>%
+    select(densityE, womenP, whiteP, blackP, childrenP, hispanicP, indigenousP, noncitizensP, poverty_combP, whiteP) %>%
     cor() %>%
     as.data.frame() %>%
     rownames_to_column(var = 'var1') %>%
@@ -419,7 +396,8 @@ moran_i_places
 
 weights_places %>%
     tibble(weights = ., k = names(.)) %>%
-    crossing(tibble(variable = c('whiteE_D', 
+    crossing(tibble(variable = c('womenE_D',
+                                 'whiteE_D', 
                                  'blackE_D', 
                                  'indigenousE_D', 
                                  'asianE_D', 

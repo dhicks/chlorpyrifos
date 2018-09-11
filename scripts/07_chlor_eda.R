@@ -30,8 +30,24 @@ prep_data = function (locations_file, use_file) {
         mutate(county_geoid = str_extract(GEOID, '[0-9]{5}')) %>%
         left_join(select(as.data.frame(counties_sf), 
                          county_geoid = GEOID, county = NAME)) %>%
+        ## County-level covariates
+        group_by(county) %>%
+        mutate(total_employed_cE = sum(total_employedE), 
+               total_employed_cM = moe_sum(total_employedM, total_employedE), 
+               ag_employed_cE = sum(ag_employedE), 
+               ag_employed_cM = moe_sum(ag_employedM, ag_employedE), 
+               ag_employed_cP = ag_employed_cE / total_employed_cE, 
+               ag_employed_cPM = moe_prop(ag_employed_cE, total_employed_cE, ag_employed_cM, total_employed_cM), 
+               total_pop_cE = sum(total_popE), 
+               total_pop_cM = moe_sum(total_popM, total_popE), 
+               area_c = sum(area), 
+               density_cE = total_pop_cE / area_c, 
+               density_log10_c = log10(density_cE)) %>%
+        ungroup() %>%
         ## Population proportions
-        mutate(whiteP = whiteE / total_popE, 
+        mutate(womenP = womenE / total_popE,
+               womenPM = moe_prop(womenE, total_popE, womenM, total_popM),
+               whiteP = whiteE / total_popE, 
                whitePM = moe_prop(whiteE, total_popE, whiteM, total_popM),
                blackP = blackE / total_popE, 
                blackPM = moe_prop(blackE, total_popE, blackM, total_popM),
@@ -58,7 +74,7 @@ prep_data = function (locations_file, use_file) {
                ag_employedPM = moe_prop(ag_employedE, total_employedE, ag_employedM, total_employedM)
         ) %>%
         ## Population densities
-        mutate_at(vars(whiteE, blackE, indigenousE, asianE, hispanicE, 
+        mutate_at(vars(womenE, whiteE, blackE, indigenousE, asianE, hispanicE, 
                        noncitizensE, childrenE, poverty_combE, 
                        hisp_povertyP, ag_employedP), 
                   funs(D = . / units::drop_units(area))) %>%
@@ -183,14 +199,35 @@ imap(places_sfl,
     cowplot::plot_grid(plotlist = .)
 
 library(lme4)
-model = lmer(w_use ~ 0 + hispanicP + densityE + ag_employedP + (1|county), 
-             data = tracts_sfl$ctd_30)
-summary(model)
-## NB Heteroscedasticity, even w/ county-level random intercept
-plot(model)
+model1 = lm(log10(w_use) ~ 1 + hispanicP + log10(densityE) + ag_employedP, 
+            data = tracts_sfl$ctd_30)
+summary(model1)
+# plot(model1)
 
-## Oh hey, spatial autocorrelation in the residuals
+## Strong spatial autocorrelation in the residuals
 tracts_sfl$ctd_30 %>%
-    mutate(.resid = residuals(model)) %>%
+    mutate(.resid = residuals(model1)) %>%
     tm_shape() + 
     tm_fill('.resid', style = 'cont')
+
+model2 = lmer(log10(w_use) ~ 0 + hispanicP + log10(densityE) + ag_employedP + (1|county), 
+             data = tracts_sfl$ctd_30)
+summary(model2)
+## NB Heteroscedasticity, even w/ county-level random intercept
+plot(model2)
+
+## Less spatial autocorrelation in the residuals, but still there
+tracts_sfl$ctd_30 %>%
+    mutate(.resid = residuals(model2)) %>%
+    tm_shape() + 
+    tm_fill('.resid', style = 'cont')
+
+model3 = lm(log10(w_use) ~ 1 + hispanicP + log10(densityE) + ag_employedP + log10(density_cE) + ag_employed_cP, 
+            data = tracts_sfl$ctd_30)
+summary(model3)
+
+AIC(model1)
+AIC(model2)
+AIC(model3)
+
+## AIC indicates model 3 isn't as good as model 2, but is a substantial improvement over model 1

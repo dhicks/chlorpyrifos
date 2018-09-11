@@ -14,6 +14,9 @@ county_df = str_c(data_dir, '01_counties.Rda') %>%
 
 vars_of_interest = c(
          'total_pop' = 'B01003_001', # total population
+         ## Gender
+         'women' = 'B01001_026', # women/girls, all ages
+         'men' = 'B01001_002', # men/boys, all ages
          ## Race and ethnicity
          'white' = 'B01001H_001', # white-alone non-hispanic
          'black' = 'B01001B_001', # black-alone
