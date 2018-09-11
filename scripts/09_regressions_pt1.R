@@ -9,6 +9,9 @@ library(spdep)
 library(tmap)
 library(broom)
 
+library(assertthat)
+library(car)
+
 ## Load data ----
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
@@ -16,7 +19,18 @@ places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
 
 ## Common regression formula
-reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + asianP + childrenP + poverty_combP + ag_employedP + density_log10)
+reg_form = formula(log_w_use ~ hispanicP + noncitizensP +
+                       blackP + indigenousP + asianP + womenP + 
+                       childrenP + poverty_combP + 
+                       ag_employedP + density_log10 + ag_employed_cP + density_log10_c)
+covars = reg_form %>%
+    as.character() %>%
+    .[3] %>%
+    str_split(fixed(' + ')) %>%
+    unlist()
+
+## Threshold for acceptable VIF
+vif_threshold = 8
 
 ## KNN
 construct_traces = function(weights) {
@@ -38,36 +52,37 @@ var_names = c('ag.employedP' = 'ag. employment',
               'blackP' = 'Black', 
               'childrenP' = 'children', 
               'hispanicP' = 'Hispanic', 
+              'noncitizensP' = 'noncitizens',
               'indigenousP' = 'Indigenous', 
               'density.log10' = 'pop. density (log)', 
-              'poverty.combP' = 'poverty')
+              'poverty.combP' = 'poverty', 
+              'womenP' = 'women')
 
 moran = function(vec, weights) {
     moran.test(vec, weights) %>%
         .$estimate %>%
-        .['Moran I statistic']
+        .['Moran I statistic'] %>%
+        `names<-`(NULL)
 }
 desc_stats = function(sfl, geography, weights) {
     sfl %>%
         .[[1]] %>%
-        as_tibble() %>% 
-        select(hispanicP, blackP, 
-               indigenousP, asianP, 
-               childrenP, poverty_combP, 
-               ag_employedP, density_log10) %>%
-        rename(poverty.combP = poverty_combP,
-               ag.employedP = ag_employedP, 
-               density.log10 = density_log10) %>%
+        as.data.frame() %>% 
+        select(one_of(covars), -contains('_c')) %>%
+        rename_all(~ str_replace_all(., '_', '.')) %>%
+        # rename(poverty.combP = poverty_combP,
+        #        ag.employedP = ag_employedP, 
+        #        density.log10 = density_log10) %>%
         summarize_all(funs(mean, sd,
                            min, max,
-                           moran(., weights))) %>%
+                           moran = moran(., weights))) %>%
         gather(key = var_stat, value) %>%
         separate(var_stat, into = c('var', 'stat'), sep = '_') %>%
         spread(key = stat, value) %>%
         mutate(geography = geography) %>%
         mutate(var = var_names[var]) %>%
         select(geography, variable = var, 
-               mean, sd, min, max, `Moran's I` = moran)
+               mean, sd, min, max, moran)
 }
 desc_stats_table = bind_rows(
     desc_stats(places_sfl, 'places', weights_pl),
@@ -87,17 +102,19 @@ knitr::kable(desc_stats_table, format = 'markdown',
 models_lm_pl = map(places_sfl, 
                    ~ lm(reg_form, data = .))
 
-car::vif(models_lm_pl[[3]])
+## VIF below threshold?  
+assert_that(!any(vif(models_lm_pl[[3]]) >= vif_threshold),
+                        msg = 'VIF at or above threshold')
+## Any observations dropped? 
+are_equal(nrow(models_lm_pl$ctd_30$model), nrow(places_sfl[[3]]), 
+          msg = 'Observations dropped in model')
 
 stats_lm_pl = map_dfr(models_lm_pl, glance, .id = 'ctd') %>%
     mutate(specification = 'lm', 
            model = models_lm_pl, 
            fitted = map(model, fitted),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_pl, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_pl))
 stats_lm_pl %>%
     select(specification, ctd, r.squared, AIC, moran) %>%
     knitr::kable()
@@ -111,10 +128,7 @@ stats_slx_pl = map_dfr(models_slx_pl, glance, .id = 'ctd') %>%
            model = models_slx_pl, 
            fitted = map(model, fitted),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_pl, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_pl))
 
 stats_slx_pl %>%
     select(specification, ctd, r.squared, AIC, moran) %>%
@@ -136,10 +150,7 @@ stats_sd_pl = models_sd_pl %>%
            r.squared = map2_dbl(y, fitted, cor)^2, 
            AIC = map_dbl(model, AIC),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_pl, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_pl))
 
 ## Combine and plot the model test statistics
 ## Across all CTDs, spatial Durbin models consistently have lowest AIC and Moran's I, and highest R^2
@@ -175,17 +186,22 @@ bind_rows(stats_lm_pl,
 models_lm_tr = map(tracts_sfl, 
                    ~ lm(reg_form, data = .))
 
-car::vif(models_lm_tr[[3]])
+assert_that(sum(vif(models_lm_tr[[3]]) >= vif_threshold) < 1, 
+                        msg = 'VIF >= 10')
+
+## VIF below threshold?  
+assert_that(!any(vif(models_lm_tr[[3]]) >= vif_threshold),
+            msg = 'VIF at or above threshold')
+## Any observations dropped? 
+are_equal(nrow(models_lm_tr$ctd_30$model), nrow(tracts_sfl[[3]]), 
+          msg = 'Observations dropped in model')
 
 stats_lm_tr = map_dfr(models_lm_tr, glance, .id = 'ctd') %>%
     mutate(specification = 'lm', 
            model = models_lm_tr, 
            fitted = map(model, fitted),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_tr, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_tr))
 stats_lm_tr %>%
     select(specification, ctd, r.squared, AIC, moran) %>%
     knitr::kable()
@@ -199,10 +215,7 @@ stats_slx_tr = map_dfr(models_slx_tr, glance, .id = 'ctd') %>%
            model = models_slx_tr, 
            fitted = map(model, fitted),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_tr, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_tr))
 
 stats_slx_tr %>%
     select(specification, ctd, r.squared, AIC, moran) %>%
@@ -224,10 +237,7 @@ stats_sd_tr = models_sd_tr %>%
            r.squared = map2_dbl(y, fitted, cor)^2, 
            AIC = map_dbl(model, AIC),
            residuals = map(model, residuals), 
-           moran = map_dbl(residuals, 
-                           ~ moran.mc(., weights_tr, 500) %>%
-                               glance() %>%
-                               pull(statistic)))
+           moran = map_dbl(residuals, moran, weights_tr))
 
 ## Combine and plot the model test statistics
 ## Across all CTDs, spatial Durbin models consistently have lowest AIC and Moran's I, and highest R^2
@@ -255,3 +265,14 @@ bind_rows(stats_lm_tr,
     geom_point() +
     geom_smooth() +
     facet_wrap(specification ~ ctd, scales = 'free', nrow = 3)
+
+## Peeking at the impacts
+summary(models_sd_tr[[3]])
+impacts(models_sd_tr[[3]], tr = traces_tr, R = 500) %>%
+    .$sres %>%
+    .$total %>%
+    as_tibble() %>%
+    gather(key = term, value = estimate) %>%
+    group_by(term) %>%
+    summarize(mean = mean(estimate), se = sd(estimate), 
+              conf_low = quantile(estimate, probs = .025), conf_high = quantile(estimate, probs = .975))
