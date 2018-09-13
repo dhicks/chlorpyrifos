@@ -16,7 +16,7 @@ library(tictoc)
 registerDoSNOW(makeCluster(25))
 
 ## Load data ----
-data_dir = 'data/'
+data_dir = '../data/'
 # data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
