@@ -1,6 +1,5 @@
 ## Spatial Durbin models
-## NB On a standard-performance setup (eg, laptop) this script can take 10+ 
-hours to run
+## NB On a standard-performance setup (eg, laptop) this script can take 10+ hours to run
 ## The parallelization below is configured for a high-performance compute server
 ## Make sure the configuration is appropriate for your setup
 ## Hard-coded bootstrap settings:  
