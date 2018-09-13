@@ -51,12 +51,12 @@ perturb_ivs = function(data, formula) {
     data_E = data_wide %>%
         select(-ends_with('M'), row_idx) %>%
         gather(key = 'variable', value = 'estimate', -row_idx) %>%
-        mutate(prefix = str_extract(variable, '[a-z]+'))
+        mutate(prefix = str_extract(variable, '[a-z\\_]+'))
     ## Arrange the MOEs in long format
     data_M = data_wide %>%
         select(row_idx, ends_with('M')) %>%
         gather(key = 'variable', value = 'moe', -row_idx) %>%
-        mutate(prefix = str_extract(variable, '[a-z]+'),
+        mutate(prefix = str_extract(variable, '[a-z\\_]+'),
                se = moe / qnorm(.95))
     
     ## Join them together, and draw from the measurement distribution for each variable
@@ -72,6 +72,7 @@ perturb_ivs = function(data, formula) {
         spread(key = variable, value = perturbed_value) %>%
         arrange(row_idx) %>%
         select(-row_idx)
+    
     ## Recombine with the DV and any IVs that didn't have MOEs
     missed_vars = setdiff(vars, names(design_wide))
     design_wide = data %>%
@@ -87,6 +88,7 @@ fit_model = function(data,
                      weights, # spatial weights
                      regression_formula,
                      zero.policy = NULL,
+                     R = 100,
                      return_model = FALSE # return the complete fitted model?
 ) {
     ## Calculate traces
@@ -100,7 +102,7 @@ fit_model = function(data,
                      type = 'Durbin',
                      zero.policy = zero.policy)
     ## Calculate impacts
-    impacts = impacts(model, tr = traces, R = 100)
+    impacts = impacts(model, tr = traces, R = R)
     
     ## Moran's I of residuals
     # moran = moran.mc(residuals(model),
@@ -122,16 +124,17 @@ fit_model = function(data,
     return(results)
 }
 
-## This function does the following:  
-## 1. Given k, construct KNN spatial weights
-## 2. Using spatial weights, construct block bootstrap resamples
-## 3. Call fit_model() for the actual model fitting
+
+## This function constructs a certain number of resamples using perturb_ivs(), 
+## then fits a SDM on each using fit_model().  
+## If initialized, a parallel backend will be used for the fitting stage.  
 resample_and_model = function(data, weights,
                               regression_formula, 
                               filter_condition = NULL, # string to filter data
                               k = 3, # n for knn; used in block resampling
+                              R = 100, # n for impact MCMC
                               zero.policy = NULL,
-                              do_bootstrap = FALSE, # Do resamples? 
+                              perturb_ivs = FALSE, # Perturb independent values? 
                               n_resamples = 1, # Num. resample datasets
                               seed = NULL, # seed for RNG
                               return_model = FALSE # return the complete fitted models? 
@@ -145,47 +148,12 @@ resample_and_model = function(data, weights,
     if (!is.null(seed)) {
         set.seed(seed)
     }
-    if (!do_bootstrap) {
+    if (!perturb_ivs) {
         ## If we're not doing bootstrap, just use the unmodified data
-        resample_datasets = list(list(data = data, weights = weights))
+        resample_datasets = list(data = data)
     } else {
-        ## Sample blocks
-        n_blocks = floor(nrow(data) / (k+1))
-        ## Blocks are defined by their "centers"
-        centers = sample(1:nrow(data), n_resamples*n_blocks, replace = TRUE)
-        
-        ## Go from index of "centers" to index of all locations
-        resample_locations = weights$neighbours[centers] %>%
-            ## Concatenate the centers, each center in a singleton list
-            c({centers %>% list() %>% transpose() %>% flatten()}) %>%
-            tibble(location = .) %>%
-            mutate(resample = rep_len(1:n_resamples, 
-                                      length.out = 2*n_resamples*n_blocks)) %>%
-            unnest() %>%
-            split(.$resample) %>%
-            map(~.$location)
-        
-        ## Subset the spatial weights matrix and coerce back to listw
-        weights_matrix = as(weights, 'CsparseMatrix')
-        resample_weights = map(resample_locations, 
-                               ~ weights_matrix[., .]) %>% 
-            ## Row standardize
-            map(~ ./rowSums(.)[row(.)]) %>% 
-            map(function (x) {x[is.na(x)] = 0; return(x)}) %>% 
-            map(quietly(mat2listw), style = 'M') %>%
-            transpose() %>%
-            .$result %>%
-            ## Pass a lagsarlm() check for row standardization
-            map(function (x) {x$style = 'W'; return(x)})
-        
-        ## Subset data
-        resample_data = map(resample_locations, ~ data[.,]) %>%
-            map(perturb_ivs, regression_formula)
-        
-        ## Put everything together
-        resample_datasets = list(data = resample_data, 
-                                 weights = resample_weights) %>%
-            transpose()
+        # resample_datasets = rep(list(data), n_resamples)
+        resample_datasets = replicate(n_resamples, perturb_ivs(data, regression_formula), simplify = FALSE)
     }
     
     ## Fit model
@@ -196,22 +164,29 @@ resample_and_model = function(data, weights,
                             .export = 'fit_model',
                             .options.snow = list(progress = progress)
     ) %dopar% {
-        fit_model(x$data, 
-                  weights = x$weights, 
+        fit_model(x, 
+                  weights = weights, 
                   regression_formula = regression_formula, 
                   zero.policy = zero.policy, 
+                  R = R,
                   return_model = return_model)
     }
     
     return(fitted_models)
 }
 
+## 8 sec for 1 resample of tract CTD -> 8 x 500 resamples x 5 CTD = 20k sec for tracts = ~5.6 hours
+# tic()
+# thing = resample_and_model(tracts_sfl[[1]], weights_tr, reg_form, n_resamples = 1, perturb_ivs = TRUE, R = 100)
+# toc()
+# str(thing, max.level = 2)
 
 ## Run resamples ----
 
-reg_form = formula(log_w_use ~ hispanicP + blackP + indigenousP + 
-                       asianP + childrenP + poverty_combP + 
-                       ag_employedP + density_log10)
+reg_form = formula(log_w_use ~ hispanicP + noncitizensP +
+                       blackP + indigenousP + asianP + womenP + 
+                       childrenP + poverty_combP + 
+                       ag_employedP + density_log10 + ag_employed_cP + density_log10_c)
 
 print('Constructing model metadataframe')
 models_meta_df = tibble(geography = c('places', 'tracts'), 
@@ -232,7 +207,7 @@ durbin = foreach(row = iter(models_meta_df, by = 'row')
                        regression_formula = reg_form,
                        seed = 78910,
                        zero.policy = TRUE,
-                       do_bootstrap = FALSE)
+                       perturb_ivs = FALSE)
 }
 toc()
 
@@ -247,8 +222,8 @@ resamples = foreach(row = iter(models_meta_df, by = 'row'),
     resample_and_model(row$data[[1]], row$weights[[1]],
                        regression_formula = reg_form,
                        seed = 1369,
-                       zero.policy = TRUE, 
-                       do_bootstrap = TRUE, n_resamples = 500)
+                       zero.policy = TRUE, R = 100,
+                       perturb_ivs = TRUE, n_resamples = 500)
 }
 toc()
 
