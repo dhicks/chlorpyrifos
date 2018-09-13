@@ -30,7 +30,7 @@ covars = reg_form %>%
     unlist()
 
 ## Threshold for acceptable VIF
-vif_threshold = 8
+vif_threshold = 10
 
 ## KNN
 construct_traces = function(weights) {
@@ -44,6 +44,58 @@ weights_tr = read_rds(str_c(data_dir, '07_tracts_weights.Rds'))
 
 traces_pl = construct_traces(weights_pl)
 traces_tr = construct_traces(weights_tr)
+
+## County stats table ----
+#+ tables
+county_var_names = c('log.w.use' = 'weighted local use (log)', 
+                     'ag.employed.cP' = 'ag. employment', 
+                     'density.log10.c' = 'pop. density (log)')
+
+county_stats = function (sfl, geography) {
+    sfl %>%
+        .[[1]] %>%
+        as.data.frame() %>%
+        select(county, ag_employed_cP, density_log10_c) %>%
+        filter(!duplicated(.)) %>%
+        rename(`ag. employment` = ag_employed_cP, 
+               `pop. density (log)` = density_log10_c) %>%
+        mutate(geography = geography)
+}
+county_stats_table = bind_rows(county_stats(tracts_sfl, 'tracts'), 
+                               county_stats(places_sfl, 'places')) %>%
+    select(geography, everything()) %>%
+    arrange(geography, county)
+knitr::kable(county_stats_table, format = 'markdown', 
+             digits = 2)
+knitr::kable(county_stats_table, format = 'markdown', 
+             digits = 2) %>%
+    write_lines('09_county_stats_table.txt')
+
+county_use = function(sfl, geography) {
+    sfl %>%
+        bind_rows() %>%
+        as.data.frame() %>%
+        select(ctd, county, log_w_use) %>%
+        group_by(ctd, county) %>%
+        summarize(mean = mean(log_w_use), 
+                  sd = sd(log_w_use),
+                  min = min(log_w_use), 
+                  max = max(log_w_use)) %>%
+        mutate(geography = geography) %>%
+        ungroup()
+}
+county_use_table = bind_rows(county_use(tracts_sfl, 'tracts'),
+                             county_use(places_sfl, 'places')) %>%
+    select(ctd, geography, everything()) %>%
+    mutate(ctd = as.integer(str_extract(ctd, '[0-9]+'))) %>%
+    rename(CTD = ctd) %>%
+    arrange(geography, county, CTD)
+knitr::kable(county_use_table, format = 'markdown', 
+             digits = 1)
+knitr::kable(county_use_table, format = 'markdown', 
+             digits = 1) %>%
+    write_lines('09_county_use_table.txt')
+
 
 ## IV table ----
 ## Nicely-printing variable names
@@ -104,7 +156,7 @@ models_lm_pl = map(places_sfl,
 
 ## VIF below threshold?  
 assert_that(!any(vif(models_lm_pl[[3]]) >= vif_threshold),
-                        msg = 'VIF at or above threshold')
+            msg = 'VIF at or above threshold')
 ## Any observations dropped? 
 are_equal(nrow(models_lm_pl$ctd_30$model), nrow(places_sfl[[3]]), 
           msg = 'Observations dropped in model')
@@ -185,9 +237,6 @@ bind_rows(stats_lm_pl,
 ## Vanilla (non-spatial) linear regression
 models_lm_tr = map(tracts_sfl, 
                    ~ lm(reg_form, data = .))
-
-assert_that(sum(vif(models_lm_tr[[3]]) >= vif_threshold) < 1, 
-                        msg = 'VIF >= 10')
 
 ## VIF below threshold?  
 assert_that(!any(vif(models_lm_tr[[3]]) >= vif_threshold),
