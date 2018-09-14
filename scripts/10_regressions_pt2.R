@@ -88,8 +88,8 @@ fit_model = function(data,
                      weights, # spatial weights
                      regression_formula,
                      zero.policy = NULL,
-                     R = 100,
-                     return_model = FALSE # return the complete fitted model?
+                     R.obs = 500, # impact draws
+		     return_model = FALSE # return the complete fitted model?
 ) {
     ## Calculate traces
     traces = trW(as(weights, 'CsparseMatrix'))
@@ -132,8 +132,8 @@ resample_and_model = function(data, weights,
                               regression_formula, 
                               filter_condition = NULL, # string to filter data
                               k = 3, # n for knn; used in block resampling
-                              R = 100, # n for impact MCMC
-                              zero.policy = NULL,
+                              R = 100, # num MCMC impact draws 
+			      zero.policy = NULL,
                               perturb_ivs = FALSE, # Perturb independent values? 
                               n_resamples = 1, # Num. resample datasets
                               seed = NULL, # seed for RNG
@@ -207,6 +207,7 @@ durbin = foreach(row = iter(models_meta_df, by = 'row')
                        regression_formula = reg_form,
                        seed = 78910,
                        zero.policy = TRUE,
+		       R = 500,
                        perturb_ivs = FALSE)
 }
 toc()
