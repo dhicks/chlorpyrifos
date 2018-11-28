@@ -23,8 +23,11 @@ dataf = list(places = places_sfl,
     modify(bind_rows, .id = 'ctd') %>%
     bind_rows(.id = 'geography') %>%
     ## Filter
+    ## 30 obs for places, 50 for tracts
     mutate(nrow = map_int(data, nrow)) %>%
-    filter(nrow >= 45)
+    filter(ifelse(geography == 'places', 
+                  nrow >= 30, 
+                  nrow >= 50))
 
 # tracts = tracts_sfl$ctd_60 %>%
 #     split(.$county) %>%
@@ -78,7 +81,7 @@ dataf = dataf %>%
                             zero.policy = NULL)), 
            impacts = list(impacts(model, 
                                   tr = traces, 
-                                  R = 100))) %>%
+                                  R = 400))) %>%
     ungroup()
 toc()
 
@@ -95,17 +98,23 @@ impacts_draws = dataf %>%
 impacts_long = gather(impacts_draws, key = variable, value = estimate, 
        hispanicP:density_log10)
 
-quants = c(.05, .5, .95)
-impacts_long %>%
-    # filter(ctd == 'ctd_60') %>%
-    ggplot(aes(fct_rev(county), estimate, color = geography)) +
-    geom_hline(yintercept = 0, linetype = 'dashed') +
-    # geom_violin(draw_quantiles = .5) +
-    stat_summary(fun.ymin = function (x) quantile(x, 
-                                                  probs = quants[1]),
-                 fun.y = median, 
-                 fun.ymax = function (x) quantile(x, 
-                                                  probs = quants[3])) +
-    facet_wrap(ctd ~ variable, scales = 'free_x', ncol = 10) +
-    coord_flip() +
-    theme_minimal()
+# quants = c(.05, .5, .95)
+# impacts_long %>%
+#     # filter(ctd == 'ctd_60') %>%
+#     ggplot(aes(fct_rev(county), estimate, color = geography)) +
+#     geom_hline(yintercept = 0, linetype = 'dashed') +
+#     # geom_violin(draw_quantiles = .5) +
+#     stat_summary(fun.ymin = function (x) quantile(x, 
+#                                                   probs = quants[1]),
+#                  fun.y = median, 
+#                  fun.ymax = function (x) quantile(x, 
+#                                                   probs = quants[3])) +
+#     facet_wrap(ctd ~ variable, scales = 'free_x', ncol = 10) +
+#     coord_flip() +
+#     theme_minimal()
+
+
+## Outputs ----
+write_rds(dataf, str_c(data_dir, '11_county_models.Rds'))
+write_rds(impacts_draws, str_c(data_dir, '11_county_impacts.Rds'))
+write_rds(impacts_long, str_c(data_dir, '11_county_impacts_long.Rds'))
