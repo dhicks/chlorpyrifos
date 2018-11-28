@@ -15,7 +15,7 @@ places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))
 
 dataf = list(places = places_sfl, 
-           tracts = tracts_sfl) %>%
+             tracts = tracts_sfl) %>%
     modify_depth(2, ~ split(., .$county)) %>%
     ## Recombine into a single second-order dataframe
     modify_depth(3, ~ tibble(data = list(.))) %>%
@@ -70,20 +70,60 @@ reg_form = formula(log_w_use ~ hispanicP + noncitizensP +
 
 ## ~15 sec
 tic()
+set.seed(2018-11-28)
 dataf = dataf %>% 
     # slice(1:5) %>%
     rowwise() %>%
     mutate(model = list(lagsarlm(reg_form, 
-                            data = data, 
-                            listw = weights, 
-                            trs = traces, 
-                            type = 'Durbin', 
-                            zero.policy = NULL)), 
+                                 data = data, 
+                                 listw = weights, 
+                                 trs = traces, 
+                                 type = 'Durbin', 
+                                 zero.policy = NULL)), 
            impacts = list(impacts(model, 
                                   tr = traces, 
                                   R = 400))) %>%
     ungroup()
 toc()
+
+## Heteroscedasticity ----
+## Ignoring a few outlying points, these look fine except maybe in Butte and Stanislaus county
+dataf %>% 
+    mutate(fitted = map(model, fitted),
+           # y = map(model, ~ .$y), 
+           # r.squared = map2_dbl(y, fitted, cor)^2,
+           # AIC = map_dbl(model, AIC),
+           residuals = map(model, residuals)) %>% 
+    # rowwise() %>% 
+    # mutate(
+    select(geography, ctd, county, fitted, residuals) %>% 
+    unnest() %>% 
+    ggplot(aes(fitted, residuals, color = geography)) + 
+    geom_point() +
+    geom_smooth() +
+    facet_wrap(county ~ ctd, scales = 'free', ncol = 5)
+
+dataf %>% 
+    filter(county %in% c('Butte', 'Stanislaus')) %>% 
+    count(county, geography, nrow)
+
+
+## Moran's I of residuals ----
+## Close to 0 (±.05) for several counties.  But generally > .05 for tracts.  <.-05 for some models of places in Fresno and Kern county.  
+moran = function(vec, weights) {
+    moran.test(vec, weights) %>%
+        .$estimate %>%
+        .['Moran I statistic'] %>%
+        `names<-`(NULL)
+}
+dataf %>% 
+    # rowwise() %>%
+    mutate(residuals = map(model, residuals),
+           moran = map2_dbl(residuals, weights, moran)) %>% 
+    ggplot(aes(county, moran, color = geography)) +
+    geom_point() +
+    geom_hline(yintercept = c(-.05, .05), linetype = 'dashed') +
+    facet_wrap(~ ctd)
 
 
 ## Impacts ----
@@ -96,7 +136,7 @@ impacts_draws = dataf %>%
     unnest(draws, .id = 'co_model_idx')
 
 impacts_long = gather(impacts_draws, key = variable, value = estimate, 
-       hispanicP:density_log10)
+                      hispanicP:density_log10)
 
 # quants = c(.05, .5, .95)
 # impacts_long %>%

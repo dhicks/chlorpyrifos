@@ -126,6 +126,7 @@ impacts_rs_long = impacts_rs %>%
     ungroup()
 toc()
 assert_that(are_equal(length(var_names)*nrow(impacts_rs), nrow(impacts_rs_long)))
+## Harmonize county values
 impacts_co = impacts_co %>%
     rename(value = estimate) %>%
     mutate(var_print = var_names[variable], 
@@ -146,14 +147,16 @@ impacts_plot = impacts_rs_long %>%
                  fun.ymax = function (x) quantile(x, 
                                                   probs = quants[3]), 
                  position = position_dodge(width = 1), 
-                 aes(linetype = 'resamples')) +
+                 aes(linetype = 'resamples', shape = 'resamples')) +
     facet_wrap(~ var_print, scales = 'free') +
-    scale_y_continuous(name = 'Total impacts' 
+    scale_y_continuous(name = 'Total impacts (log 10 scale)' 
                        # labels = function (x) round(10^(x/10), 1)
                        # labels = scales::math_format(10^.x)
     ) +
     scale_color_brewer(palette = 'Set1', 
                        labels = c('places', 'tracts')) +
+    scale_linetype(name = 'data') +
+    scale_shape(name = 'data') +
     theme_minimal()
 impacts_plot +
     stat_summary(data = subset(impacts_long, 
@@ -163,32 +166,34 @@ impacts_plot +
                  fun.ymin = function (x) quantile(x, probs = quants[1]),
                  fun.y = median, 
                  fun.ymax = function (x) quantile(x, probs = quants[3]), 
-                 aes(linetype = 'observed'))
-ggsave('12_impacts_369.png', width = 6, height = 4.5)
+                 aes(linetype = 'observed', shape = 'observed'))
+ggsave('12_impacts_369.png', width = 6, height = 4, scale = 1.5)
 
 impacts_rs_long %>%
     filter(ctd == 'ctd_1') %>%
     {impacts_plot %+% .} +
     stat_summary(data = subset(impacts_long, 
                                ctd == 'ctd_1'),
-                 size = .25,
+                 # size = .25,
                  position = position_dodge(width = .25), 
                  fun.ymin = function (x) quantile(x, probs = quants[1]),
                  fun.y = median, 
-                 fun.ymax = function (x) quantile(x, probs = quants[3]))
-ggsave('12_impacts_1.png', width = 6, height = 4.5)
+                 fun.ymax = function (x) quantile(x, probs = quants[3]), 
+                 aes(linetype = 'observed', shape = 'observed'))
+ggsave('12_impacts_1.png', width = 6, height = 4, scale = 1.5)
 
 impacts_rs_long %>%
     filter(ctd == 'ctd_10') %>%
     {impacts_plot %+% .} +
     stat_summary(data = subset(impacts_long, 
                                ctd == 'ctd_10'),
-                 size = .25,
+                 # size = .25,
                  position = position_dodge(width = .25), 
                  fun.ymin = function (x) quantile(x, probs = quants[1]),
                  fun.y = median, 
-                 fun.ymax = function (x) quantile(x, probs = quants[3]))
-ggsave('12_impacts_10.png', width = 6, height = 4.5)
+                 fun.ymax = function (x) quantile(x, probs = quants[3]), 
+                 aes(linetype = 'observed', shape = 'observed'))
+ggsave('12_impacts_10.png', width = 6, height = 4, scale = 1.5)
 
 
 ## 30-60-90 w/ county-level estimates
@@ -219,13 +224,12 @@ impacts_long %>%
                  aes(linetype = 'county-level', 
                      shape = 'county-level')) +
     facet_wrap(~ CTD + var_print, scales = 'free_x', ncol = 5) +
-    scale_x_discrete(limits = fct_inorder(
-        c('Full Data', 
+    scale_x_discrete(limits = fct_inorder(c('Full Data', 
           rev(c('Butte', 'Fresno', 
           'Kern', 'San Joaquin', 
           'Solano', 'Stanislaus', 
           'Tulare'))))) +
-    scale_y_continuous(name = 'Total impacts') +
+    scale_y_continuous(name = 'Total impacts (log 10 scale)') +
     scale_color_brewer(palette = 'Set1', 
                        labels = c('places', 'tracts')) +
     scale_shape(name = 'model') +
@@ -252,7 +256,7 @@ impacts_long %>%
     scale_color_brewer(palette = 'Set1', 
                        labels = c('places', 'tracts')) +
     theme_minimal()
-ggsave('12_impacts_backtrans.png', width = 6, height = 4.5)
+ggsave('12_impacts_backtrans.png', width = 6, height = 4, scale = 1.5)
 
 impacts_long %>%
     filter(ctd %in% c('ctd_60')) %>% 
