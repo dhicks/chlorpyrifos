@@ -71,6 +71,7 @@ knitr::kable(county_stats_table, format = 'markdown',
              digits = 2) %>%
     write_lines('09_county_stats_table.txt')
 
+logsumexp = function (x) log10(sum(10^x))
 county_use = function(sfl, geography) {
     sfl %>%
         bind_rows() %>%
@@ -80,7 +81,8 @@ county_use = function(sfl, geography) {
         summarize(mean = mean(log_w_use), 
                   sd = sd(log_w_use),
                   min = min(log_w_use), 
-                  max = max(log_w_use)) %>%
+                  max = max(log_w_use), 
+                  total = logsumexp(log_w_use)) %>%
         mutate(geography = geography) %>%
         ungroup()
 }
@@ -90,11 +92,11 @@ county_use_table = bind_rows(county_use(tracts_sfl, 'tracts'),
     mutate(ctd = as.integer(str_extract(ctd, '[0-9]+'))) %>%
     rename(CTD = ctd) %>%
     arrange(geography, county, CTD)
-knitr::kable(county_use_table, format = 'markdown', 
-             digits = 1)
-knitr::kable(county_use_table, format = 'markdown', 
-             digits = 1) %>%
-    write_lines('09_county_use_table.txt')
+# knitr::kable(county_use_table, format = 'markdown', 
+#              digits = 1)
+# knitr::kable(county_use_table, format = 'markdown', 
+#              digits = 1) %>%
+#     write_lines('09_county_use_table.txt')
 
 
 ## IV table ----
@@ -144,6 +146,31 @@ knitr::kable(desc_stats_table, format = 'markdown',
 knitr::kable(desc_stats_table, format = 'markdown', 
              digits = 2) %>%
     write_lines('09_desc_stats_table.txt')
+
+dv_stats = function(sfl, geography, weights) {
+    sfl %>% 
+        as.data.frame() %>% 
+        summarize_at(vars(log_w_use), 
+                     funs(mean, sd,
+                          min, max,
+                          moran = moran(., weights))) %>% 
+        mutate(geography = geography)
+}
+
+dv_stats_table = bind_rows(
+    map_dfr(places_sfl, dv_stats, 
+            'places', weights_pl, .id = 'ctd'),
+    map_dfr(tracts_sfl, dv_stats, 
+            'tracts', weights_tr, .id = 'ctd')
+) %>% 
+    separate(ctd, into = c('trash', 'CTD'), 
+             sep = '_', convert = TRUE) %>% 
+    select(CTD, geography, mean:moran)
+knitr::kable(dv_stats_table, format = 'markdown', 
+             digits = 2)
+knitr::kable(dv_stats_table, format = 'markdown', 
+             digits = 2) %>% 
+    write_lines('09_dv_stats_table.txt')
 
 
 ## Places ----
