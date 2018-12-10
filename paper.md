@@ -149,7 +149,7 @@ where $q_u$ is the total use at section $u$ and $d_{iu}$ is the Euclidean distan
 
 It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_exp} provide, at best, rough estimates of potential exposure.  They do not take into account prevailing or occurrent winds, or other chemical transport media such as water.  Read as exposure estimates, they represent the chemical moving uniformly away from the source along a one-dimensional path, not dispersing over a two- or three-dimensional space surrounding the source at various speeds in various directions at various times.  Diverse and variable processes of application, fixation, and chemical transformation are represented as simple exponential decay.  I therefore refer to these aggregate statistics as "local use" rather than "exposure."  By comparison, @LuoSpatiallydistributedpesticide2010 use a physical-chemical model and PUR data to produce much more sophisticated estimates of chlorpyrifos loading.  
 
-@MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  For robustness, this paper considers five CTD values, ranging from 1 km to 90 km.  See table \ref{tab.ctd} and figure \ref{fig.ctd}.  
+@MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  For robustness, this paper considers five CTD values, ranging from 1 km to 90 km.  See tables \ref{tab.ctd}, \ref{tab.dv}, and figure \ref{fig.ctd}.  
 
 | CTD (km) | $\beta$ |
 |:---------|:--------|
@@ -162,6 +162,181 @@ It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_ex
 Table: Characteristic Travel Distance (CTD) values used in this study, and corresponding decay-rate values $\beta$. \label{tab.ctd}
 
 ![Impact of Characteristic Travel Distance (CTD) value on weighted local use values in Census tracts. Panels correspond to the different CTD values used in this study. Weighted local use is the log (base 10) of aggregate chlorpyrifos use around each tract, scaled using the decay coefficient, 2011-15. Color scales are only roughly consistent between panels, with the scale midpoint set at 5 ($10^5 = 100,000$ lbs). \label{fig.ctd}](07_ctd.png)
+
+| CTD|geography |county      | mean|  sd|   min| max| total|
+|---:|:---------|:-----------|----:|---:|-----:|---:|-----:|
+|   1|places    |Butte       | -2.0| 3.9| -10.5| 4.1|   4.2|
+|  10|places    |Butte       |  4.1| 0.4|   3.4| 4.8|   5.7|
+|  30|places    |Butte       |  5.1| 0.1|   4.9| 5.3|   6.5|
+|  60|places    |Butte       |  5.5| 0.1|   5.3| 5.6|   6.9|
+|  90|places    |Butte       |  5.7| 0.0|   5.6| 5.7|   7.1|
+|   1|places    |Colusa      |  0.4| 3.9|  -7.0| 3.0|   3.4|
+|  10|places    |Colusa      |  4.2| 0.4|   3.5| 4.6|   5.3|
+|  30|places    |Colusa      |  5.1| 0.1|   4.9| 5.3|   6.1|
+|  60|places    |Colusa      |  5.5| 0.1|   5.4| 5.6|   6.5|
+|  90|places    |Colusa      |  5.7| 0.1|   5.6| 5.8|   6.7|
+|   1|places    |Fresno      |  1.6| 3.8| -16.7| 3.8|   4.7|
+|  10|places    |Fresno      |  4.7| 0.4|   2.9| 5.1|   6.5|
+|  30|places    |Fresno      |  5.7| 0.2|   5.0| 5.8|   7.3|
+|  60|places    |Fresno      |  6.1| 0.1|   5.8| 6.2|   7.7|
+|  90|places    |Fresno      |  6.3| 0.1|   6.1| 6.3|   7.9|
+|   1|places    |Glenn       |  1.1| 3.2|  -4.6| 3.1|   3.3|
+|  10|places    |Glenn       |  4.5| 0.4|   3.8| 4.8|   5.3|
+|  30|places    |Glenn       |  5.2| 0.1|   4.9| 5.3|   5.9|
+|  60|places    |Glenn       |  5.5| 0.1|   5.4| 5.5|   6.2|
+|  90|places    |Glenn       |  5.7| 0.0|   5.6| 5.7|   6.4|
+|   1|places    |Kern        | -3.0| 7.0| -19.0| 4.5|   4.9|
+|  10|places    |Kern        |  3.9| 1.3|   0.5| 5.2|   6.4|
+|  30|places    |Kern        |  5.3| 0.5|   4.2| 5.9|   7.2|
+|  60|places    |Kern        |  5.9| 0.2|   5.3| 6.2|   7.7|
+|  90|places    |Kern        |  6.1| 0.2|   5.7| 6.3|   7.9|
+|   1|places    |Kings       |  2.5| 1.1|  -0.8| 3.2|   3.9|
+|  10|places    |Kings       |  5.0| 0.2|   4.5| 5.1|   6.0|
+|  30|places    |Kings       |  5.8| 0.1|   5.6| 5.9|   6.9|
+|  60|places    |Kings       |  6.2| 0.0|   6.1| 6.2|   7.2|
+|  90|places    |Kings       |  6.3| 0.0|   6.3| 6.3|   7.4|
+|   1|places    |Madera      | -3.9| 8.4| -16.9| 3.4|   3.8|
+|  10|places    |Madera      |  3.9| 0.8|   2.8| 4.6|   5.5|
+|  30|places    |Madera      |  5.3| 0.2|   5.0| 5.6|   6.6|
+|  60|places    |Madera      |  5.9| 0.1|   5.8| 6.0|   7.1|
+|  90|places    |Madera      |  6.2| 0.1|   6.1| 6.2|   7.3|
+|   1|places    |Merced      |  2.5| 0.4|   1.7| 3.4|   4.0|
+|  10|places    |Merced      |  4.5| 0.2|   4.2| 4.7|   5.9|
+|  30|places    |Merced      |  5.4| 0.1|   5.3| 5.5|   6.8|
+|  60|places    |Merced      |  5.9| 0.0|   5.8| 6.0|   7.2|
+|  90|places    |Merced      |  6.1| 0.0|   6.1| 6.2|   7.5|
+|   1|places    |San Joaquin |  2.3| 0.7|   1.2| 3.7|   4.3|
+|  10|places    |San Joaquin |  4.5| 0.2|   4.2| 4.8|   6.0|
+|  30|places    |San Joaquin |  5.2| 0.1|   5.1| 5.4|   6.7|
+|  60|places    |San Joaquin |  5.7| 0.0|   5.6| 5.8|   7.1|
+|  90|places    |San Joaquin |  5.9| 0.0|   5.9| 6.0|   7.4|
+|   1|places    |Shasta      | -8.9| 7.2| -22.7| 1.9|   1.9|
+|  10|places    |Shasta      |  2.1| 1.1|   0.4| 3.6|   4.2|
+|  30|places    |Shasta      |  4.0| 0.3|   3.5| 4.6|   5.5|
+|  60|places    |Shasta      |  4.9| 0.1|   4.6| 5.1|   6.2|
+|  90|places    |Shasta      |  5.2| 0.1|   5.1| 5.4|   6.6|
+|   1|places    |Solano      |  1.0| 1.9|  -3.9| 3.1|   3.3|
+|  10|places    |Solano      |  3.8| 0.5|   2.9| 4.4|   5.0|
+|  30|places    |Solano      |  4.9| 0.1|   4.6| 5.0|   5.9|
+|  60|places    |Solano      |  5.5| 0.1|   5.4| 5.5|   6.5|
+|  90|places    |Solano      |  5.8| 0.0|   5.7| 5.8|   6.8|
+|   1|places    |Stanislaus  |  2.6| 1.0|  -1.6| 3.4|   4.4|
+|  10|places    |Stanislaus  |  4.7| 0.1|   4.2| 4.8|   6.2|
+|  30|places    |Stanislaus  |  5.4| 0.0|   5.3| 5.4|   6.9|
+|  60|places    |Stanislaus  |  5.8| 0.0|   5.8| 5.8|   7.3|
+|  90|places    |Stanislaus  |  6.0| 0.0|   6.0| 6.1|   7.5|
+|   1|places    |Sutter      |  3.0| 0.5|   2.4| 3.6|   4.2|
+|  10|places    |Sutter      |  4.6| 0.1|   4.5| 4.8|   5.6|
+|  30|places    |Sutter      |  5.2| 0.0|   5.2| 5.3|   6.2|
+|  60|places    |Sutter      |  5.6| 0.0|   5.6| 5.6|   6.5|
+|  90|places    |Sutter      |  5.8| 0.0|   5.8| 5.8|   6.7|
+|   1|places    |Tehama      | -0.4| 4.6| -13.8| 3.2|   3.8|
+|  10|places    |Tehama      |  4.0| 0.6|   2.5| 4.6|   5.4|
+|  30|places    |Tehama      |  4.9| 0.2|   4.4| 5.1|   6.2|
+|  60|places    |Tehama      |  5.3| 0.1|   5.1| 5.4|   6.5|
+|  90|places    |Tehama      |  5.5| 0.1|   5.4| 5.6|   6.7|
+|   1|places    |Tulare      |  1.1| 4.4| -10.3| 3.8|   4.9|
+|  10|places    |Tulare      |  4.8| 0.6|   1.9| 5.2|   6.8|
+|  30|places    |Tulare      |  5.7| 0.2|   4.8| 5.9|   7.5|
+|  60|places    |Tulare      |  6.1| 0.1|   5.7| 6.2|   7.9|
+|  90|places    |Tulare      |  6.3| 0.1|   6.0| 6.3|   8.0|
+|   1|places    |Yolo        |  1.7| 0.7|   0.5| 2.6|   3.2|
+|  10|places    |Yolo        |  4.1| 0.2|   3.8| 4.3|   5.2|
+|  30|places    |Yolo        |  5.0| 0.1|   4.9| 5.1|   6.1|
+|  60|places    |Yolo        |  5.5| 0.0|   5.4| 5.5|   6.6|
+|  90|places    |Yolo        |  5.8| 0.0|   5.7| 5.8|   6.9|
+|   1|places    |Yuba        | -1.7| 6.0| -14.3| 3.9|   4.1|
+|  10|places    |Yuba        |  4.2| 0.6|   3.0| 4.8|   5.5|
+|  30|places    |Yuba        |  5.1| 0.2|   4.7| 5.3|   6.2|
+|  60|places    |Yuba        |  5.5| 0.1|   5.3| 5.6|   6.6|
+|  90|places    |Yuba        |  5.7| 0.1|   5.6| 5.8|   6.8|
+|   1|tracts    |Butte       |  0.4| 3.1|  -7.7| 4.8|   5.2|
+|  10|tracts    |Butte       |  4.3| 0.3|   3.6| 4.9|   6.2|
+|  30|tracts    |Butte       |  5.2| 0.1|   4.9| 5.3|   6.9|
+|  60|tracts    |Butte       |  5.5| 0.0|   5.4| 5.6|   7.2|
+|  90|tracts    |Butte       |  5.7| 0.0|   5.6| 5.7|   7.4|
+|   1|tracts    |Colusa      |  4.0| 0.4|   3.3| 4.5|   4.8|
+|  10|tracts    |Colusa      |  4.5| 0.1|   4.3| 4.6|   5.2|
+|  30|tracts    |Colusa      |  5.2| 0.1|   5.1| 5.2|   5.9|
+|  60|tracts    |Colusa      |  5.5| 0.0|   5.5| 5.6|   6.2|
+|  90|tracts    |Colusa      |  5.7| 0.0|   5.7| 5.7|   6.4|
+|   1|tracts    |Fresno      |  1.7| 1.6|  -8.8| 5.5|   6.1|
+|  10|tracts    |Fresno      |  4.7| 0.2|   3.7| 5.5|   7.0|
+|  30|tracts    |Fresno      |  5.6| 0.1|   5.3| 5.8|   7.9|
+|  60|tracts    |Fresno      |  6.1| 0.0|   5.9| 6.2|   8.4|
+|  90|tracts    |Fresno      |  6.3| 0.0|   6.1| 6.3|   8.6|
+|   1|tracts    |Glenn       |  3.7| 1.1|   1.9| 4.7|   5.1|
+|  10|tracts    |Glenn       |  4.7| 0.1|   4.5| 4.8|   5.5|
+|  30|tracts    |Glenn       |  5.2| 0.0|   5.2| 5.3|   6.0|
+|  60|tracts    |Glenn       |  5.5| 0.0|   5.5| 5.5|   6.3|
+|  90|tracts    |Glenn       |  5.7| 0.0|   5.6| 5.7|   6.4|
+|   1|tracts    |Kern        |  0.6| 4.0| -17.5| 5.5|   6.1|
+|  10|tracts    |Kern        |  4.5| 1.1|   0.4| 5.5|   7.0|
+|  30|tracts    |Kern        |  5.5| 0.4|   4.2| 5.9|   7.8|
+|  60|tracts    |Kern        |  6.0| 0.2|   5.3| 6.2|   8.2|
+|  90|tracts    |Kern        |  6.2| 0.1|   5.7| 6.3|   8.3|
+|   1|tracts    |Kings       |  3.1| 1.0|   2.0| 5.6|   5.7|
+|  10|tracts    |Kings       |  5.0| 0.2|   4.6| 5.6|   6.5|
+|  30|tracts    |Kings       |  5.8| 0.0|   5.6| 5.9|   7.2|
+|  60|tracts    |Kings       |  6.2| 0.0|   6.1| 6.2|   7.6|
+|  90|tracts    |Kings       |  6.3| 0.0|   6.3| 6.3|   7.7|
+|   1|tracts    |Madera      | -1.0| 6.9| -15.8| 4.7|   5.2|
+|  10|tracts    |Madera      |  4.2| 0.6|   2.8| 4.9|   5.8|
+|  30|tracts    |Madera      |  5.4| 0.2|   5.0| 5.6|   6.8|
+|  60|tracts    |Madera      |  6.0| 0.1|   5.8| 6.0|   7.3|
+|  90|tracts    |Madera      |  6.2| 0.1|   6.1| 6.2|   7.5|
+|   1|tracts    |Merced      |  2.6| 1.1|   0.9| 4.7|   5.3|
+|  10|tracts    |Merced      |  4.6| 0.1|   4.3| 4.8|   6.3|
+|  30|tracts    |Merced      |  5.4| 0.0|   5.4| 5.5|   7.1|
+|  60|tracts    |Merced      |  5.9| 0.0|   5.8| 6.0|   7.6|
+|  90|tracts    |Merced      |  6.1| 0.0|   6.1| 6.2|   7.8|
+|   1|tracts    |San Joaquin |  2.0| 0.9|   0.7| 4.6|   5.4|
+|  10|tracts    |San Joaquin |  4.5| 0.1|   4.3| 4.8|   6.7|
+|  30|tracts    |San Joaquin |  5.3| 0.1|   5.1| 5.4|   7.4|
+|  60|tracts    |San Joaquin |  5.7| 0.0|   5.6| 5.8|   7.8|
+|  90|tracts    |San Joaquin |  5.9| 0.0|   5.9| 6.0|   8.1|
+|   1|tracts    |Shasta      | -2.9| 4.6| -17.6| 3.5|   3.8|
+|  10|tracts    |Shasta      |  2.9| 0.6|   0.4| 3.8|   4.8|
+|  30|tracts    |Shasta      |  4.3| 0.2|   3.6| 4.6|   6.0|
+|  60|tracts    |Shasta      |  4.9| 0.1|   4.6| 5.1|   6.6|
+|  90|tracts    |Shasta      |  5.3| 0.1|   5.1| 5.4|   7.0|
+|   1|tracts    |Solano      | -0.5| 2.1|  -4.8| 4.5|   4.7|
+|  10|tracts    |Solano      |  3.5| 0.5|   2.8| 4.6|   5.7|
+|  30|tracts    |Solano      |  4.8| 0.1|   4.6| 5.0|   6.8|
+|  60|tracts    |Solano      |  5.4| 0.1|   5.3| 5.5|   7.4|
+|  90|tracts    |Solano      |  5.7| 0.0|   5.7| 5.8|   7.7|
+|   1|tracts    |Stanislaus  |  2.6| 0.8|   1.2| 4.6|   5.4|
+|  10|tracts    |Stanislaus  |  4.8| 0.1|   4.5| 4.9|   6.7|
+|  30|tracts    |Stanislaus  |  5.4| 0.0|   5.3| 5.4|   7.4|
+|  60|tracts    |Stanislaus  |  5.8| 0.0|   5.8| 5.8|   7.8|
+|  90|tracts    |Stanislaus  |  6.0| 0.0|   6.0| 6.1|   8.0|
+|   1|tracts    |Sutter      |  3.3| 0.7|   2.6| 4.5|   5.1|
+|  10|tracts    |Sutter      |  4.7| 0.0|   4.7| 4.8|   6.1|
+|  30|tracts    |Sutter      |  5.3| 0.0|   5.2| 5.3|   6.6|
+|  60|tracts    |Sutter      |  5.6| 0.0|   5.6| 5.6|   6.9|
+|  90|tracts    |Sutter      |  5.8| 0.0|   5.8| 5.8|   7.1|
+|   1|tracts    |Tehama      |  3.2| 0.9|   1.7| 4.2|   4.8|
+|  10|tracts    |Tehama      |  4.2| 0.3|   3.7| 4.6|   5.3|
+|  30|tracts    |Tehama      |  4.9| 0.2|   4.6| 5.1|   6.0|
+|  60|tracts    |Tehama      |  5.3| 0.1|   5.1| 5.4|   6.3|
+|  90|tracts    |Tehama      |  5.5| 0.1|   5.4| 5.6|   6.6|
+|   1|tracts    |Tulare      |  3.2| 1.0|   1.8| 5.1|   6.0|
+|  10|tracts    |Tulare      |  5.1| 0.1|   4.6| 5.3|   7.0|
+|  30|tracts    |Tulare      |  5.8| 0.0|   5.6| 5.9|   7.7|
+|  60|tracts    |Tulare      |  6.2| 0.0|   6.0| 6.2|   8.1|
+|  90|tracts    |Tulare      |  6.3| 0.0|   6.2| 6.3|   8.2|
+|   1|tracts    |Yolo        |  1.3| 1.2|  -0.8| 3.7|   4.4|
+|  10|tracts    |Yolo        |  4.1| 0.1|   3.8| 4.3|   5.7|
+|  30|tracts    |Yolo        |  5.0| 0.0|   5.0| 5.1|   6.6|
+|  60|tracts    |Yolo        |  5.5| 0.0|   5.5| 5.5|   7.1|
+|  90|tracts    |Yolo        |  5.8| 0.0|   5.7| 5.8|   7.4|
+|   1|tracts    |Yuba        |  2.4| 3.2|  -8.5| 4.4|   4.9|
+|  10|tracts    |Yuba        |  4.6| 0.3|   3.6| 4.8|   5.8|
+|  30|tracts    |Yuba        |  5.2| 0.1|   4.9| 5.3|   6.4|
+|  60|tracts    |Yuba        |  5.6| 0.0|   5.4| 5.6|   6.7|
+|  90|tracts    |Yuba        |  5.8| 0.0|   5.7| 5.8|   6.9|
+
+Table: Summary statistics of weighted local chlorpyrifos use, by county, geography, and CTD value.  All numerical columns in $\log_10$ (order-of-magnitude) pounds units.  \label{tab.dv}
 
 It may be objected that this approach effectively assumes that, when chlorpyrifos is used, all of the chemical is volatilized.  This assumption is plainly false, but fortunately the current study only requires a much weaker assumption.  Decay coefficients are multiplicative, so that if $q_u$ is the amount used at section $u$ and $\pi$ is the volatilization rate, then $q_i = \sum_{u} \pi q_u \beta^{d_{iu}} = \pi \sum q_u \beta^{d_{iu}}$ is weighted local use at location $i$.  The second equality assumes that the volatilization rate $\pi$ is constant across the dataset.  This entails that the local use values can all be scaled by $\pi$.  Then, since the log of weighted local use is the dependent variable in the regression models below, the scaling coefficient $\pi$ becomes a constant term:  $\log q_i = \log \hat q_i + \log \pi$, where $\hat q_i$ is the un-scaled estimate above.  Thus, while the value of $\pi$ matters for estimating the intercept of the regression models, it does not matter for estimating the coefficients on the covariates.  The assumption of a constant volatilization rate is still unlikely, of course; it likely varies with the weather at the time chlorpyrifos is applied, for example.  However, insofar as variation in the volatilization rate is uncorrelated with the section $u$ and the demographic covariates of interest — which both seem plausible — the argument above can be modified to conclude that this variation will be bundled into the error term of the regression models, and so will not bias the coefficient estimates of interest.  
 
