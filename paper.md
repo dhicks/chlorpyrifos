@@ -163,180 +163,20 @@ Table: Characteristic Travel Distance (CTD) values used in this study, and corre
 
 ![Impact of Characteristic Travel Distance (CTD) value on weighted local use values in Census tracts. Panels correspond to the different CTD values used in this study. Weighted local use is the log (base 10) of aggregate chlorpyrifos use around each tract, scaled using the decay coefficient, 2011-15. Color scales are only roughly consistent between panels, with the scale midpoint set at 5 ($10^5 = 100,000$ lbs). \label{fig.ctd}](07_ctd.png)
 
-| CTD|geography |county      | mean|  sd|   min| max| total|
-|---:|:---------|:-----------|----:|---:|-----:|---:|-----:|
-|   1|places    |Butte       | -2.0| 3.9| -10.5| 4.1|   4.2|
-|  10|places    |Butte       |  4.1| 0.4|   3.4| 4.8|   5.7|
-|  30|places    |Butte       |  5.1| 0.1|   4.9| 5.3|   6.5|
-|  60|places    |Butte       |  5.5| 0.1|   5.3| 5.6|   6.9|
-|  90|places    |Butte       |  5.7| 0.0|   5.6| 5.7|   7.1|
-|   1|places    |Colusa      |  0.4| 3.9|  -7.0| 3.0|   3.4|
-|  10|places    |Colusa      |  4.2| 0.4|   3.5| 4.6|   5.3|
-|  30|places    |Colusa      |  5.1| 0.1|   4.9| 5.3|   6.1|
-|  60|places    |Colusa      |  5.5| 0.1|   5.4| 5.6|   6.5|
-|  90|places    |Colusa      |  5.7| 0.1|   5.6| 5.8|   6.7|
-|   1|places    |Fresno      |  1.6| 3.8| -16.7| 3.8|   4.7|
-|  10|places    |Fresno      |  4.7| 0.4|   2.9| 5.1|   6.5|
-|  30|places    |Fresno      |  5.7| 0.2|   5.0| 5.8|   7.3|
-|  60|places    |Fresno      |  6.1| 0.1|   5.8| 6.2|   7.7|
-|  90|places    |Fresno      |  6.3| 0.1|   6.1| 6.3|   7.9|
-|   1|places    |Glenn       |  1.1| 3.2|  -4.6| 3.1|   3.3|
-|  10|places    |Glenn       |  4.5| 0.4|   3.8| 4.8|   5.3|
-|  30|places    |Glenn       |  5.2| 0.1|   4.9| 5.3|   5.9|
-|  60|places    |Glenn       |  5.5| 0.1|   5.4| 5.5|   6.2|
-|  90|places    |Glenn       |  5.7| 0.0|   5.6| 5.7|   6.4|
-|   1|places    |Kern        | -3.0| 7.0| -19.0| 4.5|   4.9|
-|  10|places    |Kern        |  3.9| 1.3|   0.5| 5.2|   6.4|
-|  30|places    |Kern        |  5.3| 0.5|   4.2| 5.9|   7.2|
-|  60|places    |Kern        |  5.9| 0.2|   5.3| 6.2|   7.7|
-|  90|places    |Kern        |  6.1| 0.2|   5.7| 6.3|   7.9|
-|   1|places    |Kings       |  2.5| 1.1|  -0.8| 3.2|   3.9|
-|  10|places    |Kings       |  5.0| 0.2|   4.5| 5.1|   6.0|
-|  30|places    |Kings       |  5.8| 0.1|   5.6| 5.9|   6.9|
-|  60|places    |Kings       |  6.2| 0.0|   6.1| 6.2|   7.2|
-|  90|places    |Kings       |  6.3| 0.0|   6.3| 6.3|   7.4|
-|   1|places    |Madera      | -3.9| 8.4| -16.9| 3.4|   3.8|
-|  10|places    |Madera      |  3.9| 0.8|   2.8| 4.6|   5.5|
-|  30|places    |Madera      |  5.3| 0.2|   5.0| 5.6|   6.6|
-|  60|places    |Madera      |  5.9| 0.1|   5.8| 6.0|   7.1|
-|  90|places    |Madera      |  6.2| 0.1|   6.1| 6.2|   7.3|
-|   1|places    |Merced      |  2.5| 0.4|   1.7| 3.4|   4.0|
-|  10|places    |Merced      |  4.5| 0.2|   4.2| 4.7|   5.9|
-|  30|places    |Merced      |  5.4| 0.1|   5.3| 5.5|   6.8|
-|  60|places    |Merced      |  5.9| 0.0|   5.8| 6.0|   7.2|
-|  90|places    |Merced      |  6.1| 0.0|   6.1| 6.2|   7.5|
-|   1|places    |San Joaquin |  2.3| 0.7|   1.2| 3.7|   4.3|
-|  10|places    |San Joaquin |  4.5| 0.2|   4.2| 4.8|   6.0|
-|  30|places    |San Joaquin |  5.2| 0.1|   5.1| 5.4|   6.7|
-|  60|places    |San Joaquin |  5.7| 0.0|   5.6| 5.8|   7.1|
-|  90|places    |San Joaquin |  5.9| 0.0|   5.9| 6.0|   7.4|
-|   1|places    |Shasta      | -8.9| 7.2| -22.7| 1.9|   1.9|
-|  10|places    |Shasta      |  2.1| 1.1|   0.4| 3.6|   4.2|
-|  30|places    |Shasta      |  4.0| 0.3|   3.5| 4.6|   5.5|
-|  60|places    |Shasta      |  4.9| 0.1|   4.6| 5.1|   6.2|
-|  90|places    |Shasta      |  5.2| 0.1|   5.1| 5.4|   6.6|
-|   1|places    |Solano      |  1.0| 1.9|  -3.9| 3.1|   3.3|
-|  10|places    |Solano      |  3.8| 0.5|   2.9| 4.4|   5.0|
-|  30|places    |Solano      |  4.9| 0.1|   4.6| 5.0|   5.9|
-|  60|places    |Solano      |  5.5| 0.1|   5.4| 5.5|   6.5|
-|  90|places    |Solano      |  5.8| 0.0|   5.7| 5.8|   6.8|
-|   1|places    |Stanislaus  |  2.6| 1.0|  -1.6| 3.4|   4.4|
-|  10|places    |Stanislaus  |  4.7| 0.1|   4.2| 4.8|   6.2|
-|  30|places    |Stanislaus  |  5.4| 0.0|   5.3| 5.4|   6.9|
-|  60|places    |Stanislaus  |  5.8| 0.0|   5.8| 5.8|   7.3|
-|  90|places    |Stanislaus  |  6.0| 0.0|   6.0| 6.1|   7.5|
-|   1|places    |Sutter      |  3.0| 0.5|   2.4| 3.6|   4.2|
-|  10|places    |Sutter      |  4.6| 0.1|   4.5| 4.8|   5.6|
-|  30|places    |Sutter      |  5.2| 0.0|   5.2| 5.3|   6.2|
-|  60|places    |Sutter      |  5.6| 0.0|   5.6| 5.6|   6.5|
-|  90|places    |Sutter      |  5.8| 0.0|   5.8| 5.8|   6.7|
-|   1|places    |Tehama      | -0.4| 4.6| -13.8| 3.2|   3.8|
-|  10|places    |Tehama      |  4.0| 0.6|   2.5| 4.6|   5.4|
-|  30|places    |Tehama      |  4.9| 0.2|   4.4| 5.1|   6.2|
-|  60|places    |Tehama      |  5.3| 0.1|   5.1| 5.4|   6.5|
-|  90|places    |Tehama      |  5.5| 0.1|   5.4| 5.6|   6.7|
-|   1|places    |Tulare      |  1.1| 4.4| -10.3| 3.8|   4.9|
-|  10|places    |Tulare      |  4.8| 0.6|   1.9| 5.2|   6.8|
-|  30|places    |Tulare      |  5.7| 0.2|   4.8| 5.9|   7.5|
-|  60|places    |Tulare      |  6.1| 0.1|   5.7| 6.2|   7.9|
-|  90|places    |Tulare      |  6.3| 0.1|   6.0| 6.3|   8.0|
-|   1|places    |Yolo        |  1.7| 0.7|   0.5| 2.6|   3.2|
-|  10|places    |Yolo        |  4.1| 0.2|   3.8| 4.3|   5.2|
-|  30|places    |Yolo        |  5.0| 0.1|   4.9| 5.1|   6.1|
-|  60|places    |Yolo        |  5.5| 0.0|   5.4| 5.5|   6.6|
-|  90|places    |Yolo        |  5.8| 0.0|   5.7| 5.8|   6.9|
-|   1|places    |Yuba        | -1.7| 6.0| -14.3| 3.9|   4.1|
-|  10|places    |Yuba        |  4.2| 0.6|   3.0| 4.8|   5.5|
-|  30|places    |Yuba        |  5.1| 0.2|   4.7| 5.3|   6.2|
-|  60|places    |Yuba        |  5.5| 0.1|   5.3| 5.6|   6.6|
-|  90|places    |Yuba        |  5.7| 0.1|   5.6| 5.8|   6.8|
-|   1|tracts    |Butte       |  0.4| 3.1|  -7.7| 4.8|   5.2|
-|  10|tracts    |Butte       |  4.3| 0.3|   3.6| 4.9|   6.2|
-|  30|tracts    |Butte       |  5.2| 0.1|   4.9| 5.3|   6.9|
-|  60|tracts    |Butte       |  5.5| 0.0|   5.4| 5.6|   7.2|
-|  90|tracts    |Butte       |  5.7| 0.0|   5.6| 5.7|   7.4|
-|   1|tracts    |Colusa      |  4.0| 0.4|   3.3| 4.5|   4.8|
-|  10|tracts    |Colusa      |  4.5| 0.1|   4.3| 4.6|   5.2|
-|  30|tracts    |Colusa      |  5.2| 0.1|   5.1| 5.2|   5.9|
-|  60|tracts    |Colusa      |  5.5| 0.0|   5.5| 5.6|   6.2|
-|  90|tracts    |Colusa      |  5.7| 0.0|   5.7| 5.7|   6.4|
-|   1|tracts    |Fresno      |  1.7| 1.6|  -8.8| 5.5|   6.1|
-|  10|tracts    |Fresno      |  4.7| 0.2|   3.7| 5.5|   7.0|
-|  30|tracts    |Fresno      |  5.6| 0.1|   5.3| 5.8|   7.9|
-|  60|tracts    |Fresno      |  6.1| 0.0|   5.9| 6.2|   8.4|
-|  90|tracts    |Fresno      |  6.3| 0.0|   6.1| 6.3|   8.6|
-|   1|tracts    |Glenn       |  3.7| 1.1|   1.9| 4.7|   5.1|
-|  10|tracts    |Glenn       |  4.7| 0.1|   4.5| 4.8|   5.5|
-|  30|tracts    |Glenn       |  5.2| 0.0|   5.2| 5.3|   6.0|
-|  60|tracts    |Glenn       |  5.5| 0.0|   5.5| 5.5|   6.3|
-|  90|tracts    |Glenn       |  5.7| 0.0|   5.6| 5.7|   6.4|
-|   1|tracts    |Kern        |  0.6| 4.0| -17.5| 5.5|   6.1|
-|  10|tracts    |Kern        |  4.5| 1.1|   0.4| 5.5|   7.0|
-|  30|tracts    |Kern        |  5.5| 0.4|   4.2| 5.9|   7.8|
-|  60|tracts    |Kern        |  6.0| 0.2|   5.3| 6.2|   8.2|
-|  90|tracts    |Kern        |  6.2| 0.1|   5.7| 6.3|   8.3|
-|   1|tracts    |Kings       |  3.1| 1.0|   2.0| 5.6|   5.7|
-|  10|tracts    |Kings       |  5.0| 0.2|   4.6| 5.6|   6.5|
-|  30|tracts    |Kings       |  5.8| 0.0|   5.6| 5.9|   7.2|
-|  60|tracts    |Kings       |  6.2| 0.0|   6.1| 6.2|   7.6|
-|  90|tracts    |Kings       |  6.3| 0.0|   6.3| 6.3|   7.7|
-|   1|tracts    |Madera      | -1.0| 6.9| -15.8| 4.7|   5.2|
-|  10|tracts    |Madera      |  4.2| 0.6|   2.8| 4.9|   5.8|
-|  30|tracts    |Madera      |  5.4| 0.2|   5.0| 5.6|   6.8|
-|  60|tracts    |Madera      |  6.0| 0.1|   5.8| 6.0|   7.3|
-|  90|tracts    |Madera      |  6.2| 0.1|   6.1| 6.2|   7.5|
-|   1|tracts    |Merced      |  2.6| 1.1|   0.9| 4.7|   5.3|
-|  10|tracts    |Merced      |  4.6| 0.1|   4.3| 4.8|   6.3|
-|  30|tracts    |Merced      |  5.4| 0.0|   5.4| 5.5|   7.1|
-|  60|tracts    |Merced      |  5.9| 0.0|   5.8| 6.0|   7.6|
-|  90|tracts    |Merced      |  6.1| 0.0|   6.1| 6.2|   7.8|
-|   1|tracts    |San Joaquin |  2.0| 0.9|   0.7| 4.6|   5.4|
-|  10|tracts    |San Joaquin |  4.5| 0.1|   4.3| 4.8|   6.7|
-|  30|tracts    |San Joaquin |  5.3| 0.1|   5.1| 5.4|   7.4|
-|  60|tracts    |San Joaquin |  5.7| 0.0|   5.6| 5.8|   7.8|
-|  90|tracts    |San Joaquin |  5.9| 0.0|   5.9| 6.0|   8.1|
-|   1|tracts    |Shasta      | -2.9| 4.6| -17.6| 3.5|   3.8|
-|  10|tracts    |Shasta      |  2.9| 0.6|   0.4| 3.8|   4.8|
-|  30|tracts    |Shasta      |  4.3| 0.2|   3.6| 4.6|   6.0|
-|  60|tracts    |Shasta      |  4.9| 0.1|   4.6| 5.1|   6.6|
-|  90|tracts    |Shasta      |  5.3| 0.1|   5.1| 5.4|   7.0|
-|   1|tracts    |Solano      | -0.5| 2.1|  -4.8| 4.5|   4.7|
-|  10|tracts    |Solano      |  3.5| 0.5|   2.8| 4.6|   5.7|
-|  30|tracts    |Solano      |  4.8| 0.1|   4.6| 5.0|   6.8|
-|  60|tracts    |Solano      |  5.4| 0.1|   5.3| 5.5|   7.4|
-|  90|tracts    |Solano      |  5.7| 0.0|   5.7| 5.8|   7.7|
-|   1|tracts    |Stanislaus  |  2.6| 0.8|   1.2| 4.6|   5.4|
-|  10|tracts    |Stanislaus  |  4.8| 0.1|   4.5| 4.9|   6.7|
-|  30|tracts    |Stanislaus  |  5.4| 0.0|   5.3| 5.4|   7.4|
-|  60|tracts    |Stanislaus  |  5.8| 0.0|   5.8| 5.8|   7.8|
-|  90|tracts    |Stanislaus  |  6.0| 0.0|   6.0| 6.1|   8.0|
-|   1|tracts    |Sutter      |  3.3| 0.7|   2.6| 4.5|   5.1|
-|  10|tracts    |Sutter      |  4.7| 0.0|   4.7| 4.8|   6.1|
-|  30|tracts    |Sutter      |  5.3| 0.0|   5.2| 5.3|   6.6|
-|  60|tracts    |Sutter      |  5.6| 0.0|   5.6| 5.6|   6.9|
-|  90|tracts    |Sutter      |  5.8| 0.0|   5.8| 5.8|   7.1|
-|   1|tracts    |Tehama      |  3.2| 0.9|   1.7| 4.2|   4.8|
-|  10|tracts    |Tehama      |  4.2| 0.3|   3.7| 4.6|   5.3|
-|  30|tracts    |Tehama      |  4.9| 0.2|   4.6| 5.1|   6.0|
-|  60|tracts    |Tehama      |  5.3| 0.1|   5.1| 5.4|   6.3|
-|  90|tracts    |Tehama      |  5.5| 0.1|   5.4| 5.6|   6.6|
-|   1|tracts    |Tulare      |  3.2| 1.0|   1.8| 5.1|   6.0|
-|  10|tracts    |Tulare      |  5.1| 0.1|   4.6| 5.3|   7.0|
-|  30|tracts    |Tulare      |  5.8| 0.0|   5.6| 5.9|   7.7|
-|  60|tracts    |Tulare      |  6.2| 0.0|   6.0| 6.2|   8.1|
-|  90|tracts    |Tulare      |  6.3| 0.0|   6.2| 6.3|   8.2|
-|   1|tracts    |Yolo        |  1.3| 1.2|  -0.8| 3.7|   4.4|
-|  10|tracts    |Yolo        |  4.1| 0.1|   3.8| 4.3|   5.7|
-|  30|tracts    |Yolo        |  5.0| 0.0|   5.0| 5.1|   6.6|
-|  60|tracts    |Yolo        |  5.5| 0.0|   5.5| 5.5|   7.1|
-|  90|tracts    |Yolo        |  5.8| 0.0|   5.7| 5.8|   7.4|
-|   1|tracts    |Yuba        |  2.4| 3.2|  -8.5| 4.4|   4.9|
-|  10|tracts    |Yuba        |  4.6| 0.3|   3.6| 4.8|   5.8|
-|  30|tracts    |Yuba        |  5.2| 0.1|   4.9| 5.3|   6.4|
-|  60|tracts    |Yuba        |  5.6| 0.0|   5.4| 5.6|   6.7|
-|  90|tracts    |Yuba        |  5.8| 0.0|   5.7| 5.8|   6.9|
+| CTD|geography |  mean|   sd|    min|  max| Moran's I|
+|---:|:---------|-----:|----:|------:|----:|-----:|
+|   1|places    | -0.19| 5.42| -22.69| 4.47|  0.88|
+|  10|places    |  4.26| 0.94|   0.41| 5.21|  0.94|
+|  30|places    |  5.30| 0.46|   3.53| 5.87|  0.97|
+|  60|places    |  5.75| 0.35|   4.61| 6.20|  0.99|
+|  90|places    |  5.98| 0.30|   5.07| 6.34|  0.99|
+|   1|tracts    |  1.38| 2.88| -17.62| 5.57|  0.74|
+|  10|tracts    |  4.43| 0.71|   0.41| 5.60|  0.95|
+|  30|tracts    |  5.34| 0.41|   3.57| 5.91|  0.98|
+|  60|tracts    |  5.79| 0.32|   4.63| 6.20|  0.99|
+|  90|tracts    |  6.01| 0.27|   5.08| 6.34|  1.00|
 
-Table: Summary statistics of weighted local chlorpyrifos use, by county, geography, and CTD value.  All numerical columns in $\log_10$ (order-of-magnitude) pounds units.  \label{tab.dv}
+Table: Summary statistics for weighted local use values, by CTD and geography.  Mean, standard deviation, minimum, and maximum in logged pounds.  \label{tab.dv}
 
 It may be objected that this approach effectively assumes that, when chlorpyrifos is used, all of the chemical is volatilized.  This assumption is plainly false, but fortunately the current study only requires a much weaker assumption.  Decay coefficients are multiplicative, so that if $q_u$ is the amount used at section $u$ and $\pi$ is the volatilization rate, then $q_i = \sum_{u} \pi q_u \beta^{d_{iu}} = \pi \sum q_u \beta^{d_{iu}}$ is weighted local use at location $i$.  The second equality assumes that the volatilization rate $\pi$ is constant across the dataset.  This entails that the local use values can all be scaled by $\pi$.  Then, since the log of weighted local use is the dependent variable in the regression models below, the scaling coefficient $\pi$ becomes a constant term:  $\log q_i = \log \hat q_i + \log \pi$, where $\hat q_i$ is the un-scaled estimate above.  Thus, while the value of $\pi$ matters for estimating the intercept of the regression models, it does not matter for estimating the coefficients on the covariates.  The assumption of a constant volatilization rate is still unlikely, of course; it likely varies with the weather at the time chlorpyrifos is applied, for example.  However, insofar as variation in the volatilization rate is uncorrelated with the section $u$ and the demographic covariates of interest — which both seem plausible — the argument above can be modified to conclude that this variation will be bundled into the error term of the regression models, and so will not bias the coefficient estimates of interest.  
 
@@ -412,10 +252,10 @@ For higher CTD values (30, 60, 90), distributions are bi- or trimodal.  Plotting
 
 Spatial exploratory data analysis of both independent and dependent variables suggested substantial degrees of spatial autocorrelation on both sides of the regression formula.  A sequence of three model specifications was considered:  "standard" linear regression, without any spatial component (referred to simply as "regression" below); spatial regression with lagged independent variables, or "spatial lag X"; and spatial Durbin regression, which incorporates lags for both dependent and independent variables [@LeSageIntroductionSpatialEconometrics2009].  If the regression model is specified as 
 \begin{align}
-    Y &= \alpha 1_n + X \beta + \varepsilon,
-    \varepsilon &\sim N(0, \sigma^2)
+    Y &= \alpha 1_n + X \beta + \varepsilon\\
+    \varepsilon &\sim N(0, \sigma^2) \nonumber
 \end{align}
-where $\alpha$ is a scalar parameter, $1_n$ is a $n$ column vector of 1s, $X$ is a $n \times p$ design matrix, and $\beta$ is a length-$p$ column vector of regression coefficients, then the spatial lag X model is specified as
+where $\alpha$ is a scalar parameter, $1_n$ is a length-$n$ column vector of 1s, $X$ is a $n \times p$ design matrix, and $\beta$ is a length-$p$ column vector of regression coefficients, then the spatial lag X model is specified as
 \begin{align}
     Y &= \alpha 1_n + X \beta + WX \theta + \varepsilon
 \end{align}
@@ -433,7 +273,7 @@ KNN spatial weights, with $k=3$, were used for all of these models.  This sequen
 
 All these regression model specifications assume perfect measurements in the independent variables.  However, ACS estimates can have large margins of error, especially for subpopulations of difficult-to-survey rural tracts [@SpielmanReducingUncertaintyAmerican2015].  This kind of measurement error can induce *attenuation bias* or *regression dilution*, in which correlation estimates are shrunk towards 0 [@FrostCorrectingregressiondilution2000].  In the context of dEJ analysis, attenuation bias is potentially a serious problem, insofar as it leads to the underestimation of environmental disparities.  That is, measurement error can make distributive environmental injustices seem less serious than they actually are.  
 
-A bootstrap approach was developed to explore the effect of measurement error on the impact estimates.  In a "basic" or unparameterized bootstrap, independent samples are taken from the observations in the dataset (with replacement), forming a "resampled dataset" of the same size as the dataset.  These samples approximate drawing a new sample from the original population.  By calculating model statistics on a set of resampled datasets (1000 resampled datasets is common), we can estimate features of the sampling distribution of the population statistic.  For example, if $\hat\beta^1, \hat\beta^2, \ldots, \hat\beta^{1000}$ are regression coefficient estimates calculated on 1,000 resampled datasets, $\mathrm{sd}_l(\hat\beta^l)$ estimates the standard error of the coefficient estimate, and quantiles of the $\hat\beta^l$ distribution estimate quantiles of the parameter's sampling distribution.  
+A bootstrap approach was developed to explore the effect of measurement error on the impact estimates.  In a "basic" or unparameterized bootstrap, independent samples are taken from the observations in the dataset (with replacement), forming a "resampled dataset" of the same size as the dataset.  These samples approximate drawing a new sample from the original population.  By calculating model statistics on a set of resampled datasets (1000 resampled datasets is common), we can estimate features of the sampling distribution of the population statistic.  For example, if $\hat\beta^1, \hat\beta^2, \ldots, \hat\beta^{1000}$ are regression coefficient estimates calculated on 1,000 resampled datasets, $\mathrm{sd}_l(\hat\beta^l)$ gives an estimate of the standard error of the coefficient estimate and quantiles of the $\hat\beta^l$ distribution give estimated quantiles of the parameter's sampling distribution.  
 
 In the present study, the uncertainty of concern is with the ACS estimates for the IV values.  Assuming normality for these estimates, resamples can be drawn from the Gaussian distribution centered at the ACS point estimate with standard deviation the ACS margin of error.  Because spatial observations are not independent, the simple sampling method described above was not applicable to the current data.  Instead, each resampled dataset comprised the actual observed response values (potential chlorpyrifos exposure) at each actual location, with resampled IV values.  
 
@@ -475,11 +315,11 @@ Figures \ref{fig.impacts_1}, \ref{fig.impacts_10}, \ref{fig.impacts_369} show to
 
 *[rewrite captions]*
 
-![Total IV impacts, CTD = 1 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_1}](11_impacts_1.png)
+![Total IV impacts, CTD = 1 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_1}](12_impacts_1.png)
 
-![Total IV impacts, CTD = 10 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_10}](11_impacts_10.png)
+![Total IV impacts, CTD = 10 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_10}](12_impacts_10.png)
 
-![Total IV impacts, CTD = 30, 60, and 90 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_369}](11_impacts_369.png)
+![Total IV impacts, CTD = 30, 60, and 90 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_369}](12_impacts_369.png)
 
 Comparing the three plots, the estimates tends to be much more uncertain for smaller CTD values.  Indeed, for CTD = 1 km, several estimates are uncertain across 10s of orders of magnitude (evaluating uncertainty by the width of the 5%-95% quantile interval).  By contrast, for CTD values of 30 or greater, uncertainty is often less than about 2 orders of magnitude, and in some cases substantially less than 1 order of magnitude.  In short, whatever physical validity different CTD values have, higher CTD values lead to more precise effects estimates.  The largest uncertainties are for the smallest subpopulations in the study area, namely, Asian, Black, Indigenous, and children proportions.  
 
@@ -487,7 +327,7 @@ The figures show both the bootstrap resamples (triangles and dashed lines) and o
 
 Comparing the resamples and observed data estimates, in many cases there are indications of regression inflation rather than regression attenuation.  That is, estimates inferred from the observed data are often slightly further from 0 than the resample-derived estimates, which account for measurement error.  Given both sets of estimates, this trend means that the observed-derived estimates may be preferable in contexts, such as EJ-sensitive policymaking, where underestimation of potential harmful effects is more serious than overestimation.  This may appear to be in tension with the observation above, that the phenomenon of regression attenuation means that resampled estimates may be preferred when it is important to avoid underestimation in dEJ research.  However, the overarching goal is to *avoid underestimation* in order to *identify and redress distributive environmental injustice*.  It is appropriate to prefer the methods that best promote those goals in a particular case, even if that method is not the most effective way to promote those goals on average or in the long run.  
 
-![Total impact estimates from the spatial Durbin models for CTD = 60 km. Total impact estimates $\hat\zeta$ are transformed as $\zeta_{trans} = 10^{\zeta/10}$.  $\zeta_{trans}$ can be interpreted as the relative change in local use when the corresponding IV increases by 10 percentage points.  For example, if $\zeta_{trans} = 1.5$, then local use is 50% greater when the corresponding IV is 10 points greater.  Transformed values $>1$ therefore correspond to increases; values $<1$ correspond to decreases.  Line ranges give transformed 5-95 percentile intervals of Monte Carlo impact draws. All estimates are based on the complete original datasets, not the block resamples.  \label{fig.impacts_backtrans}](11_impacts_backtrans.png)
+![Total impact estimates from the spatial Durbin models for CTD = 60 km. Total impact estimates $\hat\zeta$ are transformed as $\zeta_{trans} = 10^{\zeta/10}$.  $\zeta_{trans}$ can be interpreted as the relative change in local use when the corresponding IV increases by 10 percentage points.  For example, if $\zeta_{trans} = 1.5$, then local use is 50% greater when the corresponding IV is 10 points greater.  Transformed values $>1$ therefore correspond to increases; values $<1$ correspond to decreases.  Line ranges give transformed 5-95 percentile intervals of Monte Carlo impact draws. All estimates are based on the complete original datasets, not the block resamples.  \label{fig.impacts_backtrans}](12_impacts_backtrans.png)
 
 |geography |CTD |IV                        | est. (transformed)| estimate| 95% CI|      |
 |:---------|:---|:-------------------------|------------------:|--------:|------:|-----:|
