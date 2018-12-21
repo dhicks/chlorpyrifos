@@ -240,7 +240,7 @@ ggsave('12_impacts_co.png', width = 10, height = 10)
 
 
 ## Backtransformed impacts ----
-impacts_long %>%
+impacts_rs_long %>%
     filter(ctd %in% c('ctd_90', 'ctd_30', 'ctd_60')) %>% 
     mutate(value.backtrans = 10^(value/10)) %>%
     ggplot(aes(CTD, value.backtrans, color = geography)) +
@@ -258,7 +258,7 @@ impacts_long %>%
     theme_minimal()
 ggsave('12_impacts_backtrans.png', width = 6, height = 4, scale = 1.5)
 
-impacts_long %>%
+impacts_rs_long %>%
     filter(ctd %in% c('ctd_60')) %>% 
     mutate(value.backtrans = 10^(value/10)) %>%
     group_by(geography, CTD, variable = var_print) %>%
