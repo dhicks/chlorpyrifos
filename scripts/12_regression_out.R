@@ -260,20 +260,20 @@ ggsave('12_impacts_backtrans.png', width = 6, height = 4, scale = 1.5)
 
 impacts_rs_long %>%
     filter(ctd %in% c('ctd_60')) %>% 
-    mutate(value.backtrans = 10^(value/10)) %>%
     group_by(geography, CTD, variable = var_print) %>%
     summarize(estimate = median(value), 
               ci_low = quantile(value, probs = quants[1]), 
               ci_high = quantile(value, probs = quants[3])) %>%
     ungroup() %>%
-    mutate(estimate_trans = 10^(estimate/10), 
-           geography = str_extract(geography, '[a-z]+')) %>%
+    mutate_if(is.numeric, 
+              ~ 10^(./10)) %>% 
+    mutate(geography = str_extract(geography, '[a-z]+')) %>%
     arrange(variable, geography) %>%
-    select(geography, CTD, variable, estimate_trans, everything()) %>%
+    select(CTD, variable, geography, everything()) %>%
     knitr::kable(digits = 2, 
-                 col.names = c('geography', 'CTD', 
+                 col.names = c('CTD', 
                                'IV', 
-                               'est. (transformed)', 
-                               'estimate', '95% CI', '')) %>%
+                               'geography', 
+                               'estimate', '95% interval', '')) %>%
     write_lines('12_impacts_table.txt')
 

@@ -1,11 +1,21 @@
 ---
-title: Environmental Justice Analysis of Chlorpyrifos Use in California's Central Valley
+title: "Census Demographics and Chlorpyrifos Use in California's Central Valley, 2011-15:  A Distributional Environmental Justice Analysis"
 author: Daniel J. Hicks
 bibliography: spatial_project.bib
 numbersections: true
+output:
+  pdf-document
+header-includes:
+  - \usepackage{lineno}
+  - \usepackage[nofiglist, notablist, fighead, tabhead]{endfloat}
+  - \DeclareDelayedFloatFlavour{longtable}{table}
 ---
 
 <!-- https://ehp.niehs.nih.gov/authors/research-articles -->
+
+*[RECORD checklist: http://www.equator-network.org/reporting-guidelines/record/]*
+
+\linenumbers
 
 # Abstract #
 
@@ -15,11 +25,11 @@ Chlorpyrifos is one of the most widely-used pesticides in the world, and is gene
 
 ## Objectives ##
 
-This paper conducts an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way distributions of environmental risks are associated with race, ethnicity, class, gender, and other systems of structural oppression.
+This paper reports an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way distributions of environmental risks are associated with race, ethnicity, class, gender, and other systems of structural oppression.
 
 ## Methods ##
 
-Data on chlorpyrifos use in townships and sections are retrieved from California's Department of Pesticide Registration (DPR) public pesticide use records (PUR) for 2011-2015.  These data are combined with demographic data for the Central Valley from the American Community Survey (ACS).  Spatial regression models are used to estimate effects of demographic covariates on local chlorpyrifos use.  A bootstrap method is used to account for measurement error in the ACS estimates.  
+Data on chlorpyrifos use in townships and sections are retrieved from California's Department of Pesticide Registration (DPR) public pesticide use records (PUR) for 2011-2015.  These data are combined with demographic data for the Central Valley from the American Community Survey (ACS).  Spatial regression models are used to estimate effects of demographic covariates on local chlorpyrifos use.  A novel bootstrap method is used to account for measurement error in the ACS estimates.  
 
 ## Results ##
 
@@ -36,9 +46,9 @@ Chlorpyrifos is one of the most widely-used pesticides in the world. In Californ
 
 Because of this evidence of harm and continued widespread use, chlorpyrifos is a significant topic of regulatory controversy. In 2007 the environmental organizations Pesticide Action Network North America (PANNA) and Natural Resources Defense Council (NRDC) filed a petition with US EPA, calling on the agency to revoke all tolerances for chlorpyrifos, effectively banning it.  In 2017, US EPA rejected this petition [@USEPAChlorpyrifosOrderDenying2017].  In 2018, Hawai'i and and California both proposed state-level restrictions on use of the chemical.  Hawai'i's complete ban comes into effect in 2023, with greater restrictions beginning in 2019 [@Hawaiibanpesticides].  California proposed classifying chlorpyrifos as a toxic air contaminant and prohibiting aerial applications [@GreenwireCalifrecommendsrestrictions2018], though as of this writing these proposed restrictions have not been adopted.  
 
-This paper reports an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.  Since the landmark report "Toxic Wastes and Race in the United States"  [@CommissionforRacialJusticeToxicWastesRace1987], a significant dEJ scholarly literature has emerged, documenting numerous inequitable distributions of multiple forms of environmental hazards [@PulidoEnvironmentalismEconomicJustice1996; @Shrader-FrechetteEnvironmentaljusticecreating2002; @BrownToxicExposuresContested2007; @MohaiEnvironmentalJustice2009; @OttingerTechnoscienceenvironmentaljustice2011; @TaylorToxiccommunitiesenvironmental2014].  
+This paper reports an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.  Since the landmark report "Toxic Wastes and Race in the United States"  [@CommissionforRacialJusticeToxicWastesRace1987], a significant dEJ scholarly literature has emerged, documenting numerous inequitable distributions of multiple forms of environmental hazards [@PulidoEnvironmentalismEconomicJustice1996; @Shrader-FrechetteEnvironmentaljusticecreating2002; @BrownToxicExposuresContested2007; @MohaiEnvironmentalJustice2009; @OttingerTechnoscienceenvironmentaljustice2011; @TaylorToxiccommunitiesenvironmental2014].  Specifically, this study asks to what degree community demographic characteristics — including but not limited to race, ethnicity, class, gender, and age — are associated with increased (or decreased) potential exposure to chlorpyrifos.  
 
-This study uses spatial regression modeling to examine the distribution of chlorpyrifos use across California's Central Valley.  While spatial methods are frequently used in dEJ analysis, they are often not statistically sophisticated [@MohaiEnvironmentalJustice2009; @ChakrabortyRevisitingToblerFirst2011], making them vulnerable to technical criticism [@OreskesMerchantsDoubtHow2011; @SteelEnvironmentalJusticeValues2012], which can limit their effectiveness as tools for policy change or legal remediation.  
+This study uses spatial regression techniques to examine the distribution of chlorpyrifos use across California's Central Valley.  While spatial methods are frequently used in dEJ analysis, they are often not statistically sophisticated [@MohaiEnvironmentalJustice2009; @ChakrabortyRevisitingToblerFirst2011], making them vulnerable to technical criticism [@OreskesMerchantsDoubtHow2011; @SteelEnvironmentalJusticeValues2012], which can limit their effectiveness as tools for policy change or legal remediation.  
 
 It is important to recognize that environmental justice issues are not exhausted by the distribution of environmental hazards.  @SchlosbergDefiningEnvironmentalJustice2007, drawing on previous work by @YoungJusticePoliticsDifference1990 and @Shrader-FrechetteEnvironmentaljusticecreating2002, argues that environmental justice also includes procedural justice and appropriate recognition and respect for community identity.  For example, racialized communities that are outside of an administrative district — and so formally excluded from land-use decisions within the district — might be exposed to pollution emitted as a result of those land-use decisions [@LondonStruggleWaterJustice2018]; this is a form of procedural injustice.  Or, communities' claims and arguments might be ignored because they are racialized or lack formal scientific credentials [@OttingerBucketsResistanceStandards2010].  This is an example of misrecognition and disrespect.  
 
@@ -48,7 +58,7 @@ Previous spatial analyses of chlorpyrifos use and exposure in California fall in
 
 The other category of studies use comparatively small-scale epidemiological methods to examine the public health impacts of chlorpyrifos exposure.  Several studies in this category have been conducted as part of the Center for the Health Assessment of Mothers and Children of Salinas (CHAMACOS) Study, based at University of California, Berkeley.  Over the past 20 years, the CHAMACOS Study has followed roughly 800 children in a farmworker community in California's Salinas Valley, a major agricultural region south of the San Francisco Bay Area [@CenterforEnvironmentalResearchandChildrensHealthCHAMACOSStudy].  @GunierPrenatalResidentialProximity2017 compare public pesticide use records to Wechsler Intelligence Scale for Children (WISC) scores for 255 7-year-old children.  Examining a 1 km buffer around the residence of pregnant women participants, they find that a 1 standard deviation increase in OP use (including chlorpyrifos) in this buffer during pregnancy is associated with a 1-4 point decrease in WISC scores.  [See also @LovasiChlorpyrifosExposureUrban2011.] 
 
-Because the CHAMACOS study focuses on populations that are likely to be highly exposed or socially vulnerable to chlorpyrifos impacts, it can be considered a dEJ study.  The CHAMACOS study focuses on estimating the health impacts of chlorpyrifos exposure, rather than relative or absolute degree of exposure.  In contrast, the current paper considers social vulnerability as a predictor for potential chlorpyrifos exposure.  The current study also works at a much larger scale, analyzing data for more than a thousand Census tracts and more than a million uses of chlorpyrifos across more than 10,000 square miles.  
+Because the CHAMACOS study focuses on populations that are likely to be highly exposed or socially vulnerable to chlorpyrifos impacts, it can be considered a dEJ study.  The CHAMACOS study focuses on estimating the health impacts of chlorpyrifos exposure, rather than relative or absolute degree of exposure.  In contrast, the current study considers social vulnerability as a predictor for potential chlorpyrifos exposure.  The current study also works at a much larger scale, analyzing data for more than a thousand Census tracts and more than a million uses of chlorpyrifos across more than 10,000 square miles.  
 
 Methodologically, the current study closely resembles a number of other studies that use spatial methods to identify demographic predictors of potential exposure to other kinds of environmental health hazards [@LievanosSociospatialDimensionsWater2017; @LievanosRetoolingCalEnviroScreenCumulative2018; @BakhtsiyaravaEnvironmentalinequalitypollution2017; @GrineskiAsianAmericansdisproportionate2017; @SilvaSpatialModelingIdentify2018].  Often these studies are framed explicitly in terms of environmental justice.  @LievanosRacedeprivationimmigrant2015 uses data from across the continental US and spatial methods to identify clusters of high lifetime cancer risk (LCR) due to air pollution, then (non-spatially) regresses these clusters against composite Census tract demographic variables.  This study concludes that "isolated Latino immigrant-economic deprivation is the strongest positive demographic predictor of tract presence in air-toxic LCR clusters, followed by black-economic deprivation and isolated Asian/Pacific Islander immigrant-economic deprivation" [@LievanosRacedeprivationimmigrant2015 50], a significant dEJ finding.  
 
@@ -60,7 +70,7 @@ Methodologically, the current study closely resembles a number of other studies 
 
 The study area for this project is California's Central Valley.  California is a major US agricultural producer, producing over 13% of US agricultural value [@CaliforniaDepartmentofFoodandAgricultureCaliforniaAgriculturalStatistics2017 2].  And the Central Valley is the largest center of California's agricultural production, containing 7 of the state's 10 most agriculturally productive counties [@CaliforniaDepartmentofFoodandAgricultureCaliforniaAgriculturalStatistics2017 5].  Consequently, the Central Valley is also a major user of pesticides, including chlorpyrifos.  Demographically, the Central Valley is home to substantial populations of both Hispanic and non-Hispanic White residents, which raises the possibility of inequitable distributions of pesticide exposure, i.e., distributive environmental injustice.  In addition, California's Department of Pesticide Regulation (DPR) makes available public, detailed, geocoded data on pesticide use in the state.  Combined with public data from the US Census, this makes it straightforward to retrieve data for a pesticide-related dEJ study.  
 
-The Central Valley can be defined in a number of different ways.  Since the units of analysis for this project are tracts and places designated by the US Census, a county-based definition was judged to be most appropriate.  Sacramento County was excluded because, unlike the rest of the region, most of its area is urban.  17 other counties were used to define the Central Valley; see table \ref{tab.counties} and figure \ref{fig.chlor_use}.  
+The Central Valley can be defined in a number of different ways.  Since the units of analysis for this study are tracts and places designated by the US Census, a county-based definition was judged to be most appropriate.  Sacramento County was excluded because, unlike the rest of the region, most of its area is urban.  17 other counties were used to define the Central Valley; see table \ref{tab.counties} and figure \ref{fig.chlor_use}.  
 
 |Sacramento Valley| San Joaquin Valley |
 |:-------|:------------|
@@ -73,7 +83,8 @@ The Central Valley can be defined in a number of different ways.  Since the unit
 | Sutter | Tulare |
 | Yolo   | Kern   |
 | Solano ||
-Table: California counties comprising the Central Valley for the purposes of this study.  Counties are listed roughly in north-south order.  Counties in the left column are in the Sacramento Valley (northern half of the Central Valley); counties in the right column are in the San Joaquin Valley (southern half).\label{tab.counties}
+
+Table: California counties comprising the Central Valley for the purposes of this study.  Counties are listed roughly in north-south order.  Left: counties in the Sacramento Valley (northern half of the Central Valley).  Right: counties in the San Joaquin Valley (southern half).\label{tab.counties}
 
 ## Pesticide Use ##
 
@@ -83,14 +94,14 @@ California's Department of Pesticide Regulation (DPR) releases annual public dat
 
 Full datasets for 2011-2015 were retrieved, combined, and filtered on chemical name for chlorpyrifos.  To avoid edge effects, PUR data for all counties across the state were used, not just the Central Valley.  For example, while Sacramento County was not included in the study area, there is some chlorpyrifos use in the southeastern part of Sacramento County, very close to areas of San Joaquin County that are included in the study area.  These Sacramento County uses are incorporated into the analysis.  
 
-Chlorpyrifos uses are spatially linked to townships and sections; annual and all-study-period active ingredient totals at the centroid of each 1 mile-square ($1.6 km \times 1.6 km$) section were calculated.  Because these centroids do not match the actual use locations (i.e., farm fields), the centroid totals might be unreliable for the smallest CTD, 1km (see discussion and table \ref{tab.ctd} below).  However, this error should be negligible for the other CTDs.  
+Chlorpyrifos uses are spatially linked to townships and sections; annual and all-study-period active ingredient totals at the centroid of each 1 mile-square ($1.6 km \times 1.6 km$) section were calculated.  Because these centroids do not match the actual use locations (i.e., farm fields), the centroid totals might be unreliable for the smallest CTD, 1 km (see discussion and table \ref{tab.ctd} below).  However, this error should be negligible for the other CTDs.  
 
 All together, 1,113,398 use records for chlorpyrifos were identified in the DPR datasets for 2011-15.  After aggregating by sections and years, there were 31,789 records, with annualized use values ranging from $10^-2$ to $10^4$ lbs of active ingredient.  
 
 
 ## Demographics ##
 
-The second primary dataset comprises American Community Survey (ACS) five-year estimates, from 2011-2015, for Census tracts and places in the 17 Central Valley Counties.  
+The second primary dataset comprises American Community Survey (ACS) five-year estimates, from 2011-2015, for all Census tracts and places in the 17 Central Valley counties.  
 
 For each tract and place, estimates and margin of error (MOE) values were retrieved for four categories of demographic variables:  *race and ethnicity* (Hispanic, non-Hispanic White, non-Hispanic Black, Indigenous, and Asian residents), *foreign-born noncitizens*, *children under 5* (who may be especially sensitive to chlorpyrifos exposure due to small body weight and critical neurodevelopmental stages), and *poverty* (individuals with an Census-determined income-poverty ratio below 1).  Because PUR data come only from agricultural uses, agricultural employment was also retrieved as a potential control.  (See also table \ref{tab.iv} and section \ref{sec.iv_selection}.)  
 
@@ -104,7 +115,7 @@ As a compromise, block population counts from the 2010 Census were used to calcu
 
 Chlorpyrifos use section centroids, Census tracts, and places included in the study area are shown in figure \ref{fig.chlor_use}.  
 
-![Data used in this study.  Red points are chlorpyrifos use totals, shown on a $log_{10}$ pounds scale and for this map 2015 only.  Blue regions are Census tracts included in the study area; yellow regions are included places.  All California counties are shown for context. \label{fig.chlor_use}](03_chlor_use.png)
+![Data used in this study.  Red points are chlorpyrifos use totals, shown on a log (base 10) pounds scale and for this map 2015 only.  Blue regions are Census tracts included in the study area; yellow regions are included places.  All California counties are shown for context. \label{fig.chlor_use}](03_chlor_use.png)
 
 
 
@@ -130,7 +141,7 @@ $\beta^d$ is referred to here as the *decay coefficient*.  Given a CTD, the deca
 \end{align}
 where $q_u$ is the total use at section $u$ and $d_{iu}$ is the Euclidean distance between the centroid of $i$ and the centroid of $u$.  To slightly account for the fact that the residents of a location are not located at its centroid, the decay coefficient is set to 1 whenever the centroid associated with use $u$ is within $i$, regardless of $d_{iu}$.  
 
-It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_exp} provide, at best, rough estimates of potential exposure.  They do not take into account prevailing or occurrent winds, or other chemical transport media such as water.  Diverse and variable processes of application, fixation, and chemical transformation are represented as simple exponential decay.  I therefore refer to these aggregate statistics as "local use" and "potential exposure" rather than "exposure."  By comparison, @LuoSpatiallydistributedpesticide2010 use a physical-chemical model and PUR data to produce more sophisticated estimates of chlorpyrifos loading.  
+It is important to stress that equations \ref{eqn.decay} and \ref{eqn.tot_pot_exp} provide, at best, rough estimates of potential exposure.  They do not take into account prevailing or occurrent winds, or other chemical transport media such as water.  Diverse and variable processes of application, fixation, and chemical transformation are represented as simple exponential decay.  These aggregate statistics are therefore referred to as "local use" and "potential exposure" rather than "exposure."  By comparison, @LuoSpatiallydistributedpesticide2010 use a physical-chemical model and PUR data to produce more sophisticated estimates of chlorpyrifos loading.  
 
 @MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  For robustness, this paper considers five CTD values, ranging from 1 km to 90 km.  See tables \ref{tab.ctd}, \ref{tab.dv}, and figure \ref{fig.ctd}.  
 
@@ -164,7 +175,7 @@ Table: Summary statistics for weighted local use values, by CTD and geography.  
 
 # Methods #
 
-The primary analysis of this study is a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models are constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with significance use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamtidyverseEasilyInstall2017; @WalkertidycensusLoadUS2018; @PebesmasfSimpleFeatures2018; @BivandspdepSpatialDependence2018; @TennekestmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/spatial_project>.  
+The primary analysis of this study is a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models are constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamtidyverseEasilyInstall2017; @WalkertidycensusLoadUS2018; @PebesmasfSimpleFeatures2018; @BivandspdepSpatialDependence2018; @TennekestmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos>.  *[push]*
 
 This study uses an effects estimation approach, rather than an hypothesis testing approach [@CummingNewStatisticsWhy2014].  Specifically, the regression specifications discussed below are designed to avoid or mitigate bias due to spatial correlation, and a bootstrap method is used to account for errors in the independent variable measures.  In addition, two major researcher degrees of freedom [@SimmonsFalsePositivePsychology2011] — geographic unit of analysis (tracts vs. places) and choice of CTD value — are tracked by analyzing 10 combinations of geography and CTD value in parallel.  
 
@@ -251,59 +262,67 @@ Figures \ref{fig.impacts_1}, \ref{fig.impacts_10}, \ref{fig.impacts_369} show to
 
 ![Total IV impacts, CTD = 30, 60, and 90 km.  Solid lines and circles show estimates inferred from observed data/ACS point estimates.  Dashed lines and triangles show estimates inferred from bootstrap resamples to account for ACS margins of error.  Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.impacts_369}](12_impacts_369.png)
 
+<!--
 ![Total impacts from county-level models, with non-resampled full data estimates for comparison.  All estimates on log scale. Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.county}](12_impacts_co.png)
+-->
 
-Comparing the three plots, the estimates tend to be much more uncertain for smaller CTD values (evaluating uncertainty by the width of the 5%-95% quantile interval).  Indeed, for CTD = 1 km, several estimates are uncertain across 10s of orders of magnitude.  By contrast, for CTD values of 30 or greater, uncertainty is often less than about 2 orders of magnitude, and in some cases substantially less than 1 order of magnitude.  In short, whatever physical validity different CTD values have, higher CTD values lead to more precise effects estimates.  The largest uncertainties are for the smallest subpopulations in the study area, namely, Asian, Black, Indigenous, and children proportions.  
+Estimates are generally much more uncertain for smaller CTD values (evaluating uncertainty by the width of the 5%-95% quantile interval).  Indeed, for CTD = 1 km, several estimates are uncertain across 10s of orders of magnitude.  By contrast, for CTD values of 30 or greater, uncertainty is often less than about 2 orders of magnitude, and in some cases substantially less than 1 order of magnitude.  In short, whatever physical validity different CTD values have, higher CTD values lead to more precise effects estimates.  The largest uncertainties are for the smallest subpopulations in the study area, namely, Asian, Black, Indigenous, and children proportions.  
 
-The figures show both the bootstrap resamples (triangles and dashed lines) and observed data/ACS point estimates (circles and solid lines).  There is general agreement between both resamples and observed data for both effect point estimates and effect uncertainty.  Even when the point estimates are somewhat different, the degree of uncertainty (width of the 5%-95% interval) is often very similar.  This is surprising because the resample-derived estimates include additional variation from measurement error.  
+The figures show both the bootstrap resamples (triangles and dashed lines) and observed data/ACS point estimates (circles and solid lines).  There is general agreement between both resamples and observed data for both effect point estimates and effect uncertainty.  Even when the point estimates are somewhat different, the degree of uncertainty (width of the 5%-95% interval) is often similar.  <!--This is surprising because the resample-derived estimates include additional variation from measurement error. -->
 
-Comparing the resamples and observed data estimates, in many cases there are indications of regression inflation rather than regression attenuation.  That is, estimates inferred from the observed data are often slightly further from 0 than the resample-derived estimates, which account for measurement error.  Given both sets of estimates, this trend means that the observed-derived estimates may be preferable in contexts, such as EJ-sensitive policymaking, where underestimation of potential harmful effects is more serious than overestimation. Bootstrapped estimates are used below.  
+<!--Comparing the resamples and observed data estimates, in many cases there are indications of regression inflation rather than regression attenuation.  That is, estimates inferred from the observed data are often slightly further from 0 than the resample-derived estimates, which account for measurement error.  Given both sets of estimates, this trend means that the observed-derived estimates may be preferable in contexts, such as EJ-sensitive policymaking, where underestimation of potential harmful effects is more serious than overestimation. Bootstrapped estimates are used below.-->
 
-![Total impact estimates from the spatial Durbin models. Total impact estimates $\zeta$ are transformed as $\zeta_{trans} = 10^{\zeta/10}$.  $\zeta_{trans}$ can be interpreted as the relative change in local use when the corresponding IV increases by 10 percentage points.  For example, if $\zeta_{trans} = 1.5$, then local use is 50% greater when the corresponding IV is 10 points greater.  Transformed values $>1$ therefore correspond to increases; values $<1$ correspond to decreases.  Line ranges give transformed 5-95 percentile intervals of Monte Carlo impact draws. All estimates are based on the resampled datasets.  \label{fig.impacts_backtrans}](12_impacts_backtrans.png)
+![Total impact estimates from the spatial Durbin models. Total impact estimates $\zeta$ are transformed as $\zeta_{trans} = 10^{\zeta/10}$.  $\zeta_{trans}$ can be interpreted as the multiplicative change in local use when the corresponding IV increases by 10 percentage points.  For example, if $\zeta_{trans} = 1.5$, then local use is 50% greater when the corresponding IV is 10 points greater.  Transformed values $>1$ therefore correspond to increases; values $<1$ correspond to decreases.  Line ranges give transformed 5-95 percentile intervals of Monte Carlo impact draws. All estimates are based on the resampled datasets.  \label{fig.impacts_backtrans}](12_impacts_backtrans.png)
 
-|geography |CTD |IV                        | est. (transformed)| estimate| 95% CI|      |
-|:---------|:---|:-------------------------|------------------:|--------:|------:|-----:|
-|places    |60  |ag. employment            |               0.99|    -0.04|  -0.59|  0.49|
-|tracts    |60  |ag. employment            |               1.09|     0.38|  -0.05|  0.92|
-|places    |60  |Asian                     |               0.97|    -0.14|  -1.57|  1.31|
-|tracts    |60  |Asian                     |               1.10|     0.43|   0.08|  0.78|
-|places    |60  |Black                     |               0.79|    -1.02|  -2.72|  0.46|
-|tracts    |60  |Black                     |               0.88|    -0.55|  -0.99| -0.11|
-|places    |60  |children                  |               1.01|     0.04|  -1.97|  2.02|
-|tracts    |60  |children                  |               0.98|    -0.10|  -1.52|  1.32|
-|places    |60  |county ag. employment     |               1.37|     1.35|   0.44|  2.26|
-|tracts    |60  |county ag. employment     |               1.46|     1.64|   1.06|  2.22|
-|places    |60  |county pop. density (log) |               1.05|     0.20|  -0.01|  0.40|
-|tracts    |60  |county pop. density (log) |               1.02|     0.08|  -0.02|  0.18|
-|places    |60  |Hispanic                  |               1.06|     0.26|  -0.21|  0.72|
-|tracts    |60  |Hispanic                  |               1.14|     0.57|   0.31|  0.83|
-|places    |60  |Indigenous                |               0.96|    -0.18|  -2.43|  1.74|
-|tracts    |60  |Indigenous                |               0.69|    -1.59|  -4.46|  1.29|
-|places    |60  |noncitizens               |               0.94|    -0.25|  -1.38|  0.89|
-|tracts    |60  |noncitizens               |               0.80|    -0.99|  -1.81| -0.21|
-|places    |60  |pop. density (log)        |               1.05|     0.22|   0.08|  0.35|
-|tracts    |60  |pop. density (log)        |               1.06|     0.24|   0.19|  0.28|
-|places    |60  |poverty                   |               1.06|     0.26|  -0.34|  0.86|
-|tracts    |60  |poverty                   |               0.99|    -0.06|  -0.32|  0.21|
-|places    |60  |women                     |               1.01|     0.02|  -1.05|  1.10|
-|tracts    |60  |women                     |               0.97|    -0.14|  -1.12|  0.85|
+|CTD |IV                        |geography | estimate| 95% interval|     |
+|:---|:-------------------------|:---------|--------:|------------:|----:|
+|60  |ag. employment            |places    |     0.99|         0.87| 1.12|
+|60  |ag. employment            |tracts    |     1.09|         0.99| 1.24|
+|60  |Asian                     |places    |     0.97|         0.70| 1.35|
+|60  |Asian                     |tracts    |     1.10|         1.02| 1.20|
+|60  |Black                     |places    |     0.79|         0.53| 1.11|
+|60  |Black                     |tracts    |     0.88|         0.80| 0.97|
+|60  |children                  |places    |     1.01|         0.64| 1.59|
+|60  |children                  |tracts    |     0.98|         0.70| 1.35|
+|60  |county ag. employment     |places    |     1.37|         1.11| 1.68|
+|60  |county ag. employment     |tracts    |     1.46|         1.28| 1.67|
+|60  |county pop. density (log) |places    |     1.05|         1.00| 1.10|
+|60  |county pop. density (log) |tracts    |     1.02|         0.99| 1.04|
+|60  |Hispanic                  |places    |     1.06|         0.95| 1.18|
+|60  |Hispanic                  |tracts    |     1.14|         1.07| 1.21|
+|60  |Indigenous                |places    |     0.96|         0.57| 1.49|
+|60  |Indigenous                |tracts    |     0.69|         0.36| 1.35|
+|60  |noncitizens               |places    |     0.94|         0.73| 1.23|
+|60  |noncitizens               |tracts    |     0.80|         0.66| 0.95|
+|60  |pop. density (log)        |places    |     1.05|         1.02| 1.08|
+|60  |pop. density (log)        |tracts    |     1.06|         1.05| 1.07|
+|60  |poverty                   |places    |     1.06|         0.92| 1.22|
+|60  |poverty                   |tracts    |     0.99|         0.93| 1.05|
+|60  |women                     |places    |     1.01|         0.79| 1.29|
+|60  |women                     |tracts    |     0.97|         0.77| 1.22|
 
-Table: Estimates of total impact (direct + indirect) from spatial Durbin models for CTD = 60km.  *IV*:  Independent variable.  *Est. (transformed)*: Point estimate for total impact $\zeta$, transformed as $10^{\zeta/10}$ to aid interpretation. \label{tab.impacts}
+Table: Estimates of total impact (direct + indirect) from spatial Durbin models for CTD = 60km.  *IV*:  Independent variable.  Estimates and percentiles have been transformed as $\zeta_{trans} = 10^{\zeta/10}$ to aid interpretation. $\zeta_{trans}$ can be interpreted as the multiplicative change in local use when the corresponding IV increases by 10 percentage points.  \label{tab.impacts} 
 
+
+# Discussion #
 
 ## Discussion of Selected IVs ##
+
+*[purely descriptive, "no conclusions" ¶¶ in Results]*
 
 For closer discussion, I selected total impact estimates for Hispanic, poverty, and agricultural employment proportion, and population density, across CTD values of 30-60-90 km, using the bootstrapped estimates to account for measurement error.  These estimates are reported in figure \ref{fig.impacts_backtrans} and table \ref{tab.impacts}.  Transformed estimates are reported to aid interpretation:  when the estimated total impact $\zeta$ is transformed as $\zeta_{trans} = 10^{\zeta/10}$, $\zeta_{trans}$ can be interpreted as the multiplicative change in local chlorpyrifos use associated with a 10% increase in the corresponding IV.  For example, if $\zeta_{trans} = 1.5$ for some proportion variable, then a 10-percentage-point increase in this proportion is associated with a 50% increase in local chlorpyrifos use.  
 
 The larger CTD values were chosen chosen for this discussion for three reasons.  First, they yield much more precise estimates than 1 km and 10 km values, which can vary over multiple orders of magnitude.  They also yield more skeptical or epistemically conservative estimates, in the sense that their estimates are closer to 0; although arguably this kind of skepticism is inappropriate in the context of environmental health [@HicksInductiveRiskRegulatory2018].  For example, if a CTD of 1 km is correct, then (figure \ref{fig.impacts_1}) fully Hispanic communities see an increase in local chlorpyrifos use of 5-20 orders of magnitude compared to fully non-Hispanic White communities.  Finally, a CTD of approximately 60 km is supported by the literature; namely, @MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  Also including values of 30 and 90 km at this stage allows for robustness checks.  
 
-The effects of agricultural employment and poverty proportions are ambiguous across different types of geography.  For agricultural employment, there is consistent evidence of a positive effect for tracts (all compatibility intervals are entirely or almost entirely above 1), perhaps as great as 1.5-fold.  But for places the estimates are centered around 1, and are generally compatible with positive, negative, and negligible effects.  Similarly, for poverty, 4 of the 6 estimates are centered around 1, and the other two estimates (both for places) extend somewhat below 1.  
+The effects of agricultural employment and poverty proportions *[differ]* are ambiguous across different types of geography.  For agricultural employment, there is consistent evidence of a positive effect for tracts (all compatibility intervals are entirely or almost entirely above 1), perhaps as great as 1.5-fold.  But for places the estimates are centered around 1, and are generally compatible with positive, negative, and negligible effects.  Similarly, for poverty, 4 of the 6 estimates are centered around 1, and the other two estimates (both for places) extend somewhat below 1.  
 
 Inconsistent estimates between tracts and places may be due to the way places are constructed, namely, as a way to capture relatively dense population centers.  This process might exclude many agricultural workers and the rural poor, which in turn might lead to biased effect estimates; though table \ref{tab.desc_stats} indicates that mean agricultural employment and poverty proportion are greater in places than in tracts.  County-level heterogeneity may also be a factor.  For example, poverty appears to have a positive effect for places in Stanislaus and Tulare counties, a negative effect in Butte county, and perhaps a negative effect in Kern county.  
 
-There is consistent evidence of a positive effect for population density, with estimates ranging from 1.01- to 1.16-fold.  Estimates for tracts are slightly more precise, giving a narrower range of approximately 1.04-1.13-fold.  This positive effect is counterintuitive:  since chlorpyrifos is used primarily in agricultural areas, with low population density, we would expect to see a negative association.  
+*['estimates agree']* There is consistent evidence of a positive effect for population density, with estimates ranging from 1.01- to 1.16-fold.  Estimates for tracts are slightly more precise, giving a narrower range of approximately 1.04-1.13-fold.  This positive effect is counterintuitive:  since chlorpyrifos is used primarily in agricultural areas, with low population density, we would expect to see a negative association.  
 
 Finally, there is consistent evidence that an increase in Hispanic proportion is associated with an increase in potential chlorpyrifos exposure.  This evidence is stronger with tracts than places, due to the combination of greater uncertainty and perhaps weaker effects across places.  But the positive association appears across all CTD values, in both observed and resampled datasets, and in 6 out of 11 county-level models (Fresno, Kern, Solano, and Tulare counties).  For tracts, the estimates of these effects range from 1.05 to nearly 1.4.  Using these estimates, a 60-point difference in Hispanic proportion, corresponding to the difference between a Hispanic-minority and Hispanic-majority tract, would be associated with as much as a 6-fold increase in potential chlorpyrifos exposure.  
+
+## Limitations ##
 
 Four limitations of this study are worth noting.  First, there are limitations in the DPR public use data.  This dataset covers agricultural uses only, and does not include industrial, commercial, state, or residential use of pesticides.  This may not be an issue for chlorpyrifos, which is banned for residential use in the US and is used primarily for agricultural purposes.  However, for other pesticides that are widely used in sectors not covered by the DPR data, the DPR data are likely to have significant gaps.  In addition, the DPR dataset tracks active ingredients, not the complex mixtures of product formulations that may enhance or mitigate active ingredient toxicity.  
 
@@ -313,8 +332,7 @@ Third, the spatial distribution of population data does not model occupational e
 
 Fourth, there are signs of heteroscedasticity and residual spatial autocorrelation in the spatial Durbin models, especially for places.  There were indications throughout the study that county-level effects would address the non-Gaussian patterns in the data.  Other data sources might be incorporated to account for background baseline chlorpyrifos use rates, such as nearby crop species cultivated.  Or spatial random effects models — which allow effects to vary across space — might be used.  
 
-
-# Discussion #
+## Potential Policy Implications ##
 
 This study finds consistent evidence that a 10-point increase in Hispanic population proportion is associated with a 1.05-1.4-fold increase in local chlorpyrifos use.  Using these estimates, a 60-point difference in Hispanic proportion would be associated with as much as a 6-fold increase in potential chlorpyrifos exposure.  
 
@@ -334,6 +352,12 @@ The plausibility of this scenario indicates a need for social science methods an
 By applying spatial regression methods to two administrative data sets, this study finds that Hispanic communities in California's Central Valley are associated with higher local chlorpyrifos use, and so higher potential chlorpyrifos exposure.  This distributive environmental injustice may be a key stage in a cumulative disadvantage process, in which ethnic disparities in chlorpyrifos exposure exacerbate other social and economic disparities, and ultimately increase disparities in pesticide exposure even further.  
 
 
+# Acknowledgment #
+
+*[TODO]*
+
+
+\processdelayedfloats
 
 
 # References #

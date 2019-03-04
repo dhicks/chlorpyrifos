@@ -1,11 +1,15 @@
 ---
-title: Supplement to "Environmental Justice Analysis of Chlorpyrifos Use in California's Central Valley"
+title: "Supplemental Material for 'Census Demographics and Chlorpyrifos Use in California's Central Valley, 2011-15:  A Distributional Environmental Justice Analysis'"
 author: Daniel J. Hicks
 bibliography: spatial_project.bib
 numbersections: true
 toc: true
+header-includes:
+  - \usepackage[nomarkers, nofiglist, notablist, fighead, tabhead]{endfloat}
+  - \DeclareDelayedFloatFlavour{longtable}{table}
 ---
 
+\renewcommand{\thefigure}{S\arabic{figure}}
 
 # Spatial Weights #
 
@@ -56,6 +60,11 @@ Unlike non-spatial linear regression models, spatial models treat observations â
 Spatial econometricians have introduced the notion of *impacts* for the interpretation of regression coefficients under spatial feedback.  In non-spatial linear regression models without interaction, the coefficient $\beta_i$ for IV $x_i$ is identical to the partial derivative $\partial y / \partial x_i$.  $\beta_i$ can therefore be interpreted directly as the marginal effect of $x_i$ on $y$ (bracketing concerns about causal inference, etc.).  But in the spatial Durbin model, the partial derivative 
 $$ \frac{\partial y}{\partial x_i} = (I_n - W\rho)^{-1}(I_n \beta_i + W \theta_i) = S_i(W) $$
 depends not just on the coefficients $\beta_i$ and $\theta_i$, but also the autoregression coefficient $\rho$.  And the value of this partial derivative at location $l$ depends on its connection to other locations, as encoded in $W$.  The *total impacts* for IV $x_i$ are formally defined as the mean row sum of $S_i(W)$, which corresponds to averaging $S_i(W)$ across locations.  
+
+
+![Total impacts from county-level models, with non-resampled full data estimates for comparison.  All estimates on log scale. Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.county}](12_impacts_co.png)
+
+\processdelayedfloats
 
 
 # References #
