@@ -11,6 +11,13 @@ header-includes:
 
 \renewcommand{\thefigure}{S\arabic{figure}}
 
+# Data Cleaning #
+
+DPR conducts automated quality checks of the PUR data, and flags errors and changed values in the data.  Entries with "potential duplicate" and "outlier" error codes were examined.  For the first few years of the dataset (2011 through 2013), it appears that DPR flagged but did not remove potential duplicates.  In later years, it appears that DPR removes potential duplicates in the released data.  Potential duplicates from the earlier years were therefore removed. 
+
+DPR automatically identifies potential outliers as entries satisfying at least one of two criteria.  The first criterion is 200 lbs (solids and sprays) or 1000 lbs (fumigants) or more of active ingredient used per acre.  The second criterion is "50 times the median rate for all uses with the same pesticide product, crop treated, unit treated, and record type" (from the documentation file included in the data release).  Inspecting the entries with "potential outlier" flags, it appears that the main datafiles include corrected/estimated/modified values, not the original potential outliers.  The corrected/estimated/modified values given in the data were used without further adjustment.  
+
+
 # Spatial Weights #
 
 To analyze the effect of choice of spatial weights, 8 row-normalized spatial weight constructions were considered for both tracts and places:  contiguity, inverse distance weights (with an outer limit of 50 km and a decay of $\frac{1}{d}$), and $k$-nearest-neighbors (KNN) with $k$ ranging from 3 to 8.  As noted above, 62% of places had no contiguity-based neighbors.  Moran's $I$ was calculated for population densities corresponding to independent variables, e.g., density of Hispanic population, calculated as the number of Hispanic residents per square kilometer.    

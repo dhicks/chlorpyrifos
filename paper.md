@@ -1,8 +1,8 @@
 ---
 title: "Census Demographics and Chlorpyrifos Use in California's Central Valley, 2011-15:  A Distributional Environmental Justice Analysis"
 author: Daniel J. Hicks
+institute:  University of California, Davis
 bibliography: spatial_project.bib
-numbersections: true
 output:
   pdf-document
 header-includes:
@@ -65,8 +65,10 @@ Because the CHAMACOS study focuses on populations that are likely to be highly e
 Methodologically, the current study closely resembles a number of other studies that use spatial methods to identify demographic predictors of potential exposure to other kinds of environmental health hazards [@LievanosSociospatialDimensionsWater2017; @LievanosRetoolingCalEnviroScreenCumulative2018; @BakhtsiyaravaEnvironmentalinequalitypollution2017; @GrineskiAsianAmericansdisproportionate2017; @SilvaSpatialModelingIdentify2018].  Often these studies are framed explicitly in terms of environmental justice.  @LievanosRacedeprivationimmigrant2015 uses data from across the continental US and spatial methods to identify clusters of high lifetime cancer risk (LCR) due to air pollution, then (non-spatially) regresses these clusters against composite Census tract demographic variables.  This study concludes that "isolated Latino immigrant-economic deprivation is the strongest positive demographic predictor of tract presence in air-toxic LCR clusters, followed by black-economic deprivation and isolated Asian/Pacific Islander immigrant-economic deprivation" [@LievanosRacedeprivationimmigrant2015 50], a significant dEJ finding.  
 
 
+# Methods #
 
-# Data #
+The primary analysis of this study is a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models are constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamtidyverseEasilyInstall2017; @WalkertidycensusLoadUS2018; @PebesmasfSimpleFeatures2018; @BivandspdepSpatialDependence2018; @TennekestmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos>.  *[push]*
+
 
 ## Study Area ##
 
@@ -88,6 +90,7 @@ The Central Valley can be defined in a number of different ways.  Since the unit
 
 Table: California counties comprising the Central Valley for the purposes of this study.  Counties are listed roughly in north-south order.  Left: counties in the Sacramento Valley (northern half of the Central Valley).  Right: counties in the San Joaquin Valley (southern half).\label{tab.counties}
 
+
 ## Pesticide Use ##
 
 California's Department of Pesticide Regulation (DPR) releases annual public datasets for agricultural pesticide use across the state, known as Pesticide Use Reports (PUR) [^DPR].  These data exclusively report agriculture use; this limitation is acceptable for studying chlorpyrifos, which has been banned for residential use, in the agriculture-heavy Central Valley.  
@@ -96,7 +99,7 @@ California's Department of Pesticide Regulation (DPR) releases annual public dat
 
 Full datasets for 2011-2015 were retrieved, combined, and filtered on chemical name for chlorpyrifos.  To avoid edge effects, PUR data for all counties across the state were used, not just the Central Valley.  For example, while Sacramento County was not included in the study area, there is some chlorpyrifos use in the southeastern part of Sacramento County, very close to areas of San Joaquin County that are included in the study area.  These Sacramento County uses are incorporated into the analysis.  
 
-Chlorpyrifos uses are spatially linked to townships and sections; annual and all-study-period active ingredient totals at the centroid of each 1 mile-square ($1.6 km \times 1.6 km$) section were calculated.  Because these centroids do not match the actual use locations (i.e., farm fields), the centroid totals might be unreliable for the smallest CTD, 1 km (see discussion and table \ref{tab.ctd} below).  However, this error should be negligible for the other CTDs.  
+Chlorpyrifos uses are spatially linked to townships and sections; annual and all-study-period active ingredient totals at the centroid of each 1 mile-square (1.6 km $\times$ 1.6 km) section were calculated.  Because these centroids do not match the actual use locations (i.e., farm fields), the centroid totals might be unreliable for the smallest CTD, 1 km (see discussion and table \ref{tab.ctd} below).  However, this error should be negligible for the other CTDs.  
 
 All together, 1,113,398 use records for chlorpyrifos were identified in the DPR datasets for 2011-15.  After aggregating by sections and years, there were 31,789 records, with annualized use values ranging from $10^-2$ to $10^4$ lbs of active ingredient.  
 
@@ -118,7 +121,6 @@ As a compromise, block population counts from the 2010 Census were used to calcu
 Chlorpyrifos use section centroids, Census tracts, and places included in the study area are shown in figure \ref{fig.chlor_use}.  
 
 ![Data used in this study.  Red points are chlorpyrifos use totals, shown on a log (base 10) pounds scale and for this map 2015 only.  Blue regions are Census tracts included in the study area; yellow regions are included places.  All California counties are shown for context. \label{fig.chlor_use}](03_chlor_use.png)
-
 
 
 ## Linking Pesticide Use to Tracts and Places ##
@@ -175,9 +177,7 @@ Table: Characteristic Travel Distance (CTD) values used in this study, and corre
 Table: Summary statistics for weighted local use values, by CTD and geography.  Mean, standard deviation, minimum, and maximum in logged pounds.  \label{tab.dv}
 
 
-# Methods #
-
-The primary analysis of this study is a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models are constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamtidyverseEasilyInstall2017; @WalkertidycensusLoadUS2018; @PebesmasfSimpleFeatures2018; @BivandspdepSpatialDependence2018; @TennekestmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos>.  *[push]*
+## Effects Estimation ##
 
 This study uses an effects estimation approach, rather than an hypothesis testing approach [@CummingNewStatisticsWhy2014].  Specifically, the regression specifications discussed below are designed to avoid or mitigate bias due to spatial correlation, and a bootstrap method is used to account for errors in the independent variable measures.  In addition, two major researcher degrees of freedom [@SimmonsFalsePositivePsychology2011] — geographic unit of analysis (tracts vs. places) and choice of CTD value — are tracked by analyzing 10 combinations of geography and CTD value in parallel.  
 
@@ -357,8 +357,7 @@ By applying spatial regression methods to two administrative data sets, this stu
 
 # Acknowledgment #
 
-*[TODO]*
-
+No specific funding was allocated for this study.  DJH's postdoctoral fellowship is funded by a gift to UC Davis from Elsevier.  
 
 \processdelayedfloats
 
