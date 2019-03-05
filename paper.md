@@ -15,6 +15,8 @@ header-includes:
 
 *[RECORD checklist: http://www.equator-network.org/reporting-guidelines/record/]*
 
+*[check tense]*
+
 \linenumbers
 
 # Abstract #
@@ -35,7 +37,7 @@ Data on chlorpyrifos use in townships and sections are retrieved from California
 
 Effects of agricultural employment and poverty on local chlorpyrifos use are ambiguous and inconsistent between Census tracts and Census-designated places.  Due to large uncertainties in effects estimates, it is unclear if there is any association between local chlorpyrifos use and Asian, Indigenous, and young children population proportion.  There is consistent evidence that Hispanic population proportion is associated with increased local chlorpyrifos use.  A 10-point increase in Hispanic proportion is associated with an estimated 1.05-1.4-fold increase in local chlorpyrifos use across Census tract models. 
 
-## Conclusions ## 
+## Discussion ## 
 
 By applying spatial regression methods to two administrative data sets, this study finds that Hispanic communities in California's Central Valley are associated with higher local chlorpyrifos use, and so higher potential chlorpyrifos exposure.  
 
@@ -250,8 +252,6 @@ In the present study, the uncertainty of concern is with the ACS estimates for t
 
 Except when noted, the analysis in this section focuses on the resampled dataset and its models.  
 
-## IV Impacts ##
-
 Impacts are reported, rather than coefficients, to account for spatial feedback in the effects of independent variables [@LeSageIntroductionSpatialEconometrics2009, §2.7].  For further discussion, see the electronic supplement.  Impacts were calculated using the `impacts()` function in the R package `spdep`, which uses a Monte Carlo method based on the traces of the powers of the spatial weights matrix $W$.  For the resample dataset, these Monte Carlo draws were aggregated across the resamples to produce bootstrap distributions of impact.  
 
 Figures \ref{fig.impacts_1}, \ref{fig.impacts_10}, \ref{fig.impacts_369} show total impact Monte Carlo estimates for IVs for CTD values of 1, 10, and 30-60-90 respectively. Total impact estimates were made for the spatial Durbin models fit on the observed dataset as well as each bootstrap resample of the IV estimates.  Impact estimates for the resampled datasets were combined into a single estimated sampling distribution for each geography-CTD-IV combination.  
@@ -266,11 +266,15 @@ Figures \ref{fig.impacts_1}, \ref{fig.impacts_10}, \ref{fig.impacts_369} show to
 ![Total impacts from county-level models, with non-resampled full data estimates for comparison.  All estimates on log scale. Tract estimates in blue; place estimates in red.  Ends of line ranges indicate 5th and 95th percentiles of Monte Carlo impact draws; circles/triangles indicate medians.\label{fig.county}](12_impacts_co.png)
 -->
 
-Estimates are generally much more uncertain for smaller CTD values (evaluating uncertainty by the width of the 5%-95% quantile interval).  Indeed, for CTD = 1 km, several estimates are uncertain across 10s of orders of magnitude.  By contrast, for CTD values of 30 or greater, uncertainty is often less than about 2 orders of magnitude, and in some cases substantially less than 1 order of magnitude.  In short, whatever physical validity different CTD values have, higher CTD values lead to more precise effects estimates.  The largest uncertainties are for the smallest subpopulations in the study area, namely, Asian, Black, Indigenous, and children proportions.  
+Estimates are generally much more uncertain (wider percentile intervals) for smaller CTD values.  Indeed, for CTD = 1 km, several estimates are uncertain across tens of orders of magnitude.  By contrast, for CTD values of 30 or greater, uncertainty is often less than about 2 orders of magnitude, and in some cases substantially less than 1 order of magnitude.  In short, whatever physical validity different CTD values have, higher CTD values have more precise effects estimates.  The largest uncertainties are for the smallest subpopulations in the study area, namely, Asian, Black, Indigenous, and children proportions.  
 
 The figures show both the bootstrap resamples (triangles and dashed lines) and observed data/ACS point estimates (circles and solid lines).  There is general agreement between both resamples and observed data for both effect point estimates and effect uncertainty.  Even when the point estimates are somewhat different, the degree of uncertainty (width of the 5%-95% interval) is often similar.  <!--This is surprising because the resample-derived estimates include additional variation from measurement error. -->
 
 <!--Comparing the resamples and observed data estimates, in many cases there are indications of regression inflation rather than regression attenuation.  That is, estimates inferred from the observed data are often slightly further from 0 than the resample-derived estimates, which account for measurement error.  Given both sets of estimates, this trend means that the observed-derived estimates may be preferable in contexts, such as EJ-sensitive policymaking, where underestimation of potential harmful effects is more serious than overestimation. Bootstrapped estimates are used below.-->
+
+For space, the remainder of this discussion focuses on total impact estimates for Hispanic, poverty, and agricultural employment proportion, and population density, across CTD values of 30-60-90 km, using the bootstrapped estimates to account for measurement error.  These estimates are reported in figure \ref{fig.impacts_backtrans} and (for CTD 60km only) table \ref{tab.impacts}.  Transformed estimates are reported to aid interpretation:  when the estimated total impact $\zeta$ is transformed as $\zeta_{trans} = 10^{\zeta/10}$, $\zeta_{trans}$ can be interpreted as the multiplicative change in local chlorpyrifos use associated with a 10% increase in the corresponding IV.  For example, if $\zeta_{trans} = 1.5$ for some proportion variable, then a 10-percentage-point increase in this proportion is associated with a 50% increase in local chlorpyrifos use.  
+
+<!--The larger CTD values were chosen chosen for this discussion for three reasons.  First, they yield much more precise estimates than 1 km and 10 km values, which can vary over multiple orders of magnitude.  They also yield more skeptical or epistemically conservative estimates, in the sense that their estimates are closer to 0; although arguably this kind of skepticism is inappropriate in the context of environmental health [@HicksInductiveRiskRegulatory2018].  For example, if a CTD of 1 km is correct, then (figure \ref{fig.impacts_1}) fully Hispanic communities see an increase in local chlorpyrifos use of 5-20 orders of magnitude compared to fully non-Hispanic White communities.  Finally, a CTD of approximately 60 km is supported by the literature; namely, @MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  Also including values of 30 and 90 km at this stage allows for robustness checks.  -->
 
 ![Total impact estimates from the spatial Durbin models. Total impact estimates $\zeta$ are transformed as $\zeta_{trans} = 10^{\zeta/10}$.  $\zeta_{trans}$ can be interpreted as the multiplicative change in local use when the corresponding IV increases by 10 percentage points.  For example, if $\zeta_{trans} = 1.5$, then local use is 50% greater when the corresponding IV is 10 points greater.  Transformed values $>1$ therefore correspond to increases; values $<1$ correspond to decreases.  Line ranges give transformed 5-95 percentile intervals of Monte Carlo impact draws. All estimates are based on the resampled datasets.  \label{fig.impacts_backtrans}](12_impacts_backtrans.png)
 
@@ -303,24 +307,23 @@ The figures show both the bootstrap resamples (triangles and dashed lines) and o
 
 Table: Estimates of total impact (direct + indirect) from spatial Durbin models for CTD = 60km.  *IV*:  Independent variable.  Estimates and percentiles have been transformed as $\zeta_{trans} = 10^{\zeta/10}$ to aid interpretation. $\zeta_{trans}$ can be interpreted as the multiplicative change in local use when the corresponding IV increases by 10 percentage points.  \label{tab.impacts} 
 
+Impact estimates for agricultural employment and poverty proportions differ across different types of geography.  For agricultural employment, for tracts, all intervals are entirely or almost entirely above 1; while for places all intervals are centered near 1, and so are compatible with positive, negative, and negligible or null effects.  For poverty, 4 of 6 intervals are centered near 1; 2 intervals, both for places, are centered around 1.05, but extend below 1.  
+
+In contrast, estimates for population density agree across geography types, with interval endpoints ranging from as low as 1.01 to as high as 1.16.  Estimates for tracts are more precise than those for places, giving a narrower range of 1.04-1.13-fold.  Across both geography types, estimates are closer to 1 at greater CTD values.  
+
+Finally, estimates for Hispanic proportion generally agree across geography types.  A positive association appears across all CTD values, in both observed and resampled datasets, and in 6 out of 11 county-level models (Fresno, Kern, Solano, and Tulare counties).  For tracts, the estimates of these effects range from 1.05 to nearly 1.4. 
+
+
 
 # Discussion #
 
 ## Discussion of Selected IVs ##
 
-*[purely descriptive, "no conclusions" ¶¶ in Results]*
+For agricultural employment and poverty, estimates are compatible with positive, negative, and negligible effects, with differences in trends across geography types.  Disagreement in estimates between tracts and places may be due to the way places are constructed, namely, as a way to capture relatively dense population centers.  This process might exclude many agricultural workers and the rural poor, which in turn might lead to biased effect estimates; though table \ref{tab.desc_stats} indicates that mean agricultural employment and poverty proportion are greater in places than in tracts.  County-level heterogeneity may also be a factor.  For example, poverty appears to have a positive effect for places in Stanislaus and Tulare counties, a negative effect in Butte county, and perhaps a negative effect in Kern county.  
 
-For closer discussion, I selected total impact estimates for Hispanic, poverty, and agricultural employment proportion, and population density, across CTD values of 30-60-90 km, using the bootstrapped estimates to account for measurement error.  These estimates are reported in figure \ref{fig.impacts_backtrans} and table \ref{tab.impacts}.  Transformed estimates are reported to aid interpretation:  when the estimated total impact $\zeta$ is transformed as $\zeta_{trans} = 10^{\zeta/10}$, $\zeta_{trans}$ can be interpreted as the multiplicative change in local chlorpyrifos use associated with a 10% increase in the corresponding IV.  For example, if $\zeta_{trans} = 1.5$ for some proportion variable, then a 10-percentage-point increase in this proportion is associated with a 50% increase in local chlorpyrifos use.  
+The positive effect of population density is counterintuitive:  since chlorpyrifos is used primarily in agricultural areas, with low population density, we would expect to see a negative association.  
 
-The larger CTD values were chosen chosen for this discussion for three reasons.  First, they yield much more precise estimates than 1 km and 10 km values, which can vary over multiple orders of magnitude.  They also yield more skeptical or epistemically conservative estimates, in the sense that their estimates are closer to 0; although arguably this kind of skepticism is inappropriate in the context of environmental health [@HicksInductiveRiskRegulatory2018].  For example, if a CTD of 1 km is correct, then (figure \ref{fig.impacts_1}) fully Hispanic communities see an increase in local chlorpyrifos use of 5-20 orders of magnitude compared to fully non-Hispanic White communities.  Finally, a CTD of approximately 60 km is supported by the literature; namely, @MackayFateenvironmentlongrange2014 estimate the CTD for chlorpyrifos to be 62 km.  Also including values of 30 and 90 km at this stage allows for robustness checks.  
-
-The effects of agricultural employment and poverty proportions *[differ]* are ambiguous across different types of geography.  For agricultural employment, there is consistent evidence of a positive effect for tracts (all compatibility intervals are entirely or almost entirely above 1), perhaps as great as 1.5-fold.  But for places the estimates are centered around 1, and are generally compatible with positive, negative, and negligible effects.  Similarly, for poverty, 4 of the 6 estimates are centered around 1, and the other two estimates (both for places) extend somewhat below 1.  
-
-Inconsistent estimates between tracts and places may be due to the way places are constructed, namely, as a way to capture relatively dense population centers.  This process might exclude many agricultural workers and the rural poor, which in turn might lead to biased effect estimates; though table \ref{tab.desc_stats} indicates that mean agricultural employment and poverty proportion are greater in places than in tracts.  County-level heterogeneity may also be a factor.  For example, poverty appears to have a positive effect for places in Stanislaus and Tulare counties, a negative effect in Butte county, and perhaps a negative effect in Kern county.  
-
-*['estimates agree']* There is consistent evidence of a positive effect for population density, with estimates ranging from 1.01- to 1.16-fold.  Estimates for tracts are slightly more precise, giving a narrower range of approximately 1.04-1.13-fold.  This positive effect is counterintuitive:  since chlorpyrifos is used primarily in agricultural areas, with low population density, we would expect to see a negative association.  
-
-Finally, there is consistent evidence that an increase in Hispanic proportion is associated with an increase in potential chlorpyrifos exposure.  This evidence is stronger with tracts than places, due to the combination of greater uncertainty and perhaps weaker effects across places.  But the positive association appears across all CTD values, in both observed and resampled datasets, and in 6 out of 11 county-level models (Fresno, Kern, Solano, and Tulare counties).  For tracts, the estimates of these effects range from 1.05 to nearly 1.4.  Using these estimates, a 60-point difference in Hispanic proportion, corresponding to the difference between a Hispanic-minority and Hispanic-majority tract, would be associated with as much as a 6-fold increase in potential chlorpyrifos exposure.  
+Within the scope of this study, the evidence of a positive association between Hispanic proportion and potential chlorpyrifos exposure is robust, with agreement across choices of parameter values, model specifications, and levels of analysis.  Using estimates for tracts for CTD of 60km (1.07-1.21), a 60-point difference in Hispanic proportion — corresponding to the difference between a Hispanic-minority and Hispanic-majority tract — would be associated with a 1.5-3.1-fold increase in potential chlorpyrifos exposure.  
 
 ## Limitations ##
 
