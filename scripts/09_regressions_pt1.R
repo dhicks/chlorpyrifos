@@ -12,6 +12,16 @@ library(broom)
 library(assertthat)
 library(car)
 
+## A very crude augment() function for spatial Durbin models
+## Returns a selected covariate and observed and predicted DV values
+augment.sarlm = function(model, covar) {
+    covar = enquo(covar)
+    
+    tibble(!!covar := model$X[,quo_name(covar)], 
+           y_obs = model$y, 
+           y_hat = as.numeric(predict(model)))
+}
+
 ## Load data ----
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
@@ -258,6 +268,16 @@ bind_rows(stats_lm_pl,
     geom_smooth() +
     facet_wrap(specification ~ ctd, scales = 'free', nrow = 3)
 
+## Observed and predicted response values vs. hispanicP
+augment_sd_pl = map_dfr(models_sd_pl, augment, hispanicP, .id = 'ctd')
+
+ggplot(augment_sd_pl, aes(hispanicP)) +
+    geom_point(aes(y = y_obs, color = 'observed')) +
+    geom_point(aes(y = y_hat, color = 'predicted'), 
+               alpha = .5) +
+    geom_linerange(aes(ymin = y_obs, ymax = y_hat)) +
+    scale_color_brewer(palette = 'Set1') +
+    facet_wrap(vars(ctd), scales = 'free')
 
 
 ## Tracts ----
@@ -341,6 +361,18 @@ bind_rows(stats_lm_tr,
     geom_point() +
     geom_smooth() +
     facet_wrap(specification ~ ctd, scales = 'free', nrow = 3)
+
+## Predicted and observed y vs. hispanicP
+augment_sd_tr = map_dfr(models_sd_tr, augment, hispanicP, .id = 'ctd')
+
+ggplot(augment_sd_tr, aes(hispanicP)) +
+    geom_point(aes(y = y_obs, color = 'observed')) +
+    geom_point(aes(y = y_hat, color = 'predicted'), 
+               alpha = .5) +
+    geom_linerange(aes(ymin = y_obs, ymax = y_hat)) +
+    scale_color_brewer(palette = 'Set1') +
+    facet_wrap(vars(ctd), scales = 'free')
+
 
 ## Peeking at the impacts
 summary(models_sd_tr[[3]])
