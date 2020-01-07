@@ -64,7 +64,7 @@ Methodologically, the current study closely resembles a number of other studies 
 
 # Methods #
 
-The primary analysis of this study was a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models were constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamTidyverseEasilyInstall2017; @WalkerTidycensusLoadUS2018; @PebesmaSfSimpleFeatures2018; @BivandSpdepSpatialDependence2018; @TennekesTmapThematicMaps2018].  Complete cleaning and analysis code is available at *[<https://github.com/dhicks/chlorpyrifos>]*.  
+The primary analysis of this study was a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models were constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamTidyverseEasilyInstall2017; @WalkerTidycensusLoadUS2018; @PebesmaSfSimpleFeatures2018; @BivandSpdepSpatialDependence2018; @TennekesTmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos/releases/tag/v1.0>.  
 
 
 ## Study Area ##
