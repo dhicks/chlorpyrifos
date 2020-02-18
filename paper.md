@@ -10,6 +10,16 @@ header-includes:
   - \usepackage{lineno}
   - \usepackage[nofiglist, notablist, fighead, tabhead]{endfloat}
   - \DeclareDelayedFloatFlavour{longtable}{table}
+
+link-citations: true
+reference-section-title: "References"
+
+indent: true
+numbersections: true
+colorlinks: true
+geometry: "margin=1.25in"
+mainfont: "Georgia"
+fontsize: 11pt
 ---
 
 <!-- https://ehp.niehs.nih.gov/authors/research-articles -->
