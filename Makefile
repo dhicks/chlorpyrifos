@@ -1,5 +1,5 @@
-paper.pdf: paper.md
-	pandoc paper.md -o paper.pdf -F pandoc-citeproc --pdf-engine=lualatex
+paper.tex: paper.md
+	pandoc paper.md -o paper.tex --natbib
 
 
 
