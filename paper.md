@@ -7,10 +7,9 @@ bibliography: spatial_project.bib
 csl: "multidisciplinary-digital-publishing-institute.csl"
 output:
   pdf-document
+documentclass: "MDPI_template/Definitions/mdpi"
 header-includes:
   - \usepackage{lineno}
-  - \usepackage[nofiglist, notablist, fighead, tabhead]{endfloat}
-  - \DeclareDelayedFloatFlavour{longtable}{table}
 
 link-citations: true
 indent: true
@@ -30,18 +29,17 @@ fontsize: 11pt
 
 <!-- Elsevier: Social Science Research; Environmental Pollution; Applied Geography; Social Science & Medicine -->
 
-\linenumbers
-
 # Abstract #
 
 Chlorpyrifos is one of the most widely-used pesticides in the world, and is generally recognized to be a moderate neurotoxin. This paper reports a distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley, examining the way distributions of environmental risks are associated with race, ethnicity, class, gender, and other systems of structural oppression. Spatial data on chlorpyrifos use were retrieved from California's Department of Pesticide Registration (DPR) public pesticide use records (PUR) for 2011-2015.  These data were combined with demographic data for the Central Valley from the American Community Survey (ACS).  Spatial regression models were used to estimate effects of demographic covariates on local chlorpyrifos use.  A novel bootstrap method was used to account for measurement error in the ACS estimates.  There is consistent evidence that Hispanic population proportion is associated with increased local chlorpyrifos use.  A 10-point increase in Hispanic proportion is associated with an estimated 1.05-1.4-fold increase in local chlorpyrifos use across Census tract models. By contrast, effects of agricultural employment and poverty on local chlorpyrifos use are ambiguous and inconsistent between Census tracts and Census-designated places. 
 
+*[keywords]*
 
 # Introduction #
 
 Chlorpyrifos is one of the most widely-used pesticides in the world. In California in 2016, it was the 29th most heavily used pesticide active ingredient, with over 900,000 pounds applied over 640,000 acres [@PesticideUseReporting2017].  Like several other organophosphate (OP) pesticides, it is generally recognized to be a moderate neurotoxin.  @BellingerStrategyComparingContributions2012 estimates an expected loss of 4.25 IQ points in children for each order-of-magnitude increase in maternal urinary concentration of dialkyl phosphate (DAP) metabolites from OP pesticides [see also @WorldHealthOrganizationWHORecommendedClassification2010 67; @GrandjeanNeurobehaviouralEffectsDevelopmental2014;  @USEPAChlorpyrifosRevisedHuman2016; @BurkeDevelopmentalNeurotoxicityOrganophosphorus2017; and further citations in @TrasandeWhenEnoughData2017].  Chlorpyrifos was banned from residential use in the US in 2001.  
 
-Because of this evidence of harm and continued widespread use, chlorpyrifos is a significant topic of regulatory controversy. In 2007 the environmental organizations Pesticide Action Network North America (PANNA) and Natural Resources Defense Council (NRDC) filed a petition with US EPA, calling on the agency to revoke all tolerances for chlorpyrifos, effectively banning it.  In 2017, US EPA rejected this petition [@USEPAChlorpyrifosOrderDenying2017].  In 2018, Hawai'i and and California both proposed state-level restrictions on use of the chemical.  Hawai'i's complete ban comes into effect in 2023, with greater restrictions beginning in 2019 [@HawaiiBanPesticides].  California proposed classifying chlorpyrifos as a toxic air contaminant and prohibiting aerial applications [@GreenwireCalifRecommendsRestrictions2018], though as of March 2019 these proposed restrictions have not been adopted.  
+Because of this evidence of harm and continued widespread use, chlorpyrifos is a significant topic of regulatory controversy. In 2007 the environmental organizations Pesticide Action Network North America (PANNA) and Natural Resources Defense Council (NRDC) filed a petition with US EPA, calling on the agency to revoke all tolerances for chlorpyrifos, effectively banning it.  In 2017, US EPA rejected this petition [@USEPAChlorpyrifosOrderDenying2017].  In 2018, Hawai'i and and California both proposed state-level restrictions on use of the chemical.  Hawai'i's complete ban comes into effect in 2023, with greater restrictions beginning in 2019 [@HawaiiBanPesticides2018].  California proposed classifying chlorpyrifos as a toxic air contaminant and prohibiting aerial applications [@GreenwireCalifRecommendsRestrictions2018], though as of March 2019 these proposed restrictions have not been adopted.  
 
 This paper reports an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way the distribution of environmental risks intersect with race, ethnicity, class, gender, and other systems of structural oppression.  Since the landmark report "Toxic Wastes and Race in the United States"  [@CommissionforRacialJusticeToxicWastesRace1987], a significant dEJ scholarly literature has emerged, documenting numerous inequitable distributions of multiple forms of environmental hazards [@PulidoEnvironmentalismEconomicJustice1996; @Shrader-FrechetteEnvironmentalJusticeCreating2002; @BrownToxicExposuresContested2007; @MohaiEnvironmentalJustice2009; @OttingerTechnoscienceEnvironmentalJustice2011; @TaylorToxicCommunitiesEnvironmental2014].  Specifically, this study asked to what degree community demographic characteristics — including but not limited to race, ethnicity, class, gender, and age — are associated with increased (or decreased) potential exposure to chlorpyrifos.  
 
@@ -60,7 +58,7 @@ Because the CHAMACOS study focuses on populations that are likely to be highly e
 Methodologically, the current study closely resembles a number of other studies that have used spatial methods to identify demographic predictors of potential exposure to other kinds of environmental health hazards [@LievanosSociospatialDimensionsWater2017; @LievanosRetoolingCalEnviroScreenCumulative2018; @BakhtsiyaravaEnvironmentalInequalityPollution2017; @GrineskiAsianAmericansDisproportionate2017; @SilvaSpatialModelingIdentify2018].  Often these studies have been framed explicitly in terms of environmental justice.  @LievanosRaceDeprivationImmigrant2015 used data from across the continental US and spatial methods to identify clusters of high lifetime cancer risk (LCR) due to air pollution, then (non-spatially) regressed these clusters against composite Census tract demographic variables.  This study concluded that "isolated Latino immigrant-economic deprivation is the strongest positive demographic predictor of tract presence in air-toxic LCR clusters, followed by black-economic deprivation and isolated Asian/Pacific Islander immigrant-economic deprivation" [@LievanosRaceDeprivationImmigrant2015 50], a significant dEJ finding.  
 
 
-# Methods #
+# Materials and Methods #
 
 The primary analysis of this study was a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models were constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamTidyverseEasilyInstall2017; @WalkerTidycensusLoadUS2018; @PebesmaSfSimpleFeatures2018; @BivandSpdepSpatialDependence2018; @TennekesTmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos/releases/tag/v1.0>.  
 
@@ -353,8 +351,6 @@ By applying spatial regression methods to two administrative data sets, this stu
 # Acknowledgment #
 
 No specific funding was allocated for this study.  DJH's postdoctoral fellowship was funded by a gift to UC Davis from Elsevier.  
-
-\processdelayedfloats
 
 
 # References #
