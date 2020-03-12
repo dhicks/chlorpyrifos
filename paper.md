@@ -4,6 +4,7 @@ author: Daniel J. Hicks
 institute:  University of California, Davis
 email: hicks.daniel.j@gmail.com
 bibliography: spatial_project.bib
+csl: "multidisciplinary-digital-publishing-institute.csl"
 output:
   pdf-document
 header-includes:
@@ -19,11 +20,20 @@ mainfont: "Georgia"
 fontsize: 11pt
 ---
 
-<!-- https://ehp.niehs.nih.gov/authors/research-articles -->
+<!-- https://www.mdpi.com/journal/ijerph/instructions -->
+<!-- 2000 CHF APC -->
+
+*[journal template latex file]*
+*[SI units]*
+
+<!-- Sociological Perspectives: https://journals.sagepub.com/author-instructions/SPX -->
+
+<!-- Elsevier: Social Science Research; Environmental Pollution; Applied Geography; Social Science & Medicine -->
 
 \linenumbers
 
 # Abstract #
+*[max 200 words; remove headings but keep structure]*
 
 ## Background ##
 
