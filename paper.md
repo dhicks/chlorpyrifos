@@ -33,27 +33,8 @@ fontsize: 11pt
 \linenumbers
 
 # Abstract #
-*[max 200 words; remove headings but keep structure]*
 
-## Background ##
-
-Chlorpyrifos is one of the most widely-used pesticides in the world, and is generally recognized to be a moderate neurotoxin.  
-
-## Objectives ##
-
-This paper reports an distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley.  A dEJ analysis examines the way distributions of environmental risks are associated with race, ethnicity, class, gender, and other systems of structural oppression.
-
-## Methods ##
-
-Data on chlorpyrifos use in townships and sections were retrieved from California's Department of Pesticide Registration (DPR) public pesticide use records (PUR) for 2011-2015.  These data were combined with demographic data for the Central Valley from the American Community Survey (ACS).  Spatial regression models were used to estimate effects of demographic covariates on local chlorpyrifos use.  A novel bootstrap method was used to account for measurement error in the ACS estimates.  
-
-## Results ##
-
-There is consistent evidence that Hispanic population proportion is associated with increased local chlorpyrifos use.  A 10-point increase in Hispanic proportion is associated with an estimated 1.05-1.4-fold increase in local chlorpyrifos use across Census tract models. By contrast, effects of agricultural employment and poverty on local chlorpyrifos use are ambiguous and inconsistent between Census tracts and Census-designated places. Due to large uncertainties in effects estimates, it is unclear if there are any associations between local chlorpyrifos use and Asian, Indigenous, and young children population proportions.  
-
-## Discussion ## 
-
-By applying spatial regression methods to two administrative data sets, this study found that Hispanic communities in California's Central Valley are associated with higher local chlorpyrifos use, and so higher potential chlorpyrifos exposure.  Some policy implications of this finding are discussed in light of theories of cumulative disadvantage.  
+Chlorpyrifos is one of the most widely-used pesticides in the world, and is generally recognized to be a moderate neurotoxin. This paper reports a distributional environmental justice (dEJ) analysis of chlorpyrifos use in California's Central Valley, examining the way distributions of environmental risks are associated with race, ethnicity, class, gender, and other systems of structural oppression. Spatial data on chlorpyrifos use were retrieved from California's Department of Pesticide Registration (DPR) public pesticide use records (PUR) for 2011-2015.  These data were combined with demographic data for the Central Valley from the American Community Survey (ACS).  Spatial regression models were used to estimate effects of demographic covariates on local chlorpyrifos use.  A novel bootstrap method was used to account for measurement error in the ACS estimates.  There is consistent evidence that Hispanic population proportion is associated with increased local chlorpyrifos use.  A 10-point increase in Hispanic proportion is associated with an estimated 1.05-1.4-fold increase in local chlorpyrifos use across Census tract models. By contrast, effects of agricultural employment and poverty on local chlorpyrifos use are ambiguous and inconsistent between Census tracts and Census-designated places. 
 
 
 # Introduction #
