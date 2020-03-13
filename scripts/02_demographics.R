@@ -1,8 +1,10 @@
+## tidycensus uses the Census API. Obtain a key at <https://api.census.gov/data/key_signup.html>
 library(tidyverse)
 library(tidycensus)
 library(sf)
 
-data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
+# data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
+data_dir = '../data/'
 
 county_df = str_c(data_dir, '01_counties.Rda') %>%
     read_rds() %>%
@@ -63,7 +65,8 @@ tracts_sf = get_acs(geography = 'tract',
 write_rds(tracts_sf, str_c(data_dir, '02_tracts_sf.Rds'))
 
 ## Places -----
-counties_unfltd_shp = tigris::counties('CA')
+options(tigris_use_cache = TRUE)
+counties_unfltd_shp = tigris::counties(state = 'CA')
 counties_shp = subset(counties_unfltd_shp, NAME %in% county_df$county)
 
 places_shp_unfltd = tigris::places('CA')

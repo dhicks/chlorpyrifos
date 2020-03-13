@@ -1,6 +1,5 @@
 ## Spatial Durbin models
 ## NB On a standard-performance setup (eg, laptop) this script can take 10+ hours to run
-## The parallelization below is configured for a high-performance compute server
 ## Make sure the configuration is appropriate for your setup
 ## Hard-coded bootstrap settings:  
 ## 500 block resamples for each primary model
@@ -13,11 +12,11 @@ library(doSNOW)
 library(tictoc)
 
 ## parallel::detectCores()
-registerDoSNOW(makeCluster(25))
+registerDoSNOW(makeCluster(5))
 
 ## Load data ----
-data_dir = '../data/'
-# data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
+# data_dir = '../data/'
+data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
 places_sfl = read_rds(str_c(data_dir, '07_places_sfl.Rds'))
 tracts_sfl = read_rds(str_c(data_dir, '07_tracts_sfl.Rds'))

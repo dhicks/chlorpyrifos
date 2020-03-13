@@ -9,6 +9,8 @@
 
 library(tidyverse)
 library(sf)
+library(tictoc)
+library(vroom)
 
 data_dir = '~/Google Drive/Coding/EJ datasets/CA pesticide/'
 
@@ -46,16 +48,19 @@ names(pur_files) <- rep(str_c('20', pur_years),
                         length.out = length(pur_files))
 
 # ~172 s
-tictoc::tic()
+tic()
 pur_data_unfltd = pur_files %>%
-    map(read_csv, col_types = cols(range = 'c', township = 'c', section = 'c', county_cd = 'c', 
-                                   grower_id = 'c', license_no = 'c', 
-                                   applic_time = 'c', section = 'c', 
-                                   site_loc_id = 'c',
-                                   acre_planted = 'n', acre_treated = 'n')) %>%
+    map(vroom, 
+        delim = ',',
+        col_types = cols(range = 'c', 
+                         township = 'c', section = 'c', county_cd = 'c', 
+                         grower_id = 'c', license_no = 'c', 
+                         applic_time = 'c', section = 'c', 
+                         site_loc_id = 'c',
+                         acre_planted = 'n', acre_treated = 'n')) %>%
     bind_rows(.id = 'year') %>%
     full_join(county_df)
-tictoc::toc()
+toc()
 
 ## Chemical data -----
 chem_file = str_c(data_dir, 'pur2015/chemical.txt')
@@ -145,7 +150,7 @@ sections_sf = sections_unfltd %>%
 ## Combine section shapefiles w/ chlorpyrifos use data ----
 chlor_sf = chlor_data %>%
     group_by(year, comtrs) %>%
-    summarize(total_use = sum(lbs_chm_used)) %>%
+    summarize(total_use = sum(lbs_chm_used) * 0.45359237) %>%
     inner_join(sections_sf, ., 
                by = c('CO_MTRS' = 'comtrs'))
 

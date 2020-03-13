@@ -88,11 +88,13 @@ prep_data = function (locations_file, use_file) {
     return(dataf)
 }
 
-places_sfl = prep_data(str_c(data_dir, '02_places_sf.Rds'), 
-                       str_c(data_dir, '06_w_use_places.Rds')) %>%
+places_sfl = quietly(prep_data)(str_c(data_dir, '02_places_sf.Rds'), 
+                       str_c(data_dir, '06_w_use_places.Rds')) %>% 
+    chuck('result') %>% 
     map(rename, place_idx = idx)
-tracts_sfl = prep_data(str_c(data_dir, '02_tracts_sf.Rds'), 
+tracts_sfl = quietly(prep_data)(str_c(data_dir, '02_tracts_sf.Rds'), 
                        str_c(data_dir, '06_w_use_tracts.Rds')) %>%
+    chuck('result') %>% 
     map(rename, tract_idx = idx)
 
 write_rds(places_sfl, str_c(data_dir, '07_places_sfl.Rds'))

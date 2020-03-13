@@ -1,7 +1,7 @@
 ## Vanilla regression, lagged X, and spatial Durbin models
 ## The focus of this script is on model selection issues: R^2, AIC, Moran's I, and residual plots
 
-#+ setup, include = FALSE
+#+ setup, include = TRUE
 library(tidyverse)
 library(sf)
 library(tidycensus)
@@ -11,6 +11,8 @@ library(broom)
 
 library(assertthat)
 library(car)
+
+sessionInfo()
 
 ## A very crude augment() function for spatial Durbin models
 ## Returns a selected covariate and observed and predicted DV values
@@ -384,3 +386,4 @@ impacts(models_sd_tr[[3]], tr = traces_tr, R = 500) %>%
     group_by(term) %>%
     summarize(mean = mean(estimate), se = sd(estimate), 
               conf_low = quantile(estimate, probs = .025), conf_high = quantile(estimate, probs = .975))
+

@@ -15,7 +15,7 @@ resamples = read_rds(str_c(data_dir, '10_resamples.Rds'))
 durbin = read_rds(str_c(data_dir, '10_durbin_models.Rds'))
 
 ## Impacts from the county-level models
-impacts_co = read_rds(str_c(data_dir, '11_county_impacts_long.Rds'))
+# impacts_co = read_rds(str_c(data_dir, '11_county_impacts_long.Rds'))
 
 
 quants = c(.05, .5, .95)
@@ -114,7 +114,7 @@ impacts_long = gather(impacts,
                       key = 'variable', value = 'value', 
                       hispanicP:density_log10_c) %>%
     mutate(var_print = var_names[variable])
-## ~20 sec
+## ~2 sec
 ## Grouped version is way faster for some reason
 tic()
 impacts_rs_long = impacts_rs %>%
@@ -127,12 +127,12 @@ impacts_rs_long = impacts_rs %>%
 toc()
 assert_that(are_equal(length(var_names)*nrow(impacts_rs), nrow(impacts_rs_long)))
 ## Harmonize county values
-impacts_co = impacts_co %>%
-    rename(value = estimate) %>%
-    mutate(var_print = var_names[variable], 
-           CTD = {ctd %>% 
-                   str_extract('[0-9]+') %>%
-                   fct_inorder()})
+# impacts_co = impacts_co %>%
+#     rename(value = estimate) %>%
+#     mutate(var_print = var_names[variable], 
+#            CTD = {ctd %>% 
+#                    str_extract('[0-9]+') %>%
+#                    fct_inorder()})
 
 
 impacts_plot = impacts_rs_long %>%
@@ -197,46 +197,46 @@ ggsave('12_impacts_10.png', width = 6, height = 4, scale = 1.5)
 
 
 ## 30-60-90 w/ county-level estimates
-impacts_long %>%
-    filter(!(ctd %in% c('ctd_1', 'ctd_10')), 
-           !str_detect(var_print, 'county')) %>%
-    mutate(county = 'Full Data') %>%
-    ggplot(aes(county, 
-               value, color = geography)) +
-    geom_hline(yintercept = 0, linetype = 'dashed') +
-    # geom_violin(draw_quantiles = quants, 
-    #             position = position_dodge(width = 1.25)) +
-    stat_summary(position = position_dodge(width = .25), 
-                 fun.ymin = function (x) quantile(x, probs = quants[1]),
-                 fun.y = median, 
-                 fun.ymax = function (x) quantile(x, probs = quants[3]), 
-                 size = .1,
-                 aes(linetype = 'full data', 
-                     shape = 'full data')) +
-    stat_summary(data = filter(impacts_co, !(ctd %in% c('ctd_1', 'ctd_10'))),
-                 fun.ymin = function (x) quantile(x,
-                                                  probs = quants[1]),
-                 fun.y = median,
-                 fun.ymax = function (x) quantile(x,
-                                                  probs = quants[3]),
-                 position = position_dodge(width = 1),
-                 size = .1,
-                 aes(linetype = 'county-level', 
-                     shape = 'county-level')) +
-    facet_wrap(~ CTD + var_print, scales = 'free_x', ncol = 5) +
-    scale_x_discrete(limits = fct_inorder(c('Full Data', 
-          rev(c('Butte', 'Fresno', 
-          'Kern', 'San Joaquin', 
-          'Solano', 'Stanislaus', 
-          'Tulare'))))) +
-    scale_y_continuous(name = 'Total impacts (log 10 scale)') +
-    scale_color_brewer(palette = 'Set1', 
-                       labels = c('places', 'tracts')) +
-    scale_shape(name = 'model') +
-    scale_linetype(name = 'model') +
-    coord_flip() +
-    theme_minimal()
-ggsave('12_impacts_co.png', width = 10, height = 10)
+# impacts_long %>%
+#     filter(!(ctd %in% c('ctd_1', 'ctd_10')), 
+#            !str_detect(var_print, 'county')) %>%
+#     mutate(county = 'Full Data') %>%
+#     ggplot(aes(county, 
+#                value, color = geography)) +
+#     geom_hline(yintercept = 0, linetype = 'dashed') +
+#     # geom_violin(draw_quantiles = quants, 
+#     #             position = position_dodge(width = 1.25)) +
+#     stat_summary(position = position_dodge(width = .25), 
+#                  fun.ymin = function (x) quantile(x, probs = quants[1]),
+#                  fun.y = median, 
+#                  fun.ymax = function (x) quantile(x, probs = quants[3]), 
+#                  size = .1,
+#                  aes(linetype = 'full data', 
+#                      shape = 'full data')) +
+#     stat_summary(data = filter(impacts_co, !(ctd %in% c('ctd_1', 'ctd_10'))),
+#                  fun.ymin = function (x) quantile(x,
+#                                                   probs = quants[1]),
+#                  fun.y = median,
+#                  fun.ymax = function (x) quantile(x,
+#                                                   probs = quants[3]),
+#                  position = position_dodge(width = 1),
+#                  size = .1,
+#                  aes(linetype = 'county-level', 
+#                      shape = 'county-level')) +
+#     facet_wrap(~ CTD + var_print, scales = 'free_x', ncol = 5) +
+#     scale_x_discrete(limits = fct_inorder(c('Full Data', 
+#           rev(c('Butte', 'Fresno', 
+#           'Kern', 'San Joaquin', 
+#           'Solano', 'Stanislaus', 
+#           'Tulare'))))) +
+#     scale_y_continuous(name = 'Total impacts (log 10 scale)') +
+#     scale_color_brewer(palette = 'Set1', 
+#                        labels = c('places', 'tracts')) +
+#     scale_shape(name = 'model') +
+#     scale_linetype(name = 'model') +
+#     coord_flip() +
+#     theme_minimal()
+# ggsave('12_impacts_co.png', width = 10, height = 10)
 
 
 ## Backtransformed impacts ----

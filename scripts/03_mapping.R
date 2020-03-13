@@ -33,7 +33,7 @@ tm_shape(places_sf) +
     tm_polygons(col = 'yellow', alpha = .75) +
 tm_shape(subset(chlor_sf, year == 2015)) +
     tm_dots(col = 'log_total_use', palette = 'Reds', 
-            style = 'cont', title = 'Chlorpyrifos\n2015 Use\n(log lbs)') +
+            style = 'cont', title = 'Chlorpyrifos\n2015 Use\n(log_10 kg)') +
 # tm_shape(subset(counties_sf, 
 #                 NAME %in% county_df$county)) +
 #     tm_text('NAME') +
