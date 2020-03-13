@@ -22,9 +22,6 @@ fontsize: 11pt
 <!-- https://www.mdpi.com/journal/ijerph/instructions -->
 <!-- 2000 CHF APC -->
 
-*[journal template latex file]*
-*[SI units]*
-
 <!-- Sociological Perspectives: https://journals.sagepub.com/author-instructions/SPX -->
 
 <!-- Elsevier: Social Science Research; Environmental Pollution; Applied Geography; Social Science & Medicine -->
@@ -60,7 +57,7 @@ Methodologically, the current study closely resembles a number of other studies 
 
 # Materials and Methods #
 
-The primary analysis of this study was a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models were constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R was used to clean and analyze all data, with especially notable use of the `tidyverse`, `tidycensus`, `sf`, `spdep`, and `tmap` packages [@WickhamTidyverseEasilyInstall2017; @WalkerTidycensusLoadUS2018; @PebesmaSfSimpleFeatures2018; @BivandSpdepSpatialDependence2018; @TennekesTmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos/releases/tag/v1.0>.  
+The primary analysis of this study was a spatial regression of potential chlorpyrifos exposure against Census demographic data.  Separate models were constructed for each of the five CTD values listed in table \ref{tab.ctd}, as well as for tracts and places.  These two methodological choices give $5 \times 2 = 10$ models.  The software language R (3.6.1) was used to clean and analyze all data, with especially notable use of the `tidyverse` (1.2.1), `tidycensus` (0.9.6), `sf` (0.8-1), `spdep` (1.1-3), and `tmap` (2.3-1) packages [@WickhamTidyverseEasilyInstall2017; @WalkerTidycensusLoadUS2018; @PebesmaSfSimpleFeatures2018; @BivandSpdepSpatialDependence2018; @TennekesTmapThematicMaps2018].  Complete cleaning and analysis code is available at <https://github.com/dhicks/chlorpyrifos/releases/tag/v1.0>.  
 
 
 ## Study Area ##
