@@ -34,7 +34,8 @@ if (!file.exists(counties_file)) {
 }
 
 ## Pesticide use data -----
-pur_years = 11:15
+# pur_years = 11:15
+pur_years = 11
 
 pur_files = county_df %>%
     crossing(pur_years) %>%
@@ -74,6 +75,31 @@ chlor_data_uncleaned = chem_df %>%
     inner_join(pur_data_unfltd) %>%
     ## 1 entry w/ NA lbs_chm_used
     filter(!is.na(lbs_chm_used))
+
+## TODO: move this below error checking
+## Site/commodity code ----
+site_file = str_c(data_dir, 'pur2015/site.txt')
+site_df = read_csv(site_file, 
+                   col_types = cols(site_code = 'c'))
+chlor_data_uncleaned %>% 
+    left_join(site_df, by = 'site_code') %>% 
+    group_by(site_name) %>% 
+    summarize(lbs_total_use = sum(lbs_chm_used), 
+              median_rate = median(lbs_chm_used / acre_treated)) %>% 
+    arrange(desc(lbs_total_use))
+
+## TODO: move below error checking
+## Month used ----
+chlor_data_uncleaned %>% 
+    mutate(date = lubridate::mdy(applic_dt), 
+           month = lubridate::month(date)) %>% 
+    group_by(month) %>% 
+    summarize(lbs_total_use = sum(lbs_chm_used)) %>% 
+    ggplot(aes(as.factor(month), lbs_total_use, 
+               group = 1L)) +
+    geom_point() +
+    geom_line()
+
 
 ## Error checking -----
 chlor_errors = pur_years %>%
